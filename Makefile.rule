@@ -1,0 +1,41 @@
+#===============================================================================
+#      FILENAME: Config.mk
+#         USAGE: make            :generate executable
+#                make clean      :remove objects, executable, prerequisits
+#
+#   DESCRIPTION: ---
+#         NOTES: config.mk - define project configuration
+#                build.mk  - auto-generate dependencies for c/c++ files
+#                Remember to inlcude build.mk after all your targets!
+#        AUTHOR: leoxiang, leoxiang@tencent.com
+#       COMPANY: Tencent Co.Ltd
+#      REVISION: 2012-05-15 by leoxiang
+#===============================================================================#
+
+############################################################
+# Default dependency rule.
+############################################################
+# generate dep file
+-include $(patsubst %.c,%.d,$(wildcard *.c))
+-include $(patsubst %.cpp,%.d,$(wildcard *.cpp))
+
+# default rules
+%.o : %.c 
+	$(CC) $(CFLAGS) $(INC_FLAGS) -c -o $@ $<
+
+%.o : %.cpp
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -o $@ $<
+
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -o $@ $<
+
+%.d : %.c
+	@$(CC) -MM $(CFLAGS) $(INC_FLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' >$@
+
+%.d : %.cpp
+	@$(CXX) -MM $(CXXFLAGS) $(INC_FLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' >$@
+
+%.d : %.cc
+	@$(CXX) -MM $(CXXFLAGS) $(INC_FLAGS) $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' >$@
+
+# vim:ts=4:sw=4:ft=make:
