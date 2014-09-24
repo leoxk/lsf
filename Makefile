@@ -20,7 +20,6 @@ MODULE_DIRS = \
 			  dev/test/util 			\
 			  dev/test/meta 			\
 			  dev/test/other 			\
-			  #dev/src/server 			\
 
 all : 
 	for dir in $(MODULE_DIRS); do \

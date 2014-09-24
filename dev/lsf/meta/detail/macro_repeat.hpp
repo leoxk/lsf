@@ -6,8 +6,7 @@
 
 #pragma once
 
-#define LSF_REPEAT_0(m,l,p)
-#define LSF_REPEAT_1(m,l,p)   LSF_REPEAT_0(m,l,p)  m(1,p)
+#define LSF_REPEAT_1(m,l,p)   m(1,p)
 #define LSF_REPEAT_2(m,l,p)   LSF_REPEAT_1(m,l,p)  m(2,p)
 #define LSF_REPEAT_3(m,l,p)   LSF_REPEAT_2(m,l,p)  m(3,p)
 #define LSF_REPEAT_4(m,l,p)   LSF_REPEAT_3(m,l,p)  m(4,p)
@@ -1037,9 +1036,5 @@
 ////////////////////////////////////////////////////////////
 // repeat define
 #define LSF_REPEAT(n, m, l, p)       LSF_TOKEN_CAT(LSF_REPEAT_,LSF_CNT_DEC(n))(m,l,p) LSF_TOKEN_CAT(LSF_LAST_REPEAT_,n)(l,p)
-
-#define LSF_REPEAT_NEST(n, m, l, p)  LSF_TOKEN_CAT(LSF_REPEAT_,LSF_CNT_DEC(n))(m,l,p) l(n,p)
-
-#define LSF_REPEAT_BIDIR(n, m, l, p) LSF_TOKEN_CAT(LSF_REPEAT_,LSF_CNT_DEC(n))(m,l,LSF_CNT_INC(p)) l(n,p)
 
 // vim:ts=4:sw=4:et:ft=cpp:
