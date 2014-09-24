@@ -24,6 +24,7 @@ BIN = \
 	  $(BIN_DIR)/test_system 	 		\
 	  $(BIN_DIR)/test_shared_mem 		\
 	  $(BIN_DIR)/test_shared_ptr 		\
+	  $(BIN_DIR)/test_file_lock 		\
 
 # main targets
 all: $(BIN)
