@@ -106,10 +106,10 @@ public:
 
     // if there is no node, just insert one
     map_type & operator[](key_type const & key) { 
-        iterator iter = Find(value_type(key));
+        iterator iter = Find(key);
         if (iter == End()) {
             if (!Insert(key, map_type())) throw std::runtime_error(LSF_DEBUG_INFO);
-            iter = Find(value_type(key));
+            iter = Find(key);
         }
         return iter->value;
     }

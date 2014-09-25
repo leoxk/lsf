@@ -30,23 +30,25 @@ public:
 
 public:
     // constructor
-    Array() : _size(0), _ptr_array_head(NULL) 
-    { }
+    Array(size_t size = 0) : _size(0), _ptr_array_head(NULL) { 
+        Init(size); 
+    }
 
-    Array(size_t size) : _size(0), _ptr_array_head(NULL)
-    { Init(size); }
-
-    Array(Array<ElemType> const & rhs) : _size(0), _ptr_array_head(NULL) 
-    {
+    Array(Array<ElemType> const & rhs) : _size(0), _ptr_array_head(NULL) {
         Init(rhs._size);
         std::copy(rhs.Begin(), rhs.End(), Begin());
     }
 
     template<typename OtherType>
-    Array(Array<OtherType> const & rhs) : _size(0), _ptr_array_head(NULL) 
-    {
+    Array(Array<OtherType> const & rhs) : _size(0), _ptr_array_head(NULL) {
         Init(rhs._size);
         std::copy(rhs.Begin(), rhs.End(), Begin());
+    }
+
+    template<typename IterType>
+    Array(IterType iter, size_t size) : _size(0), _ptr_array_head(NULL) {
+        Init(size);
+        std::copy(iter, iter + size, Begin());
     }
 
     ~Array() { Release(); }
@@ -71,13 +73,19 @@ public:
     void Init(size_t size) {
         Release();
         _size = size;
-        _ptr_array_head = ::new value_type[_size];
+        if (_size != 0) _ptr_array_head = ::new value_type[_size];
     }
 
     void Release() {
         _size = 0;
         if (_ptr_array_head != NULL) ::delete[] _ptr_array_head;
         _ptr_array_head = NULL;
+    }
+
+    template<typename IterType>
+    void Copy(IterType it_begin, IterType it_end) {
+        Init(it_end - it_begin);
+        std::copy(it_begin, it_end, Begin());
     }
 
     // member funcs
@@ -135,6 +143,55 @@ public:
     typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
 
 public:
+    StaticArray(size_t size = 0) : _size(size) { }
+
+    StaticArray(StaticArray<ElemType, SIZE> const & rhs)
+    {
+        _size = std::min(SIZE, rhs.Size());
+        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+    }
+
+    template<typename OtherType, size_t OTHER_SIZE>
+    StaticArray(StaticArray<OtherType, OTHER_SIZE> const & rhs)
+    {
+        _size = std::min(SIZE, rhs.Size());
+        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+    }
+
+    ~StaticArray() { }
+
+    StaticArray<ElemType, SIZE> & operator=(StaticArray<ElemType, SIZE> const & rhs) {
+        if (this == &rhs) return *this;
+
+        _size = std::min(SIZE, rhs.Size());
+        std::copy(rhs.Begin(), rhs.End(), Data());
+        return *this;
+    }
+
+    template<typename OtherType, size_t OTHER_SIZE>
+    StaticArray<ElemType, SIZE> & operator=(StaticArray<OtherType, OTHER_SIZE> const & rhs) {
+        if (this == &rhs) return *this;
+
+        _size = std::min(SIZE, rhs.Size());
+        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+        return *this;
+    }
+
+    template<typename IterType>
+    void Copy(IterType it_begin, IterType it_end) {
+        _size = it_end - it_begin;
+        std::copy(it_begin, it_end, Begin());
+    }
+
+    template<typename OtherType>
+    bool PushBack(OtherType const & value) {
+        if (_size >= SIZE) return false;
+        _array[_size++] = value;
+        return true;
+    }
+
+    void SetSize(size_t size) { _size = std::min(SIZE, size); }
+
     // member funcs
     iterator       Begin()       { return _array; }
     const_iterator Begin() const { return _array; }
@@ -152,14 +209,10 @@ public:
     value_type *        Data() { return _array; }
     value_type const *  Data() const { return _array; }
 
-    void Fill(value_type & val) { std::fill(Begin(), End(), val); }
-    void Fill(value_type   val) { std::fill(Begin(), End(), val); }
+    size_t Size() const { return _size; }
 
-    template<typename OtherType>
-    StaticArray<ElemType, SIZE> & operator=(StaticArray<OtherType, SIZE> const & rhs) {
-        std::copy(rhs.Begin(), rhs.End(), Begin());
-        return *this;
-    }
+    void Fill(value_type & val) { _size = SIZE; std::fill(Begin(), End(), val); }
+    void Fill(value_type   val) { _size = SIZE; std::fill(Begin(), End(), val); }
 
     template<typename OtherType>
     bool operator==(StaticArray<OtherType, SIZE> const & rhs) {
@@ -171,11 +224,8 @@ public:
         return !(*this == rhs);
     }
 
-    // static funcs
-    static size_t ByteSize() { return SIZE * sizeof(value_type); }
-    static size_t Size()     { return SIZE; }
-
 protected:
+    size_t          _size;
     value_type      _array[SIZE];
 };
 

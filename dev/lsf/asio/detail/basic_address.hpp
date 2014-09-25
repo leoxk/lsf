@@ -76,7 +76,7 @@ public:
         else        return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
     }
     
-    basic::Buffer ToBytes() const { return basic::Buffer(&_addr, 16); }
+    void const * ToBytes() const { return &_addr; }
 
     bool operator==(BasicAddress const & rhs) const {
         if (_type != rhs._type) return false;

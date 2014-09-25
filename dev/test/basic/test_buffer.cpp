@@ -19,37 +19,31 @@ LSF_TEST_CASE(test_static_funcs)
         0x16, 0xaa, 0xb7, 0xb7, 0x12, 0xaa, 0xba, 0x94
     };
 
-    //string hex_string = Buffer::BinToHexString(content, sizeof(content));
-    //Buffer buffer = Buffer::HexStringToBin(hex_string);
-
     LSF_ASSERT(BinToHexString(content, sizeof(content)) == "1634a8c01f12129416b8a81212ccc1ba168212b794aa94a116aab7b712aaba94");
     LSF_ASSERT(BinToString(content, sizeof(content)) == ".4..............................");
     LSF_ASSERT(Buffer(content, sizeof(content)) ==
             HexStringToBin(BinToHexString(content, sizeof(content))));
 }
 
-//LSF_TEST_CASE(test_with_static_bytes)
-//{
-    //StaticBuffer<16>   bytes;
+LSF_TEST_CASE(test_with_static_bytes)
+{
+    StaticBuffer<16>   bytes;
 
-    //// binary bytes
-    //bytes.Fill(0xff);
-    //LSF_ASSERT(!bytes.IsString());
-    //LSF_ASSERT(bytes.ToHexString() == "ffffffffffffffffffffffffffffffff");
-    //LSF_ASSERT(bytes.ToString() == "................");
+    // binary bytes
+    bytes.Fill(0xff);
+    LSF_ASSERT(bytes.ToHexString() == "ffffffffffffffffffffffffffffffff");
+    LSF_ASSERT(bytes.ToString() == "................");
 
-    //// length >= 16
-    //bytes.Copy("this is a string");
-    //LSF_ASSERT(!bytes.IsString());
-    //LSF_ASSERT(bytes.ToHexString() == "74686973206973206120737472696e67");
-    //LSF_ASSERT(bytes.ToString() == "this is a string");
+    // length >= 16
+    bytes.Copy("this is a string");
+    LSF_ASSERT(bytes.ToHexString() == "74686973206973206120737472696e67");
+    LSF_ASSERT(bytes.ToString() == "this is a string");
 
-    //// length < 16
-    //bytes.Copy("short string");
-    //LSF_ASSERT(bytes.IsString());
-    //LSF_ASSERT(string((char *)bytes.Data()) == "short string");
-    //LSF_ASSERT(bytes.ToHexString() == "73686f727420737472696e6700627974");
-//}
+    // length < 16
+    bytes.Copy("short string");
+    LSF_ASSERT(string((char *)bytes.Data(), bytes.Size()) == "short string");
+    LSF_ASSERT(bytes.ToHexString() == "73686f727420737472696e67");
+}
 
 int main(int argc, char **argv)
 {

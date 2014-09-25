@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdio>
 #include <algorithm>
+#include "lsf/basic/array.hpp"
 
 namespace lsf {
 namespace basic {
@@ -22,146 +23,96 @@ static std::string BinToHexString(void const * input, size_t inlen);
 static Buffer HexStringToBin(std::string input);
 
 ////////////////////////////////////////////////////////////
-// Buffer: simple replacement of binary buffer
-class Buffer
+// Buffer: A wrapper for Array with uint8_t as its item
+class Buffer : public Array<uint8_t>
 {
 public:
-    typedef     uint8_t *           iterator;
-    typedef     uint8_t const *     const_iterator;
+    typedef Array<uint8_t> base_type;
 
 public:
-    ////////////////////////////////////////////////////////////
-    // constructor
-    Buffer() : _size(0), _max_size(0), _ptr_data(NULL) 
-    { }
+    Buffer(size_t size = 0) : base_type(size) { }
 
-    Buffer(size_t size) : _size(0), _max_size(0), _ptr_data(NULL) { 
-        Init(size); 
-    }
+    template<typename OtherType>
+    Buffer(Array<OtherType> const & rhs) : base_type(rhs) { }
 
-    Buffer(Buffer const & rhs) : _size(0), _max_size(0), _ptr_data(NULL) {
-        Copy(rhs._ptr_data, rhs._size);
-    }
+    template<typename IterType>
+    Buffer(IterType iter, size_t size) : base_type(iter, size) { }
 
-    // do not use explicit to allow auto type conversion
-    Buffer(void const * ptr, size_t size) : _size(0), _max_size(0), _ptr_data(NULL) {
-        Copy(ptr, size);
-    }
+    template<typename OtherType>
+    Buffer & operator=(Array<OtherType> const & rhs) { base_type::operator=(rhs); return *this; }
 
-    ~Buffer() { Release(); }
+    std::string ToHexString() const { return BinToHexString(base_type::Begin(), base_type::Size()); }
 
-    Buffer & operator=(Buffer const & rhs) {
-        if (this == &rhs) return *this;
+    std::string ToString()    const { return BinToString(base_type::Begin(), base_type::Size()); }
+};
 
-        Copy(rhs._ptr_data, rhs._size);
-        return *this;
-    }
+////////////////////////////////////////////////////////////
+// StaticBuffer: A wrapper for StaticArray with uint8_t as its item
+template<size_t SIZE>
+class StaticBuffer : public StaticArray<uint8_t, SIZE>
+{ 
+public:
+    typedef StaticArray<uint8_t, SIZE> base_type;
 
-    void Init(size_t size) {
-        Release();
-        _size = 0;
-        _max_size = size;
-        _ptr_data = (uint8_t *)::malloc(size);
-    }
+public:
+    StaticBuffer(size_t size = 0) : base_type(size) { }
 
-    void Release() {
-        _size = 0;
-        _max_size = 0;
-        if (_ptr_data != NULL) ::free(_ptr_data);
-        _ptr_data = NULL;
-    }
+    template<typename OtherType, size_t OTHER_SIZE>
+    StaticBuffer(StaticArray<OtherType, OTHER_SIZE> const & rhs) : base_type(rhs) { }
 
-    ////////////////////////////////////////////////////////////
-    // common funcs
-    void Copy(void const * ptr, size_t size) { 
-        if (_max_size < size) {
-            Release();
-            Init(size);
-        }
-        memcpy(_ptr_data, ptr, size); 
-        _size = size;
-    }
+    template<typename IterType>
+    StaticBuffer(IterType iter, size_t size) : base_type(iter, size) { }
 
-    uint8_t &       operator[](size_t index) { return *(_ptr_data + index); }
-    uint8_t const & operator[](size_t index) const { return *(_ptr_data + index); }
+    template<typename OtherType>
+    StaticBuffer & operator=(Array<OtherType> const & rhs) { base_type::operator=(rhs); return *this; }
 
-    //support implicit convertion to pointer type
-    operator uint8_t const *() const { return _ptr_data; }
-    operator uint8_t *() { return _ptr_data; }
+    std::string ToHexString() const { return BinToHexString(base_type::Begin(), base_type::Size()); }
 
-    // operator
-    bool operator==(Buffer const & rhs) {
-        return (rhs._size == _size) && 
-            memcmp(_ptr_data, rhs._ptr_data, std::min(rhs._size, _size)) == 0;
-    }
+    std::string ToString()    const { return BinToString(base_type::Begin(), base_type::Size()); }
 
-    // accessor
-    size_t Size()    const { return _size; }
-    size_t MaxSize() const { return _max_size; }
-    uint8_t *       Data() { return _ptr_data; }
-    uint8_t const * Data() const { return _ptr_data; }
-
-    iterator       Begin() { return _ptr_data; }
-    iterator       End()   { return _ptr_data + _size; }
-    const_iterator Begin() const { return _ptr_data; }
-    const_iterator End()   const { return _ptr_data + _size; }
-
-    std::string ToHexString() const { return BinToHexString(_ptr_data, _size); }
-    std::string ToString()    const { return BinToHexString(_ptr_data, _size); }
-
-    bool IsString() const { return std::find(Begin(), End(), '\0') != End(); }
-
-    friend Buffer HexStringToBin(std::string input);
-
-private:
-    size_t      _size;
-    size_t      _max_size;
-    uint8_t *   _ptr_data;
+    void Copy(char const * str) { base_type::Copy(str, str + ::strlen(str)); }
 };
 
 ////////////////////////////////////////////////////////////
 // BufferRef: no copy action compared to buffer
-class BufferRef
-{
-public:
-    ////////////////////////////////////////////////////////////
-    // constructor
-    BufferRef() : _size(0), _ptr_data(NULL) 
-    { }
+//class BufferRef
+//{
+//public:
+    //////////////////////////////////////////////////////////////
+    //// constructor
+    //BufferRef() : _size(0), _ptr_data(NULL) 
+    //{ }
 
-    BufferRef(BufferRef const & rhs) : _size(rhs._size), _ptr_data(rhs._ptr_data)
-    { }
+    //BufferRef(BufferRef const & rhs) : _size(rhs._size), _ptr_data(rhs._ptr_data)
+    //{ }
 
-    BufferRef(void * ptr, size_t size) : _size(size), _ptr_data((uint8_t *)ptr) 
-    { }
+    //BufferRef(void * ptr, size_t size) : _size(size), _ptr_data((uint8_t *)ptr) 
+    //{ }
 
-    BufferRef & operator=(BufferRef const & rhs) {
-        if (this == &rhs) return *this;
+    //BufferRef & operator=(BufferRef const & rhs) {
+        //if (this == &rhs) return *this;
+        //_size = rhs._size;
+        //_ptr_data = rhs._ptr_data;
+        //return *this;
+    //}
 
-        _size = rhs._size;
-        _ptr_data = rhs._ptr_data;
-        return *this;
-    }
+    //// common funcs
+    //uint8_t & operator[](size_t index) const { return *(_ptr_data + index); }
 
-    // common funcs
-    uint8_t & operator[](size_t index) const { return *(_ptr_data + index); }
+    //// accessor
+    //size_t    Size() const { return _size; }
 
-    bool IsString() const { return std::find(_ptr_data, _ptr_data + _size, '\0') != _ptr_data + _size; }
+    //uint8_t *       Data()       { return _ptr_data; }
+    //uint8_t const * Data() const { return _ptr_data; }
 
-    // accessor
-    size_t    Size() const { return _size; }
+    //Buffer      ToBuffer()    const { return Buffer(_ptr_data, _size); }
+    //std::string ToHexString() const { return BinToHexString(_ptr_data, _size); }
+    //std::string ToString()    const { return BinToHexString(_ptr_data, _size); }
 
-    uint8_t *       Data()       { return _ptr_data; }
-    uint8_t const * Data() const { return _ptr_data; }
-
-    Buffer      ToBuffer()    const { return Buffer(_ptr_data, _size); }
-    std::string ToHexString() const { return BinToHexString(_ptr_data, _size); }
-    std::string ToString()    const { return BinToHexString(_ptr_data, _size); }
-
-private:
-    size_t              _size;
-    mutable uint8_t *   _ptr_data;
-};
+//private:
+    //size_t              _size;
+    //mutable uint8_t *   _ptr_data;
+//};
 
 ////////////////////////////////////////////////////////////
 // static function
@@ -171,7 +122,6 @@ static inline std::string BinToHexString(void const * input, size_t inlen)
         '0', '1', '2', '3', '4', '5', '6', '7', 
         '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
     std::string tmp;
-
     for (size_t off = 0; off < inlen; off++) {
         tmp.push_back(CHAR_TABLE[(*((unsigned char *)input + off) >> 4) & 0xf]);
         tmp.push_back(CHAR_TABLE[*((unsigned char *)input + off) & 0xf]);
@@ -182,7 +132,6 @@ static inline std::string BinToHexString(void const * input, size_t inlen)
 static inline std::string BinToString(void const * input, size_t inlen) 
 {
     std::string tmp;
-
     for (size_t off = 0; off < inlen; off++) {
         unsigned char ch = *((unsigned char *)input + off);
         if (ch < 0x20 || ch > 0x7e) 
@@ -196,7 +145,6 @@ static inline std::string BinToString(void const * input, size_t inlen)
 static inline Buffer HexStringToBin(std::string input) 
 {
     Buffer buf(input.size() / 2);
-
     for (size_t off = 0; off < input.size() / 2; off++) {
         switch (input[off * 2]) {
             case '1': buf[off] = (0x1 << 4) & 0xf0; break;
@@ -244,7 +192,6 @@ static inline Buffer HexStringToBin(std::string input)
             case 'E': buf[off] += 0xe; break;
             case 'F': buf[off] += 0xf; break;
         }
-        buf._size++;
     }
     return buf;
 }

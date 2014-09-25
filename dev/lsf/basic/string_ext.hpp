@@ -34,7 +34,7 @@ public:
         size_t pos = input.find_first_of(delimit);
         while (last != std::string::npos)
         {
-            if (off_mark++ == offset) 
+            if (off_mark++ == offset)
                 return input.substr(last, pos - last);
             last = input.find_first_not_of(delimit, pos);
             pos  = input.find_first_of(delimit, last);
@@ -42,7 +42,7 @@ public:
         return "";
     }
 
-    static std::string SplitAndGet(std::string const & input, char delimit, size_t offset) 
+    static std::string SplitAndGet(std::string const & input, char delimit, size_t offset)
     {
         return SplitAndGet(input, std::string(1, delimit), offset);
     }
@@ -62,7 +62,7 @@ public:
     }
 
     static std::string Replace(std::string const & src, 
-            std::string const & to_replace, std::string const & replace_with) 
+            std::string const & to_replace, std::string const & replace_with)
     {
         std::string tmp;
         size_t last = 0;
@@ -79,31 +79,39 @@ public:
     }
     ////////////////////////////////////////////////////////////
     // strip
-    static std::string & RemoveHeadWhitespace(std::string & input) {
+    static std::string & RemoveHeadWhitespace(std::string & input)
+    {
         size_t pos = input.find_first_not_of(detail::WHITE_SPACES);
 
-        if (pos == 0) {
+        if (pos == 0)
+        {
             return input;
         }
-        else if (pos == std::string::npos) {
+        else if (pos == std::string::npos)
+        {
             input.clear();
         }
-        else {
+        else 
+        {
             input.erase(0, pos);
         }
         return input;
     }
 
-    static std::string & RemoveTailWhitespace(std::string & input) {
+    static std::string & RemoveTailWhitespace(std::string & input)
+    {
         size_t pos = input.find_last_not_of(detail::WHITE_SPACES);
 
-        if (pos == input.size() - 1) {
+        if (pos == input.size() - 1)
+        {
             return input;
         }
-        else if (pos == std::string::npos) {
+        else if (pos == std::string::npos)
+        {
             input.clear();
         }
-        else {
+        else 
+        {
             input.erase(pos + 1);
         }
         return input;
@@ -111,31 +119,37 @@ public:
 
     ////////////////////////////////////////////////////////////
     // path related
-    static std::string GetDirName(std::string const & input) {
+    static std::string GetDirName(std::string const & input)
+    {
         // remove heading and tailing whitespace
         size_t pos1 = input.find_first_not_of(detail::WHITE_SPACES);
         size_t pos2 = input.find_last_not_of(detail::WHITE_SPACES);
         // remove tailing '/'
-        while (input[pos2] == '/' && pos2 != 0) {
+        while (input[pos2] == '/' && pos2 != 0)
+        {
             pos2--;
         }
 
         // find last '/'
         size_t pos = input.find_last_of('/', pos2);
 
-        if (pos == std::string::npos) {
+        if (pos == std::string::npos)
+        {
             return std::string(".");
         }
-        else if (pos == pos1) {
+        else if (pos == pos1)
+        {
             return std::string("/");
         }
-        else {
+        else
+        {
             return input.substr(pos1, pos - pos1);
         }
         return input;
     }
 
-    static std::string GetBaseName(std::string const & input) {
+    static std::string GetBaseName(std::string const & input)
+    {
         // remove heading and tailing whitespace
         size_t pos1 = input.find_first_not_of(detail::WHITE_SPACES);
         size_t pos2 = input.find_last_not_of(detail::WHITE_SPACES);
@@ -145,24 +159,29 @@ public:
         // find last '/'
         size_t pos = input.find_last_of('/', pos2);
 
-        if (pos == std::string::npos) {
+        if (pos == std::string::npos)
+        {
             return input.substr(pos1, pos2 - pos1 + 1);
         }
-        else {
+        else
+        {
             return input.substr(pos + 1, pos2 - pos);
         }
         return input;
     }
 
-    static std::string GetSuffix(std::string const & input) {
+    static std::string GetSuffix(std::string const & input)
+    {
         std::string tmp = GetBaseName(input);
 
         size_t pos = tmp.find_last_of('.');
 
-        if (pos == std::string::npos) {
+        if (pos == std::string::npos)
+        {
             return std::string("");
         }
-        else {
+        else
+        {
             return tmp.substr(pos + 1);
         }
         return tmp;
@@ -170,7 +189,8 @@ public:
 
     ////////////////////////////////////////////////////////////
     // other
-    static std::string Format(char const * fmt, ...) {
+    static std::string Format(char const * fmt, ...)
+    {
         char tmp[8192];
 
         va_list ap;

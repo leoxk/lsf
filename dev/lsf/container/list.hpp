@@ -45,7 +45,7 @@ public:
     bool PushBack(value_type const & val) {
         if (base_type::IsFull())         return false;
 
-        size_type pos = base_type::_ptr_state->GetNewNodeAndInsert( _GetPrevPos(_GetHeadPos()));
+        size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetPrevPos(_GetHeadPos()));
         new(_GetDataPtr(pos)) value_type(val);
         return true;
     }
