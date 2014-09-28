@@ -23,11 +23,11 @@ BIN = $(BIN_DIR)/test_ip 		\
 # main targets
 all: $(BIN)
 
-$(BIN): $(BIN_DIR)/%: %.o
+$(BIN): $(BIN_DIR)/%: $(DEP_DIR)/%.o
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^
 
 clean:
-	$(RM) $(BIN) *.o *.d
+	$(RM) $(BIN) $(DEP_DIR)
 
 .PHONY: all clean
 

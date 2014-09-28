@@ -35,4 +35,8 @@ BIN_DIR 	:= $(PROJECT_DIR)/release/bin
 # define options
 export INC_FLAGS = -I$(DEV_DIR)
 
+# define dep dirs
+DEP_DIR := ./objdep
+$(shell mkdir -p $(DEP_DIR))
+
 # vim:ts=4:sw=4:ft=make:

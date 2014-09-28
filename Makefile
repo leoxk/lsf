@@ -13,13 +13,13 @@
 #===============================================================================#
 
 MODULE_DIRS = \
+			  dev/test/algorithm		\
 			  dev/test/asio				\
 			  dev/test/basic			\
 			  dev/test/container		\
 			  dev/test/encrypt 			\
 			  dev/test/util 			\
 			  dev/test/meta 			\
-			  dev/test/other 			\
 
 all : 
 	for dir in $(MODULE_DIRS); do \

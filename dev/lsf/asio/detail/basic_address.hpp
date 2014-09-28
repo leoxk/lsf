@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <ostream>
-#include "lsf/basic/buffer.hpp"
+#include <cstring>
 
 namespace lsf {
 namespace asio {
