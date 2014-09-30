@@ -158,7 +158,7 @@ LSF_TEST_CASE(random_test)
 {
     Set<TestNode, SharedMem> sets;
 
-    size_t size = 1000000;
+    size_t size = 10000;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Set<TestNode, SharedMem>::CalcByteSize(size)));

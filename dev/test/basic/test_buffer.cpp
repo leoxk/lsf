@@ -21,13 +21,16 @@ LSF_TEST_CASE(test_static_funcs)
 
     LSF_ASSERT(BinToHexString(content, sizeof(content)) == "1634a8c01f12129416b8a81212ccc1ba168212b794aa94a116aab7b712aaba94");
     LSF_ASSERT(BinToString(content, sizeof(content)) == ".4..............................");
-    LSF_ASSERT(Buffer(content, sizeof(content)) ==
-            HexStringToBin(BinToHexString(content, sizeof(content))));
+    Buffer<1024> buf;
+    LSF_ASSERT(HexStringToBin(BinToHexString(content, sizeof(content)), buf));
+    LSF_ASSERT(buf.Size() == 32);
+    LSF_ASSERT(Buffer<1024>(content, sizeof(content)).ToHexString() == buf.ToHexString());
+    LSF_ASSERT(Buffer<1024>(content, sizeof(content)) == buf);
 }
 
 LSF_TEST_CASE(test_with_static_bytes)
 {
-    StaticBuffer<16>   bytes;
+    Buffer<16>   bytes;
 
     // binary bytes
     bytes.Fill(0xff);
