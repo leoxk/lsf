@@ -10,7 +10,7 @@
 #include "lsf/basic/macro.hpp"
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_bidirectional_list.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 
 namespace lsf {
 namespace container {
@@ -20,7 +20,7 @@ namespace container {
 ////////////////////////////////////////////////////////////
 template<
     typename ElemType,
-    typename StoreType = HeapMem,
+    typename StoreType = SharedMem,
     typename SizeType = size_t>
 class Pool :
     public detail::BasicContainer<
@@ -93,7 +93,6 @@ public:
     reverse_iterator REnd()   { return reverse_iterator(Begin()); }
 
 private:
-    //value_type const * _GetDataPtr(size_type pos) const { return base_type::_ptr_state->GetDataPtr(pos); }
     value_type * _GetDataPtr(size_type pos) const { return base_type::_ptr_state->GetDataPtr(pos); }
     size_type    _GetNextPos(size_type pos) const { return base_type::_ptr_state->GetNextPos(pos); }
     size_type    _GetPrevPos(size_type pos) const { return base_type::_ptr_state->GetPrevPos(pos); }

@@ -10,7 +10,6 @@
 #include "lsf/basic/type_cast.hpp"
 #include "lsf/util/random.hpp"
 #include "lsf/container/set.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -54,8 +53,7 @@ LSF_TEST_CASE(test_load_batch)
     Set<uint32_t, SharedMem> sets;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, sets.CalcByteSize(line_count)));
-    LSF_ASSERT(sets.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(sets.InitStorage());
+    LSF_ASSERT(sets.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(sets.MaxSize() == line_count);
 
     // insert

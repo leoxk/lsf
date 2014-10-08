@@ -7,7 +7,6 @@
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/util/random.hpp"
 #include "lsf/container/set.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 #include <set>
 
@@ -41,8 +40,7 @@ LSF_TEST_CASE(easy_test)
     Set<TestNode, SharedMem> sets;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Set<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(sets.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(sets.InitStorage());
+    LSF_ASSERT(sets.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(sets.MaxSize() == 10);
 
     // test insert
@@ -162,8 +160,7 @@ LSF_TEST_CASE(random_test)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Set<TestNode, SharedMem>::CalcByteSize(size)));
-    LSF_ASSERT(sets.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(sets.InitStorage());
+    LSF_ASSERT(sets.BindAndInitStorage(SharedMem(SHM_KEY)));
 
     // init a random uint group
     set<uint32_t> uint_group;

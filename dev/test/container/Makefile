@@ -17,15 +17,17 @@ PROJECT_DIR := ../../..
 
 # define targets
 BIN = \
-	  $(BIN_DIR)/test_array 		\
-	  $(BIN_DIR)/test_list 			\
-	  $(BIN_DIR)/test_pool 			\
-	  $(BIN_DIR)/test_queue 		\
-	  $(BIN_DIR)/test_set			\
-	  $(BIN_DIR)/test_map			\
-	  $(BIN_DIR)/test_rb_tree		\
-	  $(BIN_DIR)/test_benchmark 	\
-	  $(BIN_DIR)/test_variant 		\
+	  $(BIN_DIR)/test_array 			\
+	  $(BIN_DIR)/test_list 				\
+	  $(BIN_DIR)/test_pool 				\
+	  $(BIN_DIR)/test_queue 			\
+	  $(BIN_DIR)/test_set				\
+	  $(BIN_DIR)/test_map				\
+	  $(BIN_DIR)/test_rb_tree			\
+	  $(BIN_DIR)/test_benchmark 		\
+	  $(BIN_DIR)/test_variant 			\
+	  $(BIN_DIR)/test_basic_container 	\
+	  $(BIN_DIR)/test_shared_mem 		\
 
 # main targets
 all: $(BIN)

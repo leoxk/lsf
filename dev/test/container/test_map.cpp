@@ -13,6 +13,7 @@
 #include <string>
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/container/map.hpp"
+#include "lsf/container/heap_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -22,9 +23,8 @@ using namespace lsf::container;
 
 LSF_TEST_CASE(easy_test)
 {
-    Map<int, string>    maps;
-    maps.BindStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
-    maps.InitStorage();
+    Map<int, string, HeapMem>    maps;
+    maps.BindAndInitStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
     LSF_ASSERT(maps.IsBindStorage());
     LSF_ASSERT(maps.IsEmpty());
 
@@ -67,9 +67,8 @@ LSF_TEST_CASE(easy_test)
 
 LSF_TEST_CASE(test_iter_erase)
 {
-    Map<int, string>    maps;
-    maps.BindStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
-    maps.InitStorage();
+    Map<int, string, HeapMem>    maps;
+    maps.BindAndInitStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
     LSF_ASSERT(maps.IsBindStorage());
     LSF_ASSERT(maps.IsEmpty());
 

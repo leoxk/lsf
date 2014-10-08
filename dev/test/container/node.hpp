@@ -33,6 +33,10 @@ struct TestNode {
     uint32_t    data;
 };
 
+struct TestNode1 : public TestNode {
+    uint32_t    other;
+};
+
 std::ostream & operator<<(std::ostream & os, TestNode const & node) {
     return os << "[" << node.key << "]";
 }

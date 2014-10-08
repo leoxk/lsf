@@ -10,7 +10,7 @@
 #include "lsf/basic/macro.hpp"
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_red_black_tree.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 
 namespace lsf {
 namespace container {
@@ -39,7 +39,7 @@ struct MapData
 template<
     typename KeyType,
     typename MapType,
-    typename StoreType = HeapMem,
+    typename StoreType = SharedMem,
     typename SizeType = size_t>
 class Map : 
     public detail::BasicContainer<

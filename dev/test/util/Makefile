@@ -22,7 +22,6 @@ BIN = \
 	  $(BIN_DIR)/test_log				\
 	  $(BIN_DIR)/test_random 	 		\
 	  $(BIN_DIR)/test_system 	 		\
-	  $(BIN_DIR)/test_shared_mem 		\
 	  $(BIN_DIR)/test_shared_ptr 		\
 	  $(BIN_DIR)/test_file_lock 		\
 

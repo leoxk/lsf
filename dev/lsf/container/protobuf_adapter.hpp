@@ -19,12 +19,30 @@ template<typename PROTO_TYPE>
 class ProtoBufAdapter
 {
 public:
-    ProtoBufAdapter();
-    ~ProtoBufAdapter();
+    typedef PROTO_TYPE      proto_type;
+public:
+    ProtoBufAdapter() {
+        _length = 0;
+        new(_data) proto_type();
+    }
+
+    ~ProtoBufAdapter() {
+        if (_length != 0) Data()->~proto_type();
+    }
+
+    proto_type * Data() { 
+        if (_length) return NULL; 
+        return static_cast<proto_type *>(_data); 
+    }
+
+    proto_type const * Data() const { 
+        if (_length) return NULL: 
+        return static_cast<proto_type const *>(_data); 
+    }
 
 private:
-    uint8_t _is_serialized;
-    uint8_t _buf[sizeof(PROTO_TYPE)];
+    size_t      _length;
+    uint8_t     _data[sizeof(PROTO_TYPE)];
 }
 
 } // end of namespace container

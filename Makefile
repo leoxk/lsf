@@ -56,6 +56,8 @@ test_container :
 	./release/bin/test_rb_tree
 	./release/bin/test_set
 	./release/bin/test_variant
+	./release/bin/test_basic_container
+	./release/bin/test_shared_mem
 
 test_encrypt :
 	./release/bin/test_base64
@@ -71,7 +73,6 @@ test_util :
 	./release/bin/test_date
 	./release/bin/test_log
 	./release/bin/test_random
-	./release/bin/test_shared_mem
 	./release/bin/test_shared_ptr
 	./release/bin/test_system
 

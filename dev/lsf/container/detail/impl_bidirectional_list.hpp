@@ -42,10 +42,11 @@ public:
 
 public:
     void Init(size_t byte_size) {
+        _size           = 0;
+        _max_size       = (byte_size - sizeof(this_type)) / sizeof(node_type);
+        _elem_byte_size = sizeof(value_type);
         _empty_head_pos = 1;
         _head_pos       = 0;
-        _max_size       = (byte_size - sizeof(this_type)) / sizeof(node_type);
-        _size           = 0;
 
         // make list a loop
         GetIsUse(ENDPOS)   = false;
@@ -119,8 +120,14 @@ public:
 
     static size_t CalcByteSize(size_type size) { return (size + 1) * sizeof(node_type) + sizeof(this_type); }
 
+    static size_t CalcElemByteSize(void const * ptr) { 
+        if (!ptr) return 0;
+        return ((this_type const *)ptr)->ElemByteSize(); 
+    }
+
     size_type Size()    const { return _size; }
     size_type MaxSize() const { return _max_size - 1; }
+    size_t ElemByteSize() const { return _elem_byte_size; }
 
     bool IsFull()  const { return _size == _max_size - 1; }
     bool IsEmpty() const { return _size == 0; }
@@ -144,6 +151,7 @@ public:
 private:
     size_type      _size;
     size_type      _max_size; // here use first node to mark END
+    size_type      _elem_byte_size;
     size_type      _empty_head_pos;
     size_type      _head_pos;
 };

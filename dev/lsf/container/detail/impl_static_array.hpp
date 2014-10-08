@@ -25,6 +25,7 @@ public:
     void Init(size_t byte_size) 
     { 
         _max_size = (byte_size - sizeof(this_type)) / sizeof(value_type);
+        _elem_byte_size = sizeof(value_type);
         // make sure all obj is constructed
         for (size_t index = 0; index < _max_size; index++) {
             new(GetDataPtr(index)) value_type();
@@ -33,8 +34,14 @@ public:
 
     static size_t CalcByteSize(size_type size) { return size * sizeof(value_type) + sizeof(this_type); }
 
+    static size_t CalcElemByteSize(void const * ptr) { 
+        if (!ptr) return 0;
+        return ((this_type const *)ptr)->ElemByteSize(); 
+    }
+
     size_type Size()    const { return _max_size; }
     size_type MaxSize() const { return _max_size; }
+    size_t ElemByteSize() const { return _elem_byte_size; }
 
     bool IsEmpty() const { return true; }
     bool IsFull()  const { return true; }
@@ -43,6 +50,7 @@ public:
 
 private:
     size_type  _max_size;
+    size_type  _elem_byte_size;
 };
 
 ////////////////////////////////////////////////////////////
