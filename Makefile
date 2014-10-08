@@ -32,7 +32,6 @@ test : 				\
 	test_container 	\
 	test_encrypt 	\
 	test_meta 		\
-	test_other 		\
 	test_util 		\
 
 test_asio :
@@ -66,9 +65,6 @@ test_meta :
 	./release/bin/test_macro
 	./release/bin/test_type_list
 	./release/bin/test_type_traits
-
-test_other :
-	./release/bin/test_multi_compile_unit
 
 test_util :
 	./release/bin/test_config release/conf/test_config.conf
