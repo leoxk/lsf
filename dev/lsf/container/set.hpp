@@ -8,7 +8,7 @@
 
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_red_black_tree.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 #include "lsf/basic/type_cast.hpp"
 
 namespace lsf {
@@ -19,7 +19,7 @@ namespace container {
 ////////////////////////////////////////////////////////////
 template<
     typename ElemType,
-    typename StoreType = HeapMem,
+    typename StoreType = SharedMem,
     typename SizeType = size_t>
 class Set : 
     public detail::BasicContainer<

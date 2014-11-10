@@ -13,7 +13,7 @@
 #include "lsf/basic/error.hpp"
 
 namespace lsf {
-namespace util {
+namespace container {
 
 class SharedMem : public basic::Error
 {
@@ -148,7 +148,7 @@ private:
     void *          _ptr_mem;
 };
 
-} // end of namespace util
+} // end of namespace container
 } // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

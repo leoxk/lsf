@@ -114,7 +114,6 @@ struct InvokeType
             return InvokeType<L, N+1>()(index, func);
         }
     }
-
 };
 
 template <typename L, size_t N> 

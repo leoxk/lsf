@@ -35,29 +35,4 @@
 #define __LSF_LIST_ITEM(n, t)       t,
 #define __LSF_LIST_ITEM_END(n, t)   t
 
-// tuple params
-#define LSF_TUPLE_DATA_CTOR(n, p) \
-    TupleData(LSF_REPEAT(n, _LSF_TUPLE_DATA_CALL_PARAM, _LSF_TUPLE_DATA_CALL_PARAM_END, p)) : head(LSF_TOKEN_CAT(p,1)), tail(LSF_ARGS_S(LSF_CNT_DEC(n),p)) { }
-
-#define LSF_TUPLE_CTOR(n,p) \
-    Tuple(LSF_REPEAT(n, _LSF_TUPLE_CALL_PARAM, _LSF_TUPLE_CALL_PARAM_END, p)) : base_type(LSF_ARGS(n,p)) { }
-
-#define _LSF_TUPLE_DATA_CALL_PARAM(n,p)         typename detail::TupleParam<L,N+n>::type p##n,
-#define _LSF_TUPLE_DATA_CALL_PARAM_END(n,p)     typename detail::TupleParam<L,N+n>::type p##n
-#define _LSF_TUPLE_CALL_PARAM(n,p)      typename detail::TupleParam<list_type,n>::type p##n,
-#define _LSF_TUPLE_CALL_PARAM_END(n,p)  typename detail::TupleParam<list_type,n>::type p##n
-	
-//// func params
-//#define LSF_FUNC_PARAMS(n, p) LSF_REPEAT(n, __LSF_FUNC_PARAM, __LSF_FUNC_PARAM_END, p)
-//#define __LSF_FUNC_PARAM(n,t) T##n t##n, 
-//#define __LSF_FUNC_PARAM_END(n,t) T##n t##n
-
-//// func pparams
-//#define LSF_FUNC_PPARAMS(n, p) LSF_REPEAT(n, __LSF_FUNC_PPARAM, __LSF_FUNC_PPARAM_END, p)
-//#define __LSF_FUNC_PPARAM(n,t) P##n t##n, 
-//#define __LSF_FUNC_PPARAM_END(n,t) P##n t##n
-
-//// enum items
-//#define LSF_ENUM_ITEMS(n, t) LSF_REPEAT(n,LSF_ARG,LSF_ARG_END,t)
-
 // vim:ts=4:sw=4:et:ft=cpp:

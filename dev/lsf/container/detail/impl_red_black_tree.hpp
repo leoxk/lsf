@@ -51,10 +51,11 @@ public:
 public:
     void Init(size_type byte_size)
     {
-        _root_pos = NPOS;
+        _root_pos       = NPOS;
         _empty_head_pos = 1;
-        _max_size = (byte_size - sizeof(this_type)) / sizeof(node_type);
-        _size     = 0;
+        _max_size       = (byte_size - sizeof(this_type)) / sizeof(node_type);
+        _size           = 0;
+        _elem_byte_size = sizeof(value_type);
         
         // make empty list a loop
         // use lchild and rchild as prev_pos and next_pos
@@ -701,6 +702,7 @@ public:
 
     size_type Size()    const { return _size; }
     size_type MaxSize() const { return _max_size - 1; }
+    size_t ElemByteSize() const { return _elem_byte_size; }
 
     node_type  * GetNodePtr(size_type pos) { return (node_type *)(this + 1) + pos; }
     value_type * GetDataPtr(size_type pos) { return &GetNodePtr(pos)->data; }
@@ -745,10 +747,13 @@ public:
     }
 
     static size_t CalcByteSize(size_type size) { return (size + 1) * sizeof(node_type) + sizeof(this_type); }
+    static size_t CalcElemByteSize(void const * ptr) { return ((this_type const *)ptr)->ElemByteSize(); }
+    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->MaxSize(); }
 
 private:
     size_type      _size;
     size_type      _max_size;
+    size_type      _elem_byte_size;
     // here we use one NIL Node to mark all nil leaf node
     // so must store this nil pos in state
     size_type      _nil_pos; 

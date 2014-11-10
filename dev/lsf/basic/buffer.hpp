@@ -10,157 +10,41 @@
 #include <string>
 #include <cstdio>
 #include <algorithm>
+#include "lsf/basic/array.hpp"
 
 namespace lsf {
 namespace basic {
 
 ////////////////////////////////////////////////////////////
 // forward declare
-class Buffer;
 static std::string BinToString(void const * input, size_t inlen);
 static std::string BinToHexString(void const * input, size_t inlen);
-static Buffer HexStringToBin(std::string input);
 
 ////////////////////////////////////////////////////////////
-// Buffer: simple replacement of binary buffer
-class Buffer
-{
+// Buffer: A wrapper for Array with uint8_t as its item
+template<size_t SIZE>
+class Buffer : public Array<uint8_t, SIZE>
+{ 
 public:
-    typedef     uint8_t *           iterator;
-    typedef     uint8_t const *     const_iterator;
+    typedef Array<uint8_t, SIZE> base_type;
 
 public:
-    ////////////////////////////////////////////////////////////
-    // constructor
-    Buffer() : _size(0), _max_size(0), _ptr_data(NULL) 
-    { }
+    Buffer(size_t size = 0) : base_type(size) { }
 
-    Buffer(size_t size) : _size(0), _max_size(0), _ptr_data(NULL) { 
-        Init(size); 
-    }
+    template<typename OtherType, size_t OTHER_SIZE>
+    Buffer(Array<OtherType, OTHER_SIZE> const & rhs) : base_type(rhs) { }
 
-    Buffer(Buffer const & rhs) : _size(0), _max_size(0), _ptr_data(NULL) {
-        Copy(rhs._ptr_data, rhs._size);
-    }
+    template<typename IterType>
+    Buffer(IterType iter, size_t size) : base_type(iter, size) { }
 
-    // do not use explicit to allow auto type conversion
-    Buffer(void const * ptr, size_t size) : _size(0), _max_size(0), _ptr_data(NULL) {
-        Copy(ptr, size);
-    }
+    template<size_t OTHER_SIZE>
+    Buffer & operator=(Buffer<OTHER_SIZE> const & rhs) { base_type::operator=(rhs); return *this; }
 
-    ~Buffer() { Release(); }
+    std::string ToHexString() const { return BinToHexString(base_type::Begin(), base_type::Size()); }
 
-    Buffer & operator=(Buffer const & rhs) {
-        if (this == &rhs) return *this;
+    std::string ToString()    const { return BinToString(base_type::Begin(), base_type::Size()); }
 
-        Copy(rhs._ptr_data, rhs._size);
-        return *this;
-    }
-
-    void Init(size_t size) {
-        Release();
-        _size = 0;
-        _max_size = size;
-        _ptr_data = (uint8_t *)::malloc(size);
-    }
-
-    void Release() {
-        _size = 0;
-        _max_size = 0;
-        if (_ptr_data != NULL) ::free(_ptr_data);
-        _ptr_data = NULL;
-    }
-
-    ////////////////////////////////////////////////////////////
-    // common funcs
-    void Copy(void const * ptr, size_t size) { 
-        if (_max_size < size) {
-            Release();
-            Init(size);
-        }
-        memcpy(_ptr_data, ptr, size); 
-        _size = size;
-    }
-
-    uint8_t &       operator[](size_t index) { return *(_ptr_data + index); }
-    uint8_t const & operator[](size_t index) const { return *(_ptr_data + index); }
-
-    //support implicit convertion to pointer type
-    operator uint8_t const *() const { return _ptr_data; }
-    operator uint8_t *() { return _ptr_data; }
-
-    // operator
-    bool operator==(Buffer const & rhs) {
-        return (rhs._size == _size) && 
-            memcmp(_ptr_data, rhs._ptr_data, std::min(rhs._size, _size)) == 0;
-    }
-
-    // accessor
-    size_t Size()    const { return _size; }
-    size_t MaxSize() const { return _max_size; }
-    uint8_t *       Data() { return _ptr_data; }
-    uint8_t const * Data() const { return _ptr_data; }
-
-    iterator       Begin() { return _ptr_data; }
-    iterator       End()   { return _ptr_data + _size; }
-    const_iterator Begin() const { return _ptr_data; }
-    const_iterator End()   const { return _ptr_data + _size; }
-
-    std::string ToHexString() const { return BinToHexString(_ptr_data, _size); }
-    std::string ToString()    const { return BinToHexString(_ptr_data, _size); }
-
-    bool IsString() const { return std::find(Begin(), End(), '\0') != End(); }
-
-    friend Buffer HexStringToBin(std::string input);
-
-private:
-    size_t      _size;
-    size_t      _max_size;
-    uint8_t *   _ptr_data;
-};
-
-////////////////////////////////////////////////////////////
-// BufferRef: no copy action compared to buffer
-class BufferRef
-{
-public:
-    ////////////////////////////////////////////////////////////
-    // constructor
-    BufferRef() : _size(0), _ptr_data(NULL) 
-    { }
-
-    BufferRef(BufferRef const & rhs) : _size(rhs._size), _ptr_data(rhs._ptr_data)
-    { }
-
-    BufferRef(void * ptr, size_t size) : _size(size), _ptr_data((uint8_t *)ptr) 
-    { }
-
-    BufferRef & operator=(BufferRef const & rhs) {
-        if (this == &rhs) return *this;
-
-        _size = rhs._size;
-        _ptr_data = rhs._ptr_data;
-        return *this;
-    }
-
-    // common funcs
-    uint8_t & operator[](size_t index) const { return *(_ptr_data + index); }
-
-    bool IsString() const { return std::find(_ptr_data, _ptr_data + _size, '\0') != _ptr_data + _size; }
-
-    // accessor
-    size_t    Size() const { return _size; }
-
-    uint8_t *       Data()       { return _ptr_data; }
-    uint8_t const * Data() const { return _ptr_data; }
-
-    Buffer      ToBuffer()    const { return Buffer(_ptr_data, _size); }
-    std::string ToHexString() const { return BinToHexString(_ptr_data, _size); }
-    std::string ToString()    const { return BinToHexString(_ptr_data, _size); }
-
-private:
-    size_t              _size;
-    mutable uint8_t *   _ptr_data;
+    void Copy(char const * str) { base_type::Copy(str, str + ::strlen(str)); }
 };
 
 ////////////////////////////////////////////////////////////
@@ -171,7 +55,6 @@ static inline std::string BinToHexString(void const * input, size_t inlen)
         '0', '1', '2', '3', '4', '5', '6', '7', 
         '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
     std::string tmp;
-
     for (size_t off = 0; off < inlen; off++) {
         tmp.push_back(CHAR_TABLE[(*((unsigned char *)input + off) >> 4) & 0xf]);
         tmp.push_back(CHAR_TABLE[*((unsigned char *)input + off) & 0xf]);
@@ -182,7 +65,6 @@ static inline std::string BinToHexString(void const * input, size_t inlen)
 static inline std::string BinToString(void const * input, size_t inlen) 
 {
     std::string tmp;
-
     for (size_t off = 0; off < inlen; off++) {
         unsigned char ch = *((unsigned char *)input + off);
         if (ch < 0x20 || ch > 0x7e) 
@@ -193,12 +75,15 @@ static inline std::string BinToString(void const * input, size_t inlen)
     return tmp;
 }
 
-static inline Buffer HexStringToBin(std::string input) 
+template<size_t SIZE>
+static inline bool HexStringToBin(std::string input, Buffer<SIZE> & buf) 
 {
-    Buffer buf(input.size() / 2);
-
-    for (size_t off = 0; off < input.size() / 2; off++) {
-        switch (input[off * 2]) {
+    buf.Reset();
+    for (size_t off = 0; off < input.size() / 2; off++) 
+    {
+        buf.PushBack(0);
+        switch (input[off * 2])
+        {
             case '1': buf[off] = (0x1 << 4) & 0xf0; break;
             case '2': buf[off] = (0x2 << 4) & 0xf0; break;
             case '3': buf[off] = (0x3 << 4) & 0xf0; break;
@@ -221,7 +106,8 @@ static inline Buffer HexStringToBin(std::string input)
             case 'E': buf[off] = (0xe << 4) & 0xf0; break;
             case 'F': buf[off] = (0xf << 4) & 0xf0; break;
         }
-        switch (input[off * 2 + 1]) {
+        switch (input[off * 2 + 1])
+        {
             case '1': buf[off] += 0x1; break;
             case '2': buf[off] += 0x2; break;
             case '3': buf[off] += 0x3; break;
@@ -244,9 +130,8 @@ static inline Buffer HexStringToBin(std::string input)
             case 'E': buf[off] += 0xe; break;
             case 'F': buf[off] += 0xf; break;
         }
-        buf._size++;
     }
-    return buf;
+    return true;
 }
 
 } // End of namespace basic

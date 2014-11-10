@@ -35,7 +35,7 @@ LSF_TEST_CASE(test_more_macro)
     LSF_ASSERT(LSF_TOKEN_TO_STRING(LSF_REPEAT(5, m, l, p)) == 
             string("m(1,p) m(2,p) m(3,p) m(4,p) l(5,p)"));
     
-    LSF_ASSERT(LSF_TOKEN_TO_STRING(LSF_REPEAT_NEST(5, m, l, p)) == 
+    LSF_ASSERT(LSF_TOKEN_TO_STRING(LSF_REPEAT(5, m, l, p)) == 
             string("m(1,p) m(2,p) m(3,p) m(4,p) l(5,p)"));
     
     // test template params
@@ -58,26 +58,6 @@ LSF_TEST_CASE(test_more_macro)
 
     // test list items
     LSF_ASSERT(LSF_TOKEN_TO_STRING((LSF_LIST_ITEMS(5, type))) == string( "(type, type, type, type, type)"));
-
-    // test tuple params
-    LSF_ASSERT(LSF_TOKEN_TO_STRING((LSF_REPEAT_NEST(5, LSF_TUPLE_DATA_CTOR, LSF_TUPLE_DATA_CTOR, arg))) == string(
-            "(TupleData(typename detail::TupleParam<L,N+1>::type arg1) : head(arg1), tail() { }"
-            " TupleData(typename detail::TupleParam<L,N+1>::type arg1, typename detail::TupleParam<L,N+2>::type arg2) : head(arg1), tail(arg2) { }"
-            " TupleData(typename detail::TupleParam<L,N+1>::type arg1, typename detail::TupleParam<L,N+2>::type arg2, typename detail::TupleParam<L,N+3>::type arg3) : head(arg1), tail(arg2, arg3) { }"
-            " TupleData(typename detail::TupleParam<L,N+1>::type arg1, typename detail::TupleParam<L,N+2>::type arg2, typename detail::TupleParam<L,N+3>::type arg3, typename detail::TupleParam<L,N+4>::type arg4) : head(arg1), tail(arg2, arg3, arg4) { }"
-            " TupleData(typename detail::TupleParam<L,N+1>::type arg1, typename detail::TupleParam<L,N+2>::type arg2, typename detail::TupleParam<L,N+3>::type arg3, typename detail::TupleParam<L,N+4>::type arg4, typename detail::TupleParam<L,N+5>::type arg5) : head(arg1), tail(arg2, arg3, arg4, arg5) { })"));
-
-    LSF_ASSERT(LSF_TOKEN_TO_STRING((LSF_REPEAT_NEST(5, LSF_TUPLE_CTOR, LSF_TUPLE_CTOR, arg))) == string(
-            "(Tuple(typename detail::TupleParam<list_type,1>::type arg1) : base_type(arg1) { }"
-            " Tuple(typename detail::TupleParam<list_type,1>::type arg1, typename detail::TupleParam<list_type,2>::type arg2) : base_type(arg1, arg2) { }"
-            " Tuple(typename detail::TupleParam<list_type,1>::type arg1, typename detail::TupleParam<list_type,2>::type arg2, typename detail::TupleParam<list_type,3>::type arg3) : base_type(arg1, arg2, arg3) { }"
-            " Tuple(typename detail::TupleParam<list_type,1>::type arg1, typename detail::TupleParam<list_type,2>::type arg2, typename detail::TupleParam<list_type,3>::type arg3, typename detail::TupleParam<list_type,4>::type arg4) : base_type(arg1, arg2, arg3, arg4) { }"
-            " Tuple(typename detail::TupleParam<list_type,1>::type arg1, typename detail::TupleParam<list_type,2>::type arg2, typename detail::TupleParam<list_type,3>::type arg3, typename detail::TupleParam<list_type,4>::type arg4, typename detail::TupleParam<list_type,5>::type arg5) : base_type(arg1, arg2, arg3, arg4, arg5) { })"));
-
-    //cout << LSF_TOKEN_TO_STRING((LSF_REPEAT_NEST(5, LSF_TUPLE_CTOR, LSF_TUPLE_CTOR, arg))) << endl;
-
-    // test func params
-    //cout << LSF_TOKEN_TO_STRING((LSF_FUNC_PARAMS(5, test))) << endl;
 }
 
 int main(int argc, char **argv)

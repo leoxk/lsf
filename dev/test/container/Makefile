@@ -26,6 +26,7 @@ BIN = \
 	  $(BIN_DIR)/test_rb_tree		\
 	  $(BIN_DIR)/test_benchmark 	\
 	  $(BIN_DIR)/test_variant 		\
+	  $(BIN_DIR)/test_shared_mem 	\
 
 # main targets
 all: $(BIN)

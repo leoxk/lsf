@@ -5,10 +5,10 @@
 // Revision:    2012-05-07 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/util/shared_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 
 using namespace std;
-using namespace lsf::util;
+using namespace lsf::container;
 
 #define SHM_KEY  0x082157ff
 #define SHM_SIZE 10 * 1024

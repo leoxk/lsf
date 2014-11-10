@@ -10,6 +10,7 @@
 #include <iterator>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
+#include "lsf/basic/empty_type.hpp"
 
 namespace lsf {
 namespace container {
@@ -41,8 +42,8 @@ public:
 public:
     BasicContainer() : _ptr_state(NULL) { }
 
-    // bind and recover from storage
-    bool BindStorage(StoreType store) {
+    // bind and recover storage
+    bool BindAndRecoverStorage(StoreType store) {
         _ptr_state = NULL;
         _store = store;
 
@@ -50,28 +51,37 @@ public:
             ErrString() = std::string("Store::GetPtr : ") + _store.ErrString();
             return false;
         }
+
+        if (((StateType *)_store.GetPtr())->ElemByteSize() != sizeof(value_type)) {
+            ErrString() = std::string("ElemSize Not Equal");
+            return false;
+        }
+
         _ptr_state = (StateType *)_store.GetPtr();
         return true;
     }
 
-    // initiate storage
-    bool InitStorage() {
-        if (!IsBindStorage()) return false;
+    // bind and initiate storage
+    bool BindAndInitStorage(StoreType store) {
+        _ptr_state = NULL;
+        _store = store;
 
+        if (_store.GetPtr() == NULL) {
+            ErrString() = std::string("Store::GetPtr : ") + _store.ErrString();
+            return false;
+        }
+
+        _ptr_state = (StateType *)_store.GetPtr();
         _ptr_state->Init(_store.GetSize());
         return true;
     }
 
     // accessor funcs
-    size_type Size() const {
-        if (!IsBindStorage()) return 0;
-        return _ptr_state->Size();
-    }
+    size_type Size() const { return _ptr_state->Size(); }
 
-    size_type MaxSize() const {
-        if (!IsBindStorage()) return 0; 
-        return _ptr_state->MaxSize();
-    }
+    size_type MaxSize() const { return _ptr_state->MaxSize(); }
+
+    size_t ElemByteSize() const { return _ptr_state->ElemByteSize(); }
 
     bool IsFull()  const { return _ptr_state->IsFull();  }
     bool IsEmpty() const { return _ptr_state->IsEmpty(); }
@@ -79,6 +89,10 @@ public:
 
     // static funcs
     static size_t CalcByteSize(size_type size) { return StateType::CalcByteSize(size); }
+
+    static size_t CalcElemByteSize(StoreType store) { return StateType::CalcElemByteSize(store.GetPtr()); }
+
+    static size_t CalcElemMaxSize(StoreType store) { return StateType::CalcElemMaxSize(store.GetPtr()); }
 
 protected:
     StateType*     _ptr_state;

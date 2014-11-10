@@ -7,13 +7,11 @@
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/basic/type_cast.hpp"
 #include "lsf/container/pool.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
 using namespace lsf::basic;
 using namespace lsf::container;
-using namespace lsf::util;
 
 #define SHM_KEY  0x082157ff
 #define QUEUE_SIZE 1024
@@ -24,8 +22,7 @@ LSF_TEST_CASE(test_pool)
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(pool.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(pool.InitStorage());
+    LSF_ASSERT(pool.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(pool.MaxSize() == 10);
 
     // test malloc
@@ -80,8 +77,7 @@ LSF_TEST_CASE(test_used)
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(pool.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(pool.InitStorage());
+    LSF_ASSERT(pool.BindAndInitStorage(SharedMem(SHM_KEY)));
 
     // test malloc
     size_t pos_arr[10];

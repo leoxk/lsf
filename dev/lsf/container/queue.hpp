@@ -8,7 +8,7 @@
 
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_circular_queue.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 
 namespace lsf {
 namespace container {
@@ -18,7 +18,7 @@ namespace container {
 ////////////////////////////////////////////////////////////
 template<
     typename ElemType, 
-    typename StoreType = HeapMem,
+    typename StoreType = SharedMem,
     typename SizeType = size_t> 
 class Queue : 
     public detail::BasicContainer<

@@ -7,10 +7,10 @@
 #pragma once
 
 #include <stdexcept>
-#include "lsf/meta/macro.hpp"
+#include "lsf/basic/macro.hpp"
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_red_black_tree.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
 
 namespace lsf {
 namespace container {
@@ -39,7 +39,7 @@ struct MapData
 template<
     typename KeyType,
     typename MapType,
-    typename StoreType = HeapMem,
+    typename StoreType = SharedMem,
     typename SizeType = size_t>
 class Map : 
     public detail::BasicContainer<
@@ -106,10 +106,10 @@ public:
 
     // if there is no node, just insert one
     map_type & operator[](key_type const & key) { 
-        iterator iter = Find(value_type(key));
+        iterator iter = Find(key);
         if (iter == End()) {
             if (!Insert(key, map_type())) throw std::runtime_error(LSF_DEBUG_INFO);
-            iter = Find(value_type(key));
+            iter = Find(key);
         }
         return iter->value;
     }

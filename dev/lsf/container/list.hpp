@@ -8,7 +8,8 @@
 
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_bidirectional_list.hpp"
-#include "lsf/container/heap_mem.hpp"
+#include "lsf/container/shared_mem.hpp"
+#include "lsf/basic/empty_type.hpp"
 
 namespace lsf {
 namespace container {
@@ -17,8 +18,8 @@ namespace container {
 // List
 ////////////////////////////////////////////////////////////
 template<
-    typename ElemType,
-    typename StoreType = HeapMem,
+    typename ElemType = basic::EmptyType,
+    typename StoreType = SharedMem,
     typename SizeType = size_t>
 class List : 
     public detail::BasicContainer<
@@ -45,7 +46,7 @@ public:
     bool PushBack(value_type const & val) {
         if (base_type::IsFull())         return false;
 
-        size_type pos = base_type::_ptr_state->GetNewNodeAndInsert( _GetPrevPos(_GetHeadPos()));
+        size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetPrevPos(_GetHeadPos()));
         new(_GetDataPtr(pos)) value_type(val);
         return true;
     }

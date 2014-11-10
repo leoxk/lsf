@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <sys/time.h>
 #include "lsf/basic/singleton.hpp"
 
 ////////////////////////////////////////////////////////////
@@ -128,28 +129,50 @@ public:
         size_t failed_num = 0;
         size_t cnt = 1;
         bool   result = true;
+        timeval tv_begin, tv_end;
+
+        gettimeofday(&tv_begin, NULL);
 
         for (UnitTest::iterator it = _case_list.begin();
              it != _case_list.end(); it++, cnt++)
         {
+            timeval case_begin, case_end;
+
             std::cout << LSF_TEST_GREEN << "[ Test " << std::setw(3) << std::setfill('0') << cnt << " ] " 
                 << (*it)->CaseName() << LSF_TEST_EOC << std::endl;
 
+
+            gettimeofday(&case_begin, NULL);
+
             (*it)->Run();
 
+            gettimeofday(&case_end, NULL);
+
+            uint64_t milli_sec = (case_end.tv_sec * 1000 + case_end.tv_usec / 1000) - (case_begin.tv_sec * 1000 + case_begin.tv_usec / 1000);
+
             if ((*it)->Result()) {
-                std::cout << LSF_TEST_GREEN << "[  Result  ] Passed" << LSF_TEST_EOC << std::endl << std::endl;
+                std::cout << LSF_TEST_GREEN << "[  Result  ] Passed" << LSF_TEST_EOC << std::endl;
+                std::cout << LSF_TEST_GREEN << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
+                std::cout << std::endl;
                 passed_num++;
             }
             else {
-                std::cout << LSF_TEST_RED   << "[  Result  ] Failed" << LSF_TEST_EOC << std::endl << std::endl;
+                std::cout << LSF_TEST_RED   << "[  Result  ] Failed" << LSF_TEST_EOC << std::endl;
+                std::cout << LSF_TEST_RED   << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
+                std::cout << std::endl;
                 failed_num++;
                 result = false;
             }
+
         }
+
+        gettimeofday(&tv_end, NULL);
+
+        uint64_t milli_sec = (tv_end.tv_sec * 1000 + tv_end.tv_usec / 1000) - (tv_begin.tv_sec * 1000 + tv_begin.tv_usec / 1000);
 
         std::cout << LSF_TEST_GREEN << "==============================" << LSF_TEST_EOC << std::endl;
         std::cout << LSF_TEST_GREEN << "Total TestCase: " << passed_num + failed_num << LSF_TEST_EOC << std::endl;
+        std::cout << LSF_TEST_GREEN << "Time: " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
         std::cout << LSF_TEST_GREEN << "Passed: " << passed_num << LSF_TEST_EOC << std::endl;
         std::cout << LSF_TEST_RED   << "Failed: " << failed_num << LSF_TEST_EOC << std::endl;
         

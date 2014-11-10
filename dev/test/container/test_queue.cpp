@@ -6,12 +6,10 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/container/queue.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
 using namespace lsf::container;
-using namespace lsf::util;
 
 #define SHM_KEY  0x082157ff
 #define SHM_SIZE 1024
@@ -23,8 +21,7 @@ LSF_TEST_CASE(bind_to_new_mem)
 
     Queue<TestNode, SharedMem> queue;
 
-    LSF_ASSERT(queue.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(queue.InitStorage());
+    LSF_ASSERT(queue.BindAndInitStorage(SharedMem(SHM_KEY)));
 
     LSF_ASSERT(queue.MaxSize() == SHM_SIZE);
     LSF_ASSERT(queue.IsBindStorage());
@@ -43,7 +40,7 @@ LSF_TEST_CASE(recovery_from_exist_mem)
 {
     Queue<TestNode, SharedMem> queue;
 
-    LSF_ASSERT(queue.BindStorage(SharedMem(SHM_KEY)));
+    LSF_ASSERT(queue.BindAndRecoverStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(queue.IsBindStorage());
 
     LSF_ASSERT(queue.MaxSize() == SHM_SIZE);
@@ -59,8 +56,7 @@ LSF_TEST_CASE(queue_common_funcs)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, queue.CalcByteSize(5)));
-    LSF_ASSERT(queue.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(queue.InitStorage());
+    LSF_ASSERT(queue.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(queue.MaxSize() == 5);
     cout << queue.MaxSize() << endl;
     LSF_ASSERT(queue.IsBindStorage());
@@ -96,8 +92,7 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Queue<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(queue.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(queue.InitStorage());
+    LSF_ASSERT(queue.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(queue.MaxSize() == 10);
 
     LSF_ASSERT(queue.PushFront(TestNode(1, 1)));
@@ -132,8 +127,7 @@ LSF_TEST_CASE(test_iterator)
     Queue<TestNode, SharedMem> queue;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Queue<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(queue.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(queue.InitStorage());
+    LSF_ASSERT(queue.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(queue.MaxSize() == 10);
 
     LSF_ASSERT(queue.PushBack(TestNode(1, 1)));

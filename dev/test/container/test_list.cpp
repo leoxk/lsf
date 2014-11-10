@@ -6,12 +6,10 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/container/list.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
 using namespace lsf::container;
-using namespace lsf::util;
 
 #define SHM_KEY  0x082157ff
 #define QUEUE_SIZE 1024
@@ -23,8 +21,7 @@ LSF_TEST_CASE(bind_to_new_mem)
 
     List<TestNode, SharedMem> list;
 
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(list.InitStorage());
+    LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.IsBindStorage());
     LSF_ASSERT(list.MaxSize() == QUEUE_SIZE);
     LSF_ASSERT(list.Size() == 0);
@@ -42,7 +39,7 @@ LSF_TEST_CASE(recovery_from_exist_mem)
 {
     List<TestNode, SharedMem> list;
 
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
+    LSF_ASSERT(list.BindAndRecoverStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.IsBindStorage());
 
     LSF_ASSERT(list.MaxSize() == QUEUE_SIZE);
@@ -57,8 +54,7 @@ LSF_TEST_CASE(list_common_funcs)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(5)));
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(list.InitStorage());
+    LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.MaxSize() == 5);
     LSF_ASSERT(list.IsBindStorage());
 
@@ -94,8 +90,7 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(list.InitStorage());
+    LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.MaxSize() == 10);
 
     LSF_ASSERT(list.PushFront(TestNode(1, 1)));
@@ -130,8 +125,7 @@ LSF_TEST_CASE(test_iterator)
     List<TestNode, SharedMem> list;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(list.InitStorage());
+    LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.MaxSize() == 10);
 
     LSF_ASSERT(list.PushBack(TestNode(1, 1)));
@@ -218,8 +212,7 @@ LSF_TEST_CASE(test_insert_and_erase_and_find)
     List<TestNode, SharedMem> list;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(10)));
-    LSF_ASSERT(list.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(list.InitStorage());
+    LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.MaxSize() == 10);
 
     LSF_ASSERT(list.PushBack(TestNode(1, 1)));

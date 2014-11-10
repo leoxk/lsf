@@ -6,12 +6,10 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/container/array.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
 using namespace lsf::container;
-using namespace lsf::util;
 
 #define SHM_KEY  0x082157ff
 #define ARRAY_SIZE 10
@@ -23,8 +21,7 @@ LSF_TEST_CASE(test_common)
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, array.CalcByteSize(ARRAY_SIZE)));
 
-    LSF_ASSERT(array.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(array.InitStorage());
+    LSF_ASSERT(array.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(array.MaxSize() == ARRAY_SIZE);
     LSF_ASSERT(array.IsBindStorage());
 
@@ -52,8 +49,7 @@ LSF_TEST_CASE(test_iterator)
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, array.CalcByteSize(ARRAY_SIZE)));
-    LSF_ASSERT(array.BindStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(array.InitStorage());
+    LSF_ASSERT(array.BindAndInitStorage(SharedMem(SHM_KEY)));
 
     for (array_type::iterator iter = array.Begin(); iter != array.End(); iter++) {
         iter->key = 8;

@@ -9,8 +9,8 @@
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/basic/type_cast.hpp"
 #include "lsf/util/random.hpp"
-#include "lsf/util/shared_mem.hpp"
 #include "lsf/container/set.hpp"
+#include "lsf/container/heap_mem.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -53,8 +53,7 @@ LSF_TEST_CASE(test_lsf_rbtree)
 {
     time_t st_time = time(NULL);
     Set<uint32_t, HeapMem> sets;
-    LSF_ASSERT(sets.BindStorage(HeapMem(sets.CalcByteSize(TREE_SIZE))));
-    LSF_ASSERT(sets.InitStorage());
+    LSF_ASSERT(sets.BindAndInitStorage(HeapMem(sets.CalcByteSize(TREE_SIZE))));
 
     // insert
     ifstream ifs(conf_path.c_str());

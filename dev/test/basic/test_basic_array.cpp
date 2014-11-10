@@ -22,15 +22,14 @@ struct TestType
 
 LSF_TEST_CASE(test_array_with_pod_type)
 {
-    Array<int>     array(10);
-    Array<int>     array_copy(10);
+    Array<int,10>     array;
+    Array<int,10>     array_copy;
 
-    LSF_ASSERT(array.Size() == 10);
-    LSF_ASSERT(array.ByteSize() == sizeof(int) * 10);
+    LSF_ASSERT(array.Size() == 0);
 
     // test fill
     array.Fill(88);
-    for (Array<int>::iterator iter = array.Begin(); iter != array.End(); iter++) {
+    for (Array<int,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
         LSF_ASSERT(*iter == 88);
     }
 
@@ -41,68 +40,23 @@ LSF_TEST_CASE(test_array_with_pod_type)
     LSF_ASSERT(array.Data() != array_copy.Data());
 
     // test copy raw data
-    memcpy(array_copy.Data(), array.Data(), array.ByteSize());
+    array_copy.Copy(array.Begin(), array.End());
     LSF_ASSERT(array_copy == array);
 }
 
 LSF_TEST_CASE(test_array_with_class_type)
 {
-    Array<TestType>      array;
-    Array<TestType>      array_copy;
+    Array<TestType,10>      array;
+    Array<TestType,10>      array_copy;
 
-    array.Init(10);
-    LSF_ASSERT(array.Size() == 10);
-    LSF_ASSERT(array.ByteSize() == sizeof(TestType) * 10);
+    LSF_ASSERT(array.Size() == 0);
 
     array.Fill(TestType(1,1));
-    for (StaticArray<TestType,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
+    for (Array<TestType,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
         LSF_ASSERT(*iter == TestType(1,1));
     }
 
     array_copy = array;
-    LSF_ASSERT(array_copy == array);
-
-    memcpy(array_copy.Data(), array.Data(), array.ByteSize());
-    LSF_ASSERT(array_copy == array);
-}
-
-LSF_TEST_CASE(test_static_array_with_pod_type)
-{
-    StaticArray<int,10>     array;
-    StaticArray<int,10>     array_copy;
-
-    LSF_ASSERT(array.Size() == 10);
-    LSF_ASSERT(array.ByteSize() == sizeof(int) * 10);
-
-    array.Fill(88);
-    for (StaticArray<int,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
-        LSF_ASSERT(*iter == 88);
-    }
-
-    array_copy = array;
-    LSF_ASSERT(array_copy == array);
-
-    memcpy(&array_copy, array.Data(), array.ByteSize());
-    LSF_ASSERT(array_copy == array);
-}
-
-LSF_TEST_CASE(test_static_array_with_class_type)
-{
-    StaticArray<TestType,10>      array;
-    StaticArray<TestType,10>      array_copy;
-
-    LSF_ASSERT(array.Size() == 10);
-    LSF_ASSERT(array.ByteSize() == sizeof(TestType) * 10);
-
-    array.Fill(TestType(1,1));
-    for (StaticArray<TestType,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
-        LSF_ASSERT(*iter == TestType(1,1));
-    }
-
-    array_copy = array;
-    LSF_ASSERT(array_copy == array);
-
-    memcpy(array_copy.Data(), array.Data(), array.ByteSize());
     LSF_ASSERT(array_copy == array);
 }
 

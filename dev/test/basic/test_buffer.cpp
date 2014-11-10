@@ -24,8 +24,10 @@ LSF_TEST_CASE(test_static_funcs)
 
     LSF_ASSERT(BinToHexString(content, sizeof(content)) == "1634a8c01f12129416b8a81212ccc1ba168212b794aa94a116aab7b712aaba94");
     LSF_ASSERT(BinToString(content, sizeof(content)) == ".4..............................");
-    LSF_ASSERT(Buffer(content, sizeof(content)) ==
-            HexStringToBin(BinToHexString(content, sizeof(content))));
+
+    Buffer<sizeof(content)> buffer;
+    LSF_ASSERT(HexStringToBin(BinToHexString(content, sizeof(content)), buffer));
+    LSF_ASSERT(Buffer<sizeof(content)>(content, sizeof(content)) == buffer);
 }
 
 //LSF_TEST_CASE(test_with_static_bytes)
