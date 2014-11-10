@@ -53,7 +53,7 @@ LSF_TEST_CASE(test_load_batch)
     Set<uint32_t, SharedMem> sets;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, sets.CalcByteSize(line_count)));
-    LSF_ASSERT(sets.BindAndRecoverStorage(SharedMem(SHM_KEY)));
+    LSF_ASSERT(sets.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(sets.MaxSize() == line_count);
 
     // insert
@@ -77,7 +77,6 @@ LSF_TEST_CASE(test_load_batch)
     for (string line; !ifs.eof(); getline(ifs, line)) {
         if (line.empty()) continue;
         if (sets.Size() <= line_count && sets.Size() % (line_count / 10) == 0) {
-        //if (sets.Size() <= 77947 && sets.Size() % 1 == 0) {
             cout << "size: " << sets.Size() << endl;
             LSF_ASSERT_EXIT(sets.CheckConsist());
         }

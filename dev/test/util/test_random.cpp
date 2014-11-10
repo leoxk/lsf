@@ -16,7 +16,7 @@ LSF_TEST_CASE(test)
     // batch test
     for (int i = 0; i < 1000; i++) {
         size_t rand = SingleRandom::GetRand(0, 100);
-        LSF_ASSERT(rand >= 0 && rand <= 100);
+        LSF_ASSERT_ERR_ONLY(rand >= 0 && rand <= 100);
     }
 
     // test special var

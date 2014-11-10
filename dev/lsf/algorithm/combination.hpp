@@ -26,9 +26,10 @@ class Combination
 public: 
     typedef IterType                iter_type;
     typedef std::vector<IterType>   iter_vec_type;
+    typedef Combination<IterType>   base_type;
 
 public:
-    virtual bool OnGetCombination(iter_vec_type iter_vec) = 0;
+    virtual bool OnGetCombination(iter_vec_type iter_vec, size_t m_count, size_t n_count) = 0;
 
     bool FindCombination(iter_type it_begin, iter_type it_end, size_t n_count)
     {
@@ -42,7 +43,7 @@ public:
 
         // the first is also a combination
         for (size_t i = 0; i < n_count; i++) vec[i] = 1;
-        if (!_GenCombination(it_begin, it_end, vec)) return false;
+        if (!_GenCombination(it_begin, it_end, vec, m_count, n_count)) return false;
 
         // get all combination with 01 algorithm
         for (size_t i = 0; i < m_count-1; )
@@ -57,7 +58,7 @@ public:
                 std::sort(vec, vec+i, std::greater<int>());
 
                 // get a new combination
-                if (!_GenCombination(it_begin, it_end, vec)) return false;
+                if (!_GenCombination(it_begin, it_end, vec, m_count, n_count)) return false;
                 
                 // repeat
                 i = 0;
@@ -72,7 +73,7 @@ public:
     }
 
 private:
-    bool _GenCombination(iter_type it_being, iter_type it_end, int8_t * vec)
+    bool _GenCombination(iter_type it_being, iter_type it_end, int8_t * vec, size_t m_count, size_t n_count)
     {
         iter_vec_type iter_vec;
 
@@ -84,7 +85,7 @@ private:
             ++i;
         }
         
-        return OnGetCombination(iter_vec);
+        return OnGetCombination(iter_vec, m_count, n_count);
     }
 };
 

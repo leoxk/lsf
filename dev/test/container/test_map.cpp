@@ -28,14 +28,20 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(maps.IsBindStorage());
     LSF_ASSERT(maps.IsEmpty());
 
+    // test default
+    LSF_ASSERT(maps[1] == string(""));
+    LSF_ASSERT(maps[2] == string(""));
+
     // test insert
-    LSF_ASSERT(maps.Insert(1, "leo1"));
-    LSF_ASSERT(maps.Insert(2, "leo2"));
     LSF_ASSERT(maps.Insert(3, "leo3"));
     LSF_ASSERT(maps.Insert(4, "leo4"));
     LSF_ASSERT(maps.Insert(5, "leo5"));
     LSF_ASSERT(maps.IsFull());
     
+    // test assign
+    maps[1] = "leo1";
+    maps[2] = "leo2";
+
     // test find
     LSF_ASSERT(maps.Find(1)->value == "leo1");
     LSF_ASSERT(maps.Find(2)->value == "leo2");

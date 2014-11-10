@@ -156,7 +156,7 @@ LSF_TEST_CASE(random_test)
 {
     Set<TestNode, SharedMem> sets;
 
-    size_t size = 100000;
+    size_t size = 10000;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Set<TestNode, SharedMem>::CalcByteSize(size)));
@@ -166,7 +166,7 @@ LSF_TEST_CASE(random_test)
     set<uint32_t> uint_group;
 
     while (uint_group.size() != size) {
-        uint_group.insert(::lsf::util::SingleRandom::Reference().GetRand(0, 100000));
+        uint_group.insert(::lsf::util::SingleRandom::Reference().GetRand(0, 1000000000));
     }
 
     LSF_ASSERT(sets.IsEmpty());

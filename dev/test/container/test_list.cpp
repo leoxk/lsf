@@ -17,7 +17,7 @@ using namespace lsf::container;
 LSF_TEST_CASE(bind_to_new_mem)
 {
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
-    LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(QUEUE_SIZE)));
+    LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode>::CalcByteSize(QUEUE_SIZE)));
 
     List<TestNode, SharedMem> list;
 

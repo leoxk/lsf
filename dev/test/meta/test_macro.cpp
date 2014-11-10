@@ -35,9 +35,6 @@ LSF_TEST_CASE(test_more_macro)
     LSF_ASSERT(LSF_TOKEN_TO_STRING(LSF_REPEAT(5, m, l, p)) == 
             string("m(1,p) m(2,p) m(3,p) m(4,p) l(5,p)"));
     
-    LSF_ASSERT(LSF_TOKEN_TO_STRING(LSF_REPEAT(5, m, l, p)) == 
-            string("m(1,p) m(2,p) m(3,p) m(4,p) l(5,p)"));
-    
     // test template params
     LSF_ASSERT(LSF_TOKEN_TO_STRING((LSF_TPARAMS(5))) == 
             string("(typename T1, typename T2, typename T3, typename T4, typename T5)"));

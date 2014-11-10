@@ -13,14 +13,13 @@
 #===============================================================================#
 
 MODULE_DIRS = \
+			  dev/test/algorithm		\
 			  dev/test/asio				\
 			  dev/test/basic			\
 			  dev/test/container		\
 			  dev/test/encrypt 			\
 			  dev/test/util 			\
 			  dev/test/meta 			\
-			  dev/test/other 			\
-			  #dev/src/server 			\
 
 all : 
 	for dir in $(MODULE_DIRS); do \
@@ -33,7 +32,6 @@ test : 				\
 	test_container 	\
 	test_encrypt 	\
 	test_meta 		\
-	test_other 		\
 	test_util 		\
 
 test_asio :
@@ -58,6 +56,8 @@ test_container :
 	./release/bin/test_rb_tree
 	./release/bin/test_set
 	./release/bin/test_variant
+	./release/bin/test_basic_container
+	./release/bin/test_shared_mem
 
 test_encrypt :
 	./release/bin/test_base64
@@ -68,15 +68,11 @@ test_meta :
 	./release/bin/test_type_list
 	./release/bin/test_type_traits
 
-test_other :
-	./release/bin/test_multi_compile_unit
-
 test_util :
 	./release/bin/test_config release/conf/test_config.conf
 	./release/bin/test_date
 	./release/bin/test_log
 	./release/bin/test_random
-	./release/bin/test_shared_mem
 	./release/bin/test_shared_ptr
 	./release/bin/test_system
 

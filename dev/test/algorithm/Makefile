@@ -16,19 +16,16 @@ PROJECT_DIR := ../../..
 -include $(PROJECT_DIR)/Makefile.shared
 
 # define targets
-BIN = $(BIN_DIR)/test_multi_compile_unit \
-
-OBJ = compile_unit.o  			\
-	  test_multi_compile_unit.o 	\
+BIN = $(BIN_DIR)/test_combination 		\
 
 # main targets
 all: $(BIN)
 
-$(BIN): $(OBJ)
+$(BIN): $(BIN_DIR)/%: $(DEP_DIR)/%.o
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^
 
 clean:
-	$(RM) $(BIN) *.o *.d
+	$(RM) $(BIN) $(DEP_DIR)
 
 .PHONY: all clean
 
