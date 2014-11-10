@@ -49,7 +49,7 @@ void LSF_TEST_##arg_case_name::Run()
         {                                                                               \
             std::cout << LSF_TEST_RED   << "[  Failed  ] " << LSF_TEST_EOC              \
                         << __FILE__ << "|" << __LINE__ << " " << #expr << std::endl;    \
-            _result = false;                                                            \
+            lsf::basic::lsf_test_case_result = false;                                                            \
         }                                                                               \
     } while (0)
 
@@ -62,7 +62,7 @@ void LSF_TEST_##arg_case_name::Run()
         {                                                                               \
             std::cout << LSF_TEST_RED   << "[  Failed  ] " << LSF_TEST_EOC              \
                         << __FILE__ << "|" << __LINE__ << " " << #expr << std::endl;    \
-            _result = false;                                                            \
+            lsf::basic::lsf_test_case_result = false;                                                            \
             exit(-1);                                                                   \
         }                                                                               \
     } while (0)
@@ -73,7 +73,7 @@ void LSF_TEST_##arg_case_name::Run()
         {                                                                               \
             std::cout << LSF_TEST_RED   << "[  Failed  ] " << LSF_TEST_EOC              \
                         << __FILE__ << "|" << __LINE__ << " " << #expr << std::endl;    \
-            _result = false;                                                            \
+            lsf::basic::lsf_test_case_result = false;                                                            \
         }                                                                               \
     } while (0)
 
@@ -83,7 +83,7 @@ void LSF_TEST_##arg_case_name::Run()
         {                                                                               \
             std::cout << LSF_TEST_RED   << "[  Failed  ] " << LSF_TEST_EOC              \
                         << __FILE__ << "|" << __LINE__ << " " << #expr << std::endl;    \
-            _result = false;                                                            \
+            lsf::basic::lsf_test_case_result = false;                                                            \
             exit(-1);                                                                   \
         }                                                                               \
     } while (0)
@@ -93,10 +93,15 @@ void LSF_TEST_##arg_case_name::Run()
 namespace lsf {
 namespace basic {
 
+namespace
+{
+    static bool lsf_test_case_result = true;
+} // end of namespace anonymous
+
 class TestCase
 {
 public:
-    TestCase(std::string const & case_name) : _case_name(case_name), _result(true) { }
+    TestCase(std::string const & case_name) : _case_name(case_name) { }
 
     virtual ~TestCase() { }
 
@@ -104,11 +109,8 @@ public:
     
     std::string const & CaseName() const { return _case_name; }
 
-    int Result() { return _result; }
-
 protected:
-    std::string   _case_name;
-    int             _result;
+    std::string _case_name;
 };
 
 class UnitTest : public basic::Singleton<UnitTest>
@@ -136,6 +138,8 @@ public:
         for (UnitTest::iterator it = _case_list.begin();
              it != _case_list.end(); it++, cnt++)
         {
+            lsf::basic::lsf_test_case_result = true;
+
             timeval case_begin, case_end;
 
             std::cout << LSF_TEST_GREEN << "[ Test " << std::setw(3) << std::setfill('0') << cnt << " ] " 
@@ -150,7 +154,7 @@ public:
 
             uint64_t milli_sec = (case_end.tv_sec * 1000 + case_end.tv_usec / 1000) - (case_begin.tv_sec * 1000 + case_begin.tv_usec / 1000);
 
-            if ((*it)->Result()) {
+            if (lsf::basic::lsf_test_case_result) {
                 std::cout << LSF_TEST_GREEN << "[  Result  ] Passed" << LSF_TEST_EOC << std::endl;
                 std::cout << LSF_TEST_GREEN << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
                 std::cout << std::endl;
