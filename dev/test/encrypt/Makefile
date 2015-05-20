@@ -7,8 +7,8 @@
 #         NOTES: config.mk - define project configuration
 #                build.mk  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude build.mk after all your targets!
-#        AUTHOR: leoxiang, leoxiang@tencent.com
-#       COMPANY: Tencent Co.Ltd
+#        AUTHOR: leoxiang, leoxiang727@qq.com
+#       COMPANY: 
 #      REVISION: 2011-09-13 by leoxiang
 #===============================================================================#
 

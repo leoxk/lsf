@@ -1,7 +1,7 @@
 // File:        random.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-08-09 by leoxiang
 
 #pragma once

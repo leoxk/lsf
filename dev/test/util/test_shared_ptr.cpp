@@ -1,7 +1,7 @@
 // File:        test_shared_ptr.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2011-12-09 by leoxiang
 
 #include <string>

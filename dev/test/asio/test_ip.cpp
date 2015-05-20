@@ -1,7 +1,7 @@
 // File:        test_ip.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-01 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
@@ -21,6 +21,9 @@ LSF_TEST_CASE(test_address)
     LSF_ASSERT(ip::Address(ipv4) == ipv4);
     LSF_ASSERT(ipv4.ToString() == "127.0.0.1");
     LSF_ASSERT(ipv4.IsV4());
+
+    LSF_ASSERT(ip::Address::Loopback().IsV4());
+    LSF_ASSERT(ip::Address::Any().IsV4());
 
     // test v6
     ip::Address ipv6(ip::V6, "::1");

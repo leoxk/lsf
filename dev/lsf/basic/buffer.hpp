@@ -1,7 +1,7 @@
 // File:        buffer.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-02 by leoxiang
 
 #pragma once

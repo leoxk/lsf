@@ -1,7 +1,7 @@
 // File:        list.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-05-30 by leoxiang
 
 #pragma once

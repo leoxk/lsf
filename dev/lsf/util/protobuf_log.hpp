@@ -1,14 +1,8 @@
 // File:        protobuf_log.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <xiangkun@ximigame.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2014-09-30 by leoxiang
-//
-// Copyright (C) 1998-2014 XiMi. All Rights Reserved.
-// This is unpublished proprietary source code of XiMi Ltd. The copyright
-// notice above does not evidence any actual or intended publication of such
-// source code. UNAUTHORIZED DISTRIBUTION, ADAPTATION OR USE MAY BE SUBJECT
-// TO CIVIL AND CRIMINAL PENALTIES.
 
 #pragma once
 

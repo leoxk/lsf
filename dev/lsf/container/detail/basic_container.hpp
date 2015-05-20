@@ -1,7 +1,7 @@
 // File:        basic_container.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-07-31 by leoxiang
 
 #pragma once

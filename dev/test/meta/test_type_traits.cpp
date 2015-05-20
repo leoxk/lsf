@@ -1,7 +1,7 @@
 // File:        test_type_traits.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-08 by leoxiang
 
 #include "lsf/meta/type_traits.hpp"

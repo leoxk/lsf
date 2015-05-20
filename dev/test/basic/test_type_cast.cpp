@@ -1,7 +1,7 @@
 // File:        test_type_cast.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-01-31 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"

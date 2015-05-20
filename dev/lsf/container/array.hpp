@@ -1,7 +1,7 @@
 // File:        array.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-12-13 by leoxiang
 
 #pragma once

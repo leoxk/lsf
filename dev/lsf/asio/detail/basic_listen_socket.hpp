@@ -1,7 +1,7 @@
 // File:        basic_listen_socket.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-08 by leoxiang
 
 #pragma once
@@ -21,6 +21,7 @@ class BasicListenSocket : public basic::Error
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
+    typedef BasicSocket<Protocol>       socket_type;
     typedef BasicSockAddr<Protocol>     sockaddr_type;
     typedef Protocol                    proto_type;
 
@@ -49,12 +50,10 @@ public:
         return ErrWrap(::listen(_sockfd, backlog)) == 0;
     }
 
-    bool Accept(sockaddr_type & sockaddr) {
+    bool Accept(socket_type & socket) {
         int      sockfd;
-        struct sockaddr addr;
-        size_t   socklen;
         if ((sockfd = ErrWrap(::accept(_sockfd, NULL, NULL))) >= 0) {
-            sockaddr.SetSockFd(sockfd);
+            socket.SetSockFd(sockfd);
             return true;
         }
         return false;

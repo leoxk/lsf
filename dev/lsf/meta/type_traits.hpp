@@ -1,7 +1,7 @@
 // File:        type_traits.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-08 by leoxiang
 
 #pragma once

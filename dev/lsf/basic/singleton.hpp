@@ -1,7 +1,7 @@
 // File:        singleton.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2011-12-26 by leoxiang
 
 #pragma once

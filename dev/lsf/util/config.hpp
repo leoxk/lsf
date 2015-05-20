@@ -1,7 +1,7 @@
 // File:        config.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2011-09-16 by leoxiang
 
 #pragma once

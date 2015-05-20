@@ -1,7 +1,7 @@
 // File:        basic_sockaddr.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-07 by leoxiang
 
 #pragma once
@@ -60,7 +60,7 @@ public:
 
     // member funcs
     std::string ToString() const {
-        return GetAddress().ToString() + "/" + basic::TypeCast< std::string>(GetPort());
+        return GetAddress().ToString() + "|" + basic::TypeCast< std::string>(GetPort());
     }
 
     uint16_t GetPort() const { 

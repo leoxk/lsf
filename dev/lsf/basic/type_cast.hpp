@@ -1,7 +1,7 @@
 // File:        type_cast.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-01-31 by leoxiang
 
 #pragma once

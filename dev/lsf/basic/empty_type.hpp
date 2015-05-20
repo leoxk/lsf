@@ -1,7 +1,7 @@
 // File:        empty_type.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-14 by leoxiang
 
 #pragma once

@@ -1,7 +1,7 @@
 // File:        basic_socket.hpp
 // Description: ---
 // Notes:       TODO add send and recv from msg
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-07 by leoxiang
 
 #pragma once
@@ -17,6 +17,23 @@
 namespace lsf {
 namespace asio {
 namespace detail {
+
+//class Protocol
+//{
+//public:
+    //Protocol(int domain) : _domain(domain) { }
+
+    //static Protocol V4() { return Protocol(AF_INET ); }
+    //static Protocol V6() { return Protocol(AF_INET6); }
+
+    //int domain() const { return _domain; }
+
+    //bool operator==(Protocol const rhs) const { return _domain == rhs._domain; }
+    //bool operator!=(Protocol const rhs) const { return _domain != rhs._domain; }
+
+//private:
+    //int _domain;
+//};
 
 template<typename Protocol>
 class BasicSocket : public basic::Error
@@ -128,6 +145,13 @@ public:
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv))) == 0;
     }
 
+    bool SetLinger(bool is_on, int sec) {
+        struct linger linger;
+        linger.l_onoff = is_on;
+        linger.l_linger = sec;
+        return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_LINGER, (char const *)&linger, sizeof(linger))) == 0;
+    }
+
     size_t GetRecvBufLen() const {
         size_t optval;
         socklen_t optlen;
@@ -145,8 +169,6 @@ public:
     int  GetSockFd() const { return _sockfd; }
 
     void SetSockFd(int sockfd) { _sockfd = sockfd; }
-    // bool func
-    //bool IsBind() const { return 
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }

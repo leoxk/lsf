@@ -1,14 +1,8 @@
 // File:        test_map.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-28 by leoxiang
-//
-// Copyright (C) 1998-2011 Tencent. All Rights Reserved.
-// This is unpublished proprietary source code of Tencent Ltd. The copyright
-// notice above does not evidence any actual or intended publication of such
-// source code. UNAUTHORIZED DISTRIBUTION, ADAPTATION OR USE MAY BE SUBJECT
-// TO CIVIL AND CRIMINAL PENALTIES.
 
 #include <string>
 #include "lsf/basic/unit_test.hpp"

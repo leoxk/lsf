@@ -1,7 +1,7 @@
 // File:        test_config.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2011-09-17 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"

@@ -7,8 +7,8 @@
 #         NOTES: config.mk - define project configuration
 #                build.mk  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude build.mk after all your targets!
-#        AUTHOR: leoxiang, leoxiang@tencent.com
-#       COMPANY: Tencent Co.Ltd
+#        AUTHOR: leoxiang, leoxiang727@qq.com
+#       COMPANY: 
 #      REVISION: 2012-08-15 by leoxiang
 #===============================================================================#
 
@@ -16,10 +16,10 @@ MODULE_DIRS = \
 			  dev/test/algorithm		\
 			  dev/test/asio				\
 			  dev/test/basic			\
+			  dev/test/meta 			\
 			  dev/test/container		\
 			  dev/test/encrypt 			\
 			  dev/test/util 			\
-			  dev/test/meta 			\
 
 all : 
 	for dir in $(MODULE_DIRS); do \
@@ -29,9 +29,9 @@ all :
 test : 				\
 	test_asio 		\
 	test_basic 		\
+	test_meta 		\
 	test_container 	\
 	test_encrypt 	\
-	test_meta 		\
 	test_util 		\
 
 test_asio :
@@ -44,6 +44,11 @@ test_basic :
 	./release/bin/test_buffer
 	./release/bin/test_string_ext
 	./release/bin/test_type_cast
+
+test_meta :
+	./release/bin/test_macro
+	./release/bin/test_type_list
+	./release/bin/test_type_traits
 
 test_container :
 	./release/bin/test_array
@@ -63,11 +68,6 @@ test_encrypt :
 	./release/bin/test_base64
 	./release/bin/test_md5
 	
-test_meta :
-	./release/bin/test_macro
-	./release/bin/test_type_list
-	./release/bin/test_type_traits
-
 test_util :
 	./release/bin/test_config release/conf/test_config.conf
 	./release/bin/test_date

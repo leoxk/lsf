@@ -1,7 +1,7 @@
 // File:        impl_bidirectional_list.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-10-20 by leoxiang
 
 #pragma once

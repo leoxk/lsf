@@ -1,7 +1,7 @@
 // File:        test_shared_mem.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-05-07 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"

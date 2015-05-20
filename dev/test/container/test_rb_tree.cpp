@@ -1,7 +1,7 @@
 // File:        test_rb_tree.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-10-29 by leoxiang
 
 #include <set>

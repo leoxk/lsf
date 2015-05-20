@@ -1,7 +1,7 @@
 // File:        unit_test.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-01-19 by leoxiang
 
 #pragma once

@@ -1,7 +1,7 @@
 // File:        variant.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-07 by leoxiang
 
 #pragma once
@@ -9,8 +9,6 @@
 #include <stdint.h>
 #include <stdexcept>
 #include "lsf/basic/empty_type.hpp"
-#include "lsf/meta/macro.hpp"
-#include "lsf/meta/type_traits.hpp"
 #include "lsf/meta/type_list.hpp"
 
 namespace lsf {

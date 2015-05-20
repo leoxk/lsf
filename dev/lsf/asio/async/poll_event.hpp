@@ -1,7 +1,7 @@
 // File:        poll_event.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-13 by leoxiang
 
 #pragma once
@@ -12,9 +12,8 @@
 
 namespace lsf {
 namespace asio {
-namespace detail {
+namespace async {
     
-template<size_t MAX_FD_NUM = 1024>
 class PollEvent : 
     public basic::NonCopyable, 
     public basic::Error
@@ -26,6 +25,8 @@ public:
     static const int FLAG_PRI   = 0x8;
     static const int FLAG_RDHUP = 0x10;
 
+    static const size_t MAX_FD_NUM = 1024;
+
 public:
     PollEvent() : _fds_size(0) {
         memset(_fds, 0, sizeof(_fds));
@@ -34,22 +35,31 @@ public:
     bool RegisterEvent(int fd, int flag) {
         if (!(flag & FLAG_READ) && !(flag & FLAG_WRITE)) return false;
 
-        _fds[_fds_size].fd = fd;
+        if (_fds_size >= MAX_FD_NUM) return false;
+
+        // check existance
+        size_t pos;
+        for (pos = 0; pos < _fds_size; ++pos)
+        {
+            if (_fds[pos].fd == fd) break;
+        }
+
+        _fds[pos].fd = fd;
         // here we use EPOLLRDHUP to make epoll aware of peer close connection 
         // or shutdown write-half of the connection, see epoll_ctl for more
-        if (flag & FLAG_READ)  _fds[_fds_size].events |= POLLIN;
-        if (flag & FLAG_WRITE) _fds[_fds_size].events |= POLLOUT;
-        if (flag & FLAG_ERR)   _fds[_fds_size].events |= POLLHUP | POLLERR | POLLNVAL;
-        if (flag & FLAG_PRI)   _fds[_fds_size].events |= POLLPRI;
-        if (flag & FLAG_RDHUP) _fds[_fds_size].events |= POLLRDHUP;
+        if (flag & FLAG_READ)  _fds[pos].events |= POLLIN;
+        if (flag & FLAG_WRITE) _fds[pos].events |= POLLOUT;
+        if (flag & FLAG_ERR)   _fds[pos].events |= POLLHUP | POLLERR | POLLNVAL;
+        if (flag & FLAG_PRI)   _fds[pos].events |= POLLPRI;
+        if (flag & FLAG_RDHUP) _fds[pos].events |= POLLRDHUP;
 
-        _fds_size++;
+        if (pos == _fds_size) _fds_size++;
         return true;
     }
 
     bool CancelEvent(int fd) {
-        int pos;
-        for (int pos = 0; pos < MAX_FD_NUM; pos++) 
+        size_t pos;
+        for (pos = 0; pos < MAX_FD_NUM; pos++) 
             if (_fds[pos].fd == fd) break;
 
         if (pos == MAX_FD_NUM) return false;
@@ -86,6 +96,8 @@ public:
         if (_fds[_cur_pos].revents & POLLRDHUP) *pflag |= FLAG_RDHUP;
 
         *pfd = _fds[_cur_pos].fd;
+
+        _cur_pos++;
         return true;
     }
 
@@ -95,7 +107,7 @@ private:
     size_t        _cur_pos;
 };
 
-} // end of namespace detail
+} // end of namespace async
 } // end of namespace asio
 } // end of namespace lsf
 

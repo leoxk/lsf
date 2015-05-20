@@ -1,7 +1,7 @@
 // File:        test_log.cpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-05-14 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"

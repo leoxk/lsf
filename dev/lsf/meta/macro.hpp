@@ -1,7 +1,7 @@
 // File:        macro.hpp
 // Description: ---
 // Notes:       ---
-// Author:      leoxiang <leoxiang@tencent.com>
+// Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-11-07 by leoxiang
 
 #pragma once
