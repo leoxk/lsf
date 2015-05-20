@@ -23,7 +23,6 @@ static string conf_path;
 
 LSF_TEST_CASE(test_stl_rbtree)
 {
-    time_t st_time = time(NULL);
     set<uint32_t> sets;
 
     // insert
@@ -44,14 +43,10 @@ LSF_TEST_CASE(test_stl_rbtree)
         LSF_ASSERT_EXIT_ERR_ONLY(sets.erase(TypeCast<uint32_t>(line)));
     }
     LSF_ASSERT(sets.size() == 0);
-
-    // calc time
-    cout << "total time is: " << time(NULL) - st_time << endl;
 }
 
 LSF_TEST_CASE(test_lsf_rbtree)
 {
-    time_t st_time = time(NULL);
     Set<uint32_t, HeapMem> sets;
     LSF_ASSERT(sets.BindAndInitStorage(HeapMem(sets.CalcByteSize(TREE_SIZE))));
 
@@ -73,9 +68,6 @@ LSF_TEST_CASE(test_lsf_rbtree)
         LSF_ASSERT_EXIT_ERR_ONLY(sets.Erase(TypeCast<uint32_t>(line)));
     }
     LSF_ASSERT(sets.Size() == 0);
-
-    // calc time
-    cout << "total time is: " << time(NULL) - st_time << endl;
 }
 
 int main(int argc, char **argv)

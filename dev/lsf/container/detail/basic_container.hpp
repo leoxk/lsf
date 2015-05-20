@@ -77,20 +77,11 @@ public:
     }
 
     // accessor funcs
-    size_type Size() const {
-        if (!IsBindStorage()) return 0;
-        return _ptr_state->Size();
-    }
+    size_type Size() const { return _ptr_state->Size(); }
 
-    size_type MaxSize() const {
-        if (!IsBindStorage()) return 0; 
-        return _ptr_state->MaxSize();
-    }
+    size_type MaxSize() const { return _ptr_state->MaxSize(); }
 
-    size_t ElemByteSize() const {
-        if (!IsBindStorage()) return 0 ;
-        return _ptr_state->ElemByteSize();
-    }
+    size_t ElemByteSize() const { return _ptr_state->ElemByteSize(); }
 
     bool IsFull()  const { return _ptr_state->IsFull();  }
     bool IsEmpty() const { return _ptr_state->IsEmpty(); }
@@ -99,10 +90,9 @@ public:
     // static funcs
     static size_t CalcByteSize(size_type size) { return StateType::CalcByteSize(size); }
 
-    static size_t CalcElemByteSize(StoreType store) { 
-        if (store.GetPtr() == NULL) return 0;
-        return StateType::CalcElemByteSize(store.GetPtr()); 
-    }
+    static size_t CalcElemByteSize(StoreType store) { return StateType::CalcElemByteSize(store.GetPtr()); }
+
+    static size_t CalcElemMaxSize(StoreType store) { return StateType::CalcElemMaxSize(store.GetPtr()); }
 
 protected:
     StateType*     _ptr_state;

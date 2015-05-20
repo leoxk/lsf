@@ -77,7 +77,6 @@ LSF_TEST_CASE(test_load_batch)
     for (string line; !ifs.eof(); getline(ifs, line)) {
         if (line.empty()) continue;
         if (sets.Size() <= line_count && sets.Size() % (line_count / 10) == 0) {
-        //if (sets.Size() <= 77947 && sets.Size() % 1 == 0) {
             cout << "size: " << sets.Size() << endl;
             LSF_ASSERT_EXIT(sets.CheckConsist());
         }

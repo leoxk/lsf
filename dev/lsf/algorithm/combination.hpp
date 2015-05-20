@@ -14,23 +14,30 @@
 namespace lsf {
 namespace algorithm {
 
+template<typename IterType>
 class Combination
 {
+public: 
+    typedef IterType                iter_type;
+    typedef std::vector<IterType>   iter_vec_type;
+    typedef Combination<IterType>   base_type;
+
 public:
-    template<typename IterType>
-    static void FindCombination(IterType it_begin, IterType it_end, size_t n_count, std::vector<std::vector<IterType>> & combin_vec)
+    virtual bool OnGetCombination(iter_vec_type iter_vec, size_t m_count, size_t n_count) = 0;
+
+    bool FindCombination(iter_type it_begin, iter_type it_end, size_t n_count)
     {
         size_t m_count = it_end - it_begin;
 
-        if (m_count < n_count) return;
+        if (m_count < n_count) return false;
 
         // init 01 array
         int8_t * vec = new int8_t[m_count];
         ::memset(vec, 0, sizeof(int8_t) * m_count);
-        for (size_t i = 0; i < n_count; i++) vec[i] = 1;
 
         // the first is also a combination
-        _GenCombination(it_begin, it_end, vec, combin_vec);
+        for (size_t i = 0; i < n_count; i++) vec[i] = 1;
+        if (!_GenCombination(it_begin, it_end, vec, m_count, n_count)) return false;
 
         // get all combination with 01 algorithm
         for (size_t i = 0; i < m_count-1; )
@@ -45,7 +52,7 @@ public:
                 std::sort(vec, vec+i, std::greater<int>());
 
                 // get a new combination
-                _GenCombination(it_begin, it_end, vec, combin_vec);
+                if (!_GenCombination(it_begin, it_end, vec, m_count, n_count)) return false;
                 
                 // repeat
                 i = 0;
@@ -53,25 +60,26 @@ public:
             }
             i++;
         }
+
         // beware of free memory
         delete [] vec;
+        return true;
     }
 
 private:
-    template<typename IterType>
-    static void _GenCombination(IterType it_being, IterType it_end, int8_t * vec, std::vector<std::vector<IterType>> & combin_vec)
+    bool _GenCombination(iter_type it_being, iter_type it_end, int8_t * vec, size_t m_count, size_t n_count)
     {
-        std::vector<IterType> iter_vec;
+        iter_vec_type iter_vec;
 
         size_t i = 0;
-        for (IterType it = it_being; it != it_end; )
+        for (iter_type it = it_being; it != it_end;)
         {
             if (vec[i] == 1) iter_vec.push_back(it);
             ++it;
             ++i;
         }
         
-        combin_vec.push_back(iter_vec);
+        return OnGetCombination(iter_vec, m_count, n_count);
     }
 };
 

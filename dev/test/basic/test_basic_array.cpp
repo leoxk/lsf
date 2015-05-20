@@ -38,6 +38,7 @@ LSF_TEST_CASE(test_array_with_pod_type)
     array_copy = array;
     LSF_ASSERT(array_copy == array);
 
+    // test copy raw data
     array_copy.Copy(array.Begin(), array.End());
     LSF_ASSERT(array_copy == array);
 }

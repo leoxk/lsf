@@ -9,6 +9,7 @@
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_bidirectional_list.hpp"
 #include "lsf/container/shared_mem.hpp"
+#include "lsf/basic/empty_type.hpp"
 
 namespace lsf {
 namespace container {
@@ -17,7 +18,7 @@ namespace container {
 // List
 ////////////////////////////////////////////////////////////
 template<
-    typename ElemType,
+    typename ElemType = basic::EmptyType,
     typename StoreType = SharedMem,
     typename SizeType = size_t>
 class List : 

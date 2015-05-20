@@ -33,11 +33,8 @@ public:
     }
 
     static size_t CalcByteSize(size_type size) { return size * sizeof(value_type) + sizeof(this_type); }
-
-    static size_t CalcElemByteSize(void const * ptr) { 
-        if (!ptr) return 0;
-        return ((this_type const *)ptr)->ElemByteSize(); 
-    }
+    static size_t CalcElemByteSize(void const * ptr) { return ((this_type const *)ptr)->ElemByteSize(); }
+    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->MaxSize(); }
 
     size_type Size()    const { return _max_size; }
     size_type MaxSize() const { return _max_size; }

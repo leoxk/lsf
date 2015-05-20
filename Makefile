@@ -52,8 +52,8 @@ test_meta :
 
 test_container :
 	./release/bin/test_array
-	#./release/bin/test_benchmark release/conf/test_rb_tree1.conf
-	#./release/bin/test_benchmark release/conf/test_rb_tree2.conf
+	./release/bin/test_benchmark release/conf/test_rb_tree1.conf
+	./release/bin/test_benchmark release/conf/test_rb_tree2.conf
 	./release/bin/test_list
 	./release/bin/test_map
 	./release/bin/test_pool
