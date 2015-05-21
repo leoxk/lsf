@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <string>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/macro.hpp"
@@ -35,7 +36,7 @@ public:
 
 public:
     ////////////////////////////////////////////////////////////
-    // Async Funcs
+    // Async Accept
     template<typename SocketType, typename HandlerType>
     bool AsyncAccept(SocketType & socket, HandlerType const & handler)
     {
@@ -47,7 +48,7 @@ public:
         }
 
         // register event
-        if (!_driver.RegisterEvent(socket.GetSockFd(), driver_type::FLAG_READ | driver_type::FLAG_ERR))
+        if (!_driver.RegisterEvent(socket.GetSockFd(), driver_type::FLAG_READ))
         {
             ErrString() = LSF_DEBUG_INFO + _driver.ErrString();
             return false;
@@ -64,15 +65,93 @@ public:
         return true;
     }
 
+    ////////////////////////////////////////////////////////////
+    // Async Connect
     bool AsyncConnect()
     {
         return true;
     }
 
-    bool AsyncRead();
-    bool AsyncWrite();
-    bool AsyncTimer();
+    ////////////////////////////////////////////////////////////
+    // Async Read
+    template<typename SocketType, typename HandlerType1, typename HandlerType2>
+    bool AsyncRead(SocketType & socket, HandlerType1 const & read_handler, HandlerType2 const & rdhup_handler)
+    {
+        // set non block
+        if (!socket.SetNonBlock())
+        {
+            ErrString() = LSF_DEBUG_INFO + socket.ErrString(); 
+            return false;
+        }
 
+        // register event
+        if (!_driver.RegisterEvent(socket.GetSockFd(), driver_type::FLAG_READ))
+        {
+            ErrString() = LSF_DEBUG_INFO + _driver.ErrString();
+            return false;
+        }
+
+        // add completion task
+        if (!_queue.AddCompletionTask(socket.GetSockFd(), EN_COMPLETION_TYPE_READ, read_handler))
+        {
+            _driver.CancelEvent(socket.GetSockFd());
+            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
+            return false;
+        }
+        if (!_queue.AddCompletionTask(socket.GetSockFd(), EN_COMPLETION_TYPE_RDHUP, rdhup_handler))
+        {
+            _driver.CancelEvent(socket.GetSockFd());
+            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
+            return false;
+        }
+
+        return true;
+    }
+
+    template<typename SocketType, typename HandlerType>
+    bool AsyncRead(SocketType & socket, HandlerType const & handler)
+    {
+        // set non block
+        if (!socket.SetNonBlock())
+        {
+            ErrString() = LSF_DEBUG_INFO + socket.ErrString(); 
+            return false;
+        }
+
+        // register event
+        if (!_driver.RegisterEvent(socket.GetSockFd(), driver_type::FLAG_READ))
+        {
+            ErrString() = LSF_DEBUG_INFO + _driver.ErrString();
+            return false;
+        }
+
+        // add completion task
+        if (!_queue.AddCompletionTask(socket.GetSockFd(), EN_COMPLETION_TYPE_READ, handler))
+        {
+            _driver.CancelEvent(socket.GetSockFd());
+            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
+            return false;
+        }
+
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Async Write
+    bool AsyncWrite()
+    {
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Async Timer
+    bool AsyncTimer()
+    {
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Close Async
     void CloseAsync(int fd)
     {
         // cancel registration
@@ -103,7 +182,7 @@ public:
                 CompletionFunc * pfunc = NULL;
                 if (!_queue.GetReadCompletionTask(fd, &pfunc)) continue;
 
-                // decide read action
+                // read action
                 if (flag & driver_type::FLAG_READ)
                 {
                     switch (pfunc->type)
@@ -115,10 +194,16 @@ public:
                     }
                 }
 
-                // decide write action
+                // write action
                 if (flag & driver_type::FLAG_WRITE)
                 {
                     OnWriteEvent(fd);
+                }
+
+                // peer close connection
+                if (flag & driver_type::FLAG_RDHUP)
+                {
+
                 }
 
                 // error handle
@@ -133,23 +218,41 @@ public:
 
     void OnAcceptEvent(int fd)
     {
+        detail::BasicListenSocket<detail::DummyProtocol> listen_socket(fd);
+        static AsyncInfo info;
+        info.Clear();
+        info.fd = fd;
 
+        // accept
+        detail::BasicSocket<detail::DummyProtocol> accept_socket;
+        if (!listen_socket.Accept(accept_socket))
+        {
+            ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
+            return;
+        }
+        info.accept_fd = accept_socket.GetSockFd();
+
+        // call register handler
+        CompletionFunc * pfunc = NULL;
+        if (!_queue.GetReadCompletionTask(fd, &pfunc)) return;
+        pfunc->func(info);
     }
 
     void OnReadEvent(int fd)
     {
-        // read data
-        static basic::Buffer<MAX_BUFFER_LEN>  buffer;
-        //buffer.SetSize(0);
         detail::BasicSocket<detail::DummyProtocol> socket(fd);
+        static char buffer[MAX_BUFFER_LEN];
+        static AsyncInfo info;
+        info.Clear();
+        info.fd = fd;
 
         // read loop
         while (true)
         {
-            ssize_t size = socket.Recv(buffer.Data(), buffer.MaxSize());
+            ssize_t ret = socket.Recv(buffer, sizeof(buffer));
 
             // handle error
-            if (size < 0)
+            if (ret < 0)
             {
                 if (errno == EINTR) // signal interrupt
                 {
@@ -159,7 +262,7 @@ public:
                 {
                     break;
                 }
-                else
+                else // error
                 {
                     CloseAsync(fd);
                     break;
@@ -167,34 +270,35 @@ public:
             }
 
             // handle socket close
-            if (size == 0)
+            if (ret == 0)
             {
                 CloseAsync(fd);
                 break;
             }
             
             // handle read data
-            break;
+            info.buffer.append(buffer, ret);
         }
         
-        // TODO 
+        // no data then return
+        if (info.buffer.empty()) return ;
 
         // call register handler
         CompletionFunc * pfunc = NULL;
         if (!_queue.GetReadCompletionTask(fd, &pfunc)) return;
-        pfunc->func();
+        pfunc->func(info);
     }
 
     void OnTimerEvent(int fd)
     {
-
+        // TODO
     }
 
     void OnWriteEvent(int fd)
     {
         CompletionFunc * pfunc = NULL;
         if (!_queue.GetWriteCompletionTask(fd, &pfunc)) return;
-        pfunc->func();
+        //pfunc->func();
     }
 
 private:

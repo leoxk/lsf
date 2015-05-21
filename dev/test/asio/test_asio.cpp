@@ -14,9 +14,9 @@ using namespace lsf::asio;
 using namespace lsf::basic;
 using namespace lsf::util;
 
-bool AcceptFunc()
+bool AcceptFunc(AsyncInfo & info)
 {
-    std::cout << "get a accept" << std::endl;
+    std::cout << "get a accept: " << info.fd << std::endl;
     return true;
 }
 
@@ -35,7 +35,7 @@ LSF_TEST_CASE(test_asio)
 
     // async accept
     EpollIOService io_service;
-    LSF_ASSERT(io_service.AsyncAccept(listen_socket, std::bind(AcceptFunc)));
+    LSF_ASSERT(io_service.AsyncAccept(listen_socket, AcceptFunc));
 
     io_service.Run();
 }

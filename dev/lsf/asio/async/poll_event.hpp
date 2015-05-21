@@ -25,8 +25,8 @@ public:
     static const int FLAG_READ  = 0x1;
     static const int FLAG_WRITE = 0x2;
     static const int FLAG_ERR   = 0x4;
-    static const int FLAG_PRI   = 0x8;
-    static const int FLAG_RDHUP = 0x10;
+    static const int FLAG_RDHUP = 0x8;
+    static const int FLAG_PRI   = 0x10;
 
     static const size_t MAX_FD_NUM = 1024;
 
@@ -47,12 +47,13 @@ public:
             if (_fds[pos].fd == fd) break;
         }
 
+        _fds[pos] = { 0 };
         _fds[pos].fd = fd;
+        _fds[pos].events |= POLLERR | POLLHUP | POLLNVAL;
         // here we use EPOLLRDHUP to make epoll aware of peer close connection 
         // or shutdown write-half of the connection, see epoll_ctl for more
         if (flag & FLAG_READ)  _fds[pos].events |= POLLIN;
         if (flag & FLAG_WRITE) _fds[pos].events |= POLLOUT;
-        if (flag & FLAG_ERR)   _fds[pos].events |= POLLHUP | POLLERR | POLLNVAL;
         if (flag & FLAG_PRI)   _fds[pos].events |= POLLPRI;
         if (flag & FLAG_RDHUP) _fds[pos].events |= POLLRDHUP;
 

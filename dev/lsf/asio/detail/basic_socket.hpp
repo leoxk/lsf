@@ -26,7 +26,9 @@ public:
     typedef void net_layer_proto;
     static DummyProtocol V4() { return DummyProtocol(); }
     static DummyProtocol V6() { return DummyProtocol(); }
-    int domain() const { return 0; }
+    int domain()   const { return 0; }
+    int type()     const { return 0; }
+    int protocol() const { return 0; }
 };
 
 ////////////////////////////////////////////////////////////

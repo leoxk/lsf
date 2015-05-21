@@ -12,6 +12,8 @@
 namespace lsf {
 namespace asio {
 
+using async::AsyncInfo;
+
 typedef async::BasicProactorSerivce<async::EpollEvent> EpollIOService;
 
 typedef async::BasicProactorSerivce<async::PollEvent>  PollIOService;

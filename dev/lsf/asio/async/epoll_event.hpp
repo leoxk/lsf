@@ -25,8 +25,9 @@ public:
     static const int FLAG_READ  = 0x1;
     static const int FLAG_WRITE = 0x2;
     static const int FLAG_ERR   = 0x4;
-    static const int FLAG_PRI   = 0x8;
-    static const int FLAG_RDHUP = 0x10;
+    static const int FLAG_RDHUP = 0x8;
+    static const int FLAG_PRI   = 0x10;
+    //static const int FLAG_ONCE  = 0x20; // TODO
 
     static const size_t MAX_EV_NUM = 128;
 
@@ -39,14 +40,14 @@ public:
         if (!(flag & FLAG_READ) && !(flag & FLAG_WRITE)) return false;
 
         epoll_event ev = { 0, { 0 } };
+        ev.data.fd = fd;
+        ev.events |= (EPOLLERR | EPOLLHUP);
         // here we use EPOLLRDHUP to make epoll aware of peer close connection 
         // or shutdown write-half of the connection, see epoll_ctl for more
         if (flag & FLAG_READ)  ev.events |= EPOLLIN;
         if (flag & FLAG_WRITE) ev.events |= EPOLLOUT;
-        if (flag & FLAG_ERR)   ev.events |= EPOLLHUP | EPOLLERR;;
         if (flag & FLAG_PRI)   ev.events |= EPOLLPRI;
         if (flag & FLAG_RDHUP) ev.events |= EPOLLRDHUP;
-        ev.data.fd = fd;
 
         int res = ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev));
         if (res == 0) return true;
