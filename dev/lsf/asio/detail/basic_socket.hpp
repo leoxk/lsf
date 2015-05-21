@@ -10,37 +10,34 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "lsf/asio/detail/basic_sockaddr.hpp"
-#include "lsf/asio/async/basic_proactor.hpp"
 #include "lsf/basic/error.hpp"
+#include "lsf/asio/detail/basic_sockaddr.hpp"
 
 namespace lsf {
 namespace asio {
 namespace detail {
 
-//class Protocol
-//{
-//public:
-    //Protocol(int domain) : _domain(domain) { }
+////////////////////////////////////////////////////////////
+// DummyProtocol
+////////////////////////////////////////////////////////////
+class DummyProtocol
+{
+public:
+    typedef void net_layer_proto;
+    static DummyProtocol V4() { return DummyProtocol(); }
+    static DummyProtocol V6() { return DummyProtocol(); }
+    int domain() const { return 0; }
+};
 
-    //static Protocol V4() { return Protocol(AF_INET ); }
-    //static Protocol V6() { return Protocol(AF_INET6); }
-
-    //int domain() const { return _domain; }
-
-    //bool operator==(Protocol const rhs) const { return _domain == rhs._domain; }
-    //bool operator!=(Protocol const rhs) const { return _domain != rhs._domain; }
-
-//private:
-    //int _domain;
-//};
-
-template<typename Protocol>
+////////////////////////////////////////////////////////////
+// BasicSocket
+////////////////////////////////////////////////////////////
+template<typename TransLayerProtocol = DummyProtocol>
 class BasicSocket : public basic::Error
 {
 public:
-    typedef BasicSockAddr<Protocol>  sockaddr_type;
-    typedef Protocol                 proto_type;
+    typedef BasicSockAddr<TransLayerProtocol>  sockaddr_type;
+    typedef TransLayerProtocol                 proto_type;
 
 public:
     BasicSocket(proto_type proto = proto_type::V4()) {

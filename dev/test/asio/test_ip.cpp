@@ -24,6 +24,9 @@ LSF_TEST_CASE(test_address)
 
     LSF_ASSERT(ip::Address::Loopback().IsV4());
     LSF_ASSERT(ip::Address::Any().IsV4());
+    
+    LSF_ASSERT(ip::Address::Any().IsV4());
+    LSF_ASSERT(ip::Address("127.0.01").IsV4());
 
     // test v6
     ip::Address ipv6(ip::V6, "::1");

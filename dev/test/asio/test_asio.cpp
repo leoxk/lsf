@@ -36,7 +36,6 @@ LSF_TEST_CASE(test_asio)
     // async accept
     EpollIOService io_service;
     LSF_ASSERT(io_service.AsyncAccept(listen_socket, std::bind(AcceptFunc)));
-    std::cout << io_service.ErrString() << std::endl;
 
     io_service.Run();
 }

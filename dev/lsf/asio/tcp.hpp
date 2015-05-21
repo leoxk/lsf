@@ -9,6 +9,7 @@
 #include "lsf/asio/detail/basic_sockaddr.hpp"
 #include "lsf/asio/detail/basic_socket.hpp"
 #include "lsf/asio/detail/basic_listen_socket.hpp"
+#include "lsf/asio/ip.hpp"
 
 namespace lsf {
 namespace asio {
@@ -17,11 +18,14 @@ namespace tcp {
 class Protocol
 {
 public:
-    Protocol(int domain, int type, int protocol)
-        : _domain(domain), _type(type), _protocol(protocol) { }
+    typedef ip::Protocol net_layer_proto;
 
     static Protocol V4() { return Protocol(AF_INET,  SOCK_STREAM, IPPROTO_TCP); }
     static Protocol V6() { return Protocol(AF_INET6, SOCK_STREAM, IPPROTO_TCP); }
+
+public:
+    Protocol(int domain, int type, int protocol)
+        : _domain(domain), _type(type), _protocol(protocol) { }
 
     int domain()   const { return _domain;   }
     int type()     const { return _type;     }

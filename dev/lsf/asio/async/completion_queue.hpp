@@ -52,6 +52,12 @@ public:
         return true;
     }
 
+    void CancelCompletionTask(int fd)
+    {
+        _read_func.erase(fd);
+        _write_func.erase(fd);
+    }
+
     bool GetReadCompletionTask(int fd, CompletionFunc ** pfunc)
     {
         func_map_type::iterator iter = _read_func.find(fd);

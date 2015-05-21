@@ -6,14 +6,21 @@
 
 #pragma once
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include "lsf/basic/type_cast.hpp"
-#include "lsf/asio/ip.hpp"
+#include "lsf/asio/detail/basic_address.hpp"
 
 namespace lsf {
 namespace asio {
 namespace detail {
 
-template<typename Protocol>
+////////////////////////////////////////////////////////////
+// BasicSockAddr
+////////////////////////////////////////////////////////////
+template<typename TransLayerProtocol>
 class BasicSockAddr
 {
 public:
@@ -21,17 +28,19 @@ public:
         sockaddr        base;
         sockaddr_in     v4;
         sockaddr_in6    v6;
-    }                               sockaddr_type;
+    }   sockaddr_type;
 
-    typedef Protocol                proto_type;
+    typedef TransLayerProtocol                      proto_type;
+    typedef typename proto_type::net_layer_proto    net_layer_proto;
+    typedef BasicAddress<net_layer_proto>           address_type;
 
 public:
     BasicSockAddr(proto_type proto = proto_type::V4()) {
-        if (proto.domain() == AF_INET) *this = BasicSockAddr(ip::Address(ip::V4), 0);
-        else                           *this = BasicSockAddr(ip::Address(ip::V6), 0);
+        if (proto.domain() == AF_INET) *this = BasicSockAddr(address_type(net_layer_proto::V4()), 0);
+        else                           *this = BasicSockAddr(address_type(net_layer_proto::V6()), 0);
     }
 
-    BasicSockAddr(ip::Address const & addr , uint16_t port) {
+    BasicSockAddr(address_type const & addr , uint16_t port) {
         if (addr.IsV4()) {
             _sockaddr.v4.sin_family = AF_INET;
             _sockaddr.v4.sin_port   = ::htons(port);
@@ -68,11 +77,11 @@ public:
         else        return ::ntohs(_sockaddr.v6.sin6_port);
     }
 
-    ip::Address GetAddress() const {
+    address_type GetAddress() const {
         if (IsV4()) 
-            return ip::Address(ip::V4, &_sockaddr.v4.sin_addr);
+            return address_type(net_layer_proto::V4(), &_sockaddr.v4.sin_addr);
         else        
-            return ip::Address(ip::V6, &_sockaddr.v6.sin6_addr, 
+            return address_type(net_layer_proto::V6(), &_sockaddr.v6.sin6_addr, 
                     _sockaddr.v6.sin6_scope_id);
     }
 

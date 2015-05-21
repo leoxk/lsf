@@ -18,17 +18,21 @@ namespace lsf {
 namespace asio {
 namespace detail {
 
-template<typename Protocol>
+////////////////////////////////////////////////////////////
+// BasicAddress
+////////////////////////////////////////////////////////////
+template<typename NetLayerProtocol>
 class BasicAddress
 {
 public:
-    typedef Protocol       proto_type;
+    typedef NetLayerProtocol    proto_type;
     typedef union {
         in_addr     v4;
         in6_addr    v6;
-    }                       addr_type;
+    }                           addr_type;
 
 public:
+    // without address
     explicit BasicAddress(proto_type type = proto_type::V4()) 
         : _type(type), _scope_id(0) 
     {
@@ -36,11 +40,20 @@ public:
         else        _addr.v6 = in6addr_any;
     }
 
-    BasicAddress(proto_type type, std::string const & ip_str, uint32_t scope_id = 0) 
-        : _type(type), _scope_id(scope_id) 
+    // with address
+    BasicAddress(std::string const & ip_str, uint32_t scope_id = 0) : _type(proto_type::V4())
     {
-        if (IsV4()) inet_pton(AF_INET,  ip_str.c_str(), &_addr.v4);
-        else        inet_pton(AF_INET6, ip_str.c_str(), &_addr.v6);
+        *this = BasicAddress(proto_type::V4(), ip_str, scope_id);
+    }
+
+    BasicAddress(char const * ip_str, uint32_t scope_id = 0) : _type(proto_type::V4())
+    {
+        *this = BasicAddress(proto_type::V4(), ip_str, scope_id);
+    }
+
+    BasicAddress(proto_type type, std::string const & ip_str, uint32_t scope_id = 0) : _type(type)
+    {
+        *this = BasicAddress(type, ip_str.c_str(), scope_id);
     }
 
     BasicAddress(proto_type type, char const * ip_str, uint32_t scope_id = 0) 

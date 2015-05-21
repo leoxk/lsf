@@ -124,6 +124,7 @@ public:
     value_type const *  Data() const { return _array; }
 
     size_t Size() const { return _size; }
+    size_t MaxSize() const { return SIZE; }
 
     bool IsEmpty() const { return _size == 0; }
     bool IsFull()  const { return _size == SIZE; }

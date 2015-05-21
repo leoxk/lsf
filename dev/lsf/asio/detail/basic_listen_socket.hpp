@@ -15,15 +15,18 @@ namespace lsf {
 namespace asio {
 namespace detail {
 
-template<typename Protocol>
+////////////////////////////////////////////////////////////
+// BasicListenSocket
+////////////////////////////////////////////////////////////
+template<typename TransLayerProtocol>
 class BasicListenSocket : public basic::Error
 {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
-    typedef BasicSocket<Protocol>       socket_type;
-    typedef BasicSockAddr<Protocol>     sockaddr_type;
-    typedef Protocol                    proto_type;
+    typedef BasicSocket<TransLayerProtocol>       socket_type;
+    typedef BasicSockAddr<TransLayerProtocol>     sockaddr_type;
+    typedef TransLayerProtocol                    proto_type;
 
 public:
     BasicListenSocket(proto_type proto = proto_type::V4()) {
