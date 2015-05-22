@@ -27,7 +27,6 @@ public:
     static const int FLAG_ERR   = 0x4;
     static const int FLAG_RDHUP = 0x8;
     static const int FLAG_PRI   = 0x10;
-    //static const int FLAG_ONCE  = 0x20; // TODO
 
     static const size_t MAX_EV_NUM = 128;
 

@@ -19,14 +19,6 @@ namespace async {
 ////////////////////////////////////////////////////////////
 // Function Closure
 ////////////////////////////////////////////////////////////
-enum ENCompletionType {
-    EN_COMPLETION_TYPE_ACCEPT = 1,
-    EN_COMPLETION_TYPE_READ   = 2,
-    EN_COMPLETION_TYPE_WRITE  = 3,
-    EN_COMPLETION_TYPE_TIMER  = 4,
-    EN_COMPLETION_TYPE_RDHUP  = 5
-};
-
 struct AsyncInfo
 {
 public:
@@ -41,9 +33,19 @@ public:
 
 struct CompletionFunc
 {
+public:
+    static const int ACTION_ACCEPT = 1;
+    static const int ACTION_READ   = 2;
+    static const int ACTION_WRITE  = 3;
+    static const int ACTION_TIMER  = 4;
+    static const int ACTION_RDHUP  = 5;
+
     typedef std::function<bool(AsyncInfo &)>  func_type;
-    ENCompletionType    type;
-    func_type           func;
+
+public:
+    int         action;
+    func_type   func;
+    std::string buffer;
 };
 
 ////////////////////////////////////////////////////////////
@@ -54,28 +56,28 @@ class CompletionQueue :
     public basic::Error
 {
 public:
-    typedef std::map<int,CompletionFunc>    func_map_type;
+    typedef std::map<int,CompletionFunc> func_map_type;
 
     const static size_t DEL_QUEUE_SIZE = 65536;
     
 public:
     template<typename HandlerType>
-    bool AddCompletionTask(int fd, ENCompletionType type, HandlerType func)
+    bool AddCompletionTask(int fd, int action, HandlerType func, void const * buffer = NULL, size_t buflen = 0)
     {
         CompletionFunc * pfunc = NULL;
-        switch (type)
+        switch (action)
         {
-            case EN_COMPLETION_TYPE_ACCEPT:
-            case EN_COMPLETION_TYPE_READ:
-            case EN_COMPLETION_TYPE_TIMER:
+            case CompletionFunc::ACTION_ACCEPT:
+            case CompletionFunc::ACTION_READ:
+            case CompletionFunc::ACTION_TIMER:
                 pfunc = &_read_func[fd];
                 break;
                 
-            case EN_COMPLETION_TYPE_WRITE:
+            case CompletionFunc::ACTION_WRITE:
                 pfunc = &_write_func[fd];
                 break;
 
-            case EN_COMPLETION_TYPE_RDHUP:
+            case CompletionFunc::ACTION_RDHUP:
                 pfunc = &_rdhup_func[fd];
                 break;
 
@@ -84,8 +86,9 @@ public:
         }
         if (pfunc == NULL) return false;
 
-        pfunc->type = type;
+        pfunc->action = action;
         pfunc->func = CompletionFunc::func_type(func);
+        pfunc->buffer.assign((char *)buffer, buflen);
         return true;
     }
 
@@ -93,6 +96,7 @@ public:
     {
         _read_func.erase(fd);
         _write_func.erase(fd);
+        _rdhup_func.erase(fd);
     }
 
     bool GetReadCompletionTask(int fd, CompletionFunc ** pfunc)
