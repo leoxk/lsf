@@ -25,14 +25,12 @@ public:
     static const int FLAG_READ  = 0x1;
     static const int FLAG_WRITE = 0x2;
     static const int FLAG_ERR   = 0x4;
-    static const int FLAG_RDHUP = 0x8;
-    static const int FLAG_PRI   = 0x10;
 
     static const size_t MAX_EV_NUM = 128;
 
 public:
     EpollEvent() : _max_evs(0), _cur_pos(0) {
-        _epfd = ErrWrap(::epoll_create(128000));
+        _epfd = ErrWrap(::epoll_create(128000)); // this size is not used nowadays, see man
     }
 
     bool RegisterEvent(int fd, int flag) {
@@ -45,8 +43,6 @@ public:
         // or shutdown write-half of the connection, see epoll_ctl for more
         if (flag & FLAG_READ)  ev.events |= EPOLLIN;
         if (flag & FLAG_WRITE) ev.events |= EPOLLOUT;
-        if (flag & FLAG_PRI)   ev.events |= EPOLLPRI;
-        if (flag & FLAG_RDHUP) ev.events |= EPOLLRDHUP;
 
         int res = ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev));
         if (res == 0) return true;
@@ -74,8 +70,6 @@ public:
         if (_evs[_cur_pos].events & EPOLLOUT)   *pflag |= FLAG_WRITE;
         if (_evs[_cur_pos].events & EPOLLERR)   *pflag |= FLAG_ERR;
         if (_evs[_cur_pos].events & EPOLLHUP)   *pflag |= FLAG_ERR;
-        if (_evs[_cur_pos].events & EPOLLPRI)   *pflag |= FLAG_PRI;
-        if (_evs[_cur_pos].events & EPOLLRDHUP) *pflag |= FLAG_RDHUP;
 
         *pfd = _evs[_cur_pos].data.fd;
 

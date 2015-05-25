@@ -25,8 +25,6 @@ public:
     static const int FLAG_READ  = 0x1;
     static const int FLAG_WRITE = 0x2;
     static const int FLAG_ERR   = 0x4;
-    static const int FLAG_RDHUP = 0x8;
-    static const int FLAG_PRI   = 0x10;
 
     static const size_t MAX_FD_NUM = 1024;
 
@@ -54,8 +52,6 @@ public:
         // or shutdown write-half of the connection, see epoll_ctl for more
         if (flag & FLAG_READ)  _fds[pos].events |= POLLIN;
         if (flag & FLAG_WRITE) _fds[pos].events |= POLLOUT;
-        if (flag & FLAG_PRI)   _fds[pos].events |= POLLPRI;
-        if (flag & FLAG_RDHUP) _fds[pos].events |= POLLRDHUP;
 
         if (pos == _fds_size) _fds_size++;
         return true;
@@ -96,8 +92,6 @@ public:
         if (_fds[_cur_pos].revents & POLLERR)   *pflag |= FLAG_ERR;
         if (_fds[_cur_pos].revents & POLLHUP)   *pflag |= FLAG_ERR;
         if (_fds[_cur_pos].revents & POLLNVAL)  *pflag |= FLAG_ERR;
-        if (_fds[_cur_pos].revents & POLLPRI)   *pflag |= FLAG_PRI;
-        if (_fds[_cur_pos].revents & POLLRDHUP) *pflag |= FLAG_RDHUP;
 
         *pfd = _fds[_cur_pos].fd;
 

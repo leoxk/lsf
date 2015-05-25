@@ -35,6 +35,7 @@ public:
     typedef BasicAddress<net_layer_proto>           address_type;
 
 public:
+    ////////////////////////////////////////////////////////////
     BasicSockAddr(proto_type proto = proto_type::V4()) {
         if (proto.domain() == AF_INET) *this = BasicSockAddr(address_type(net_layer_proto::V4()), 0);
         else                           *this = BasicSockAddr(address_type(net_layer_proto::V6()), 0);
@@ -67,6 +68,7 @@ public:
         return *this;
     }
 
+    ////////////////////////////////////////////////////////////
     // member funcs
     std::string ToString() const {
         return GetAddress().ToString() + "|" + basic::TypeCast< std::string>(GetPort());
@@ -113,6 +115,7 @@ public:
         else        return sizeof(_sockaddr.v6);
     }
 
+    ////////////////////////////////////////////////////////////
     // static funcs
     static BasicSockAddr Any(proto_type proto = proto_type::V4()) { 
         if (proto.domain() == AF_INET) return BasicSockAddr(proto_type::V4());

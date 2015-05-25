@@ -32,6 +32,7 @@ public:
     }                           addr_type;
 
 public:
+    ////////////////////////////////////////////////////////////
     // without address
     explicit BasicAddress(proto_type type = proto_type::V4()) 
         : _type(type), _scope_id(0) 
@@ -82,6 +83,7 @@ public:
         return *this;
     }
 
+    ////////////////////////////////////////////////////////////
     // mem funcs
     std::string ToString() const {
         char tmp[128];
@@ -110,6 +112,7 @@ public:
     uint32_t GetScopeId() const { return _scope_id; }
     void     SetScopeId(uint32_t scope_id) { _scope_id = scope_id; }
 
+    ////////////////////////////////////////////////////////////
     // static funcs
     static BasicAddress Any(proto_type type = proto_type::V4()) { return BasicAddress(type); }
 

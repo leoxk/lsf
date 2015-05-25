@@ -29,6 +29,7 @@ public:
     typedef TransLayerProtocol                    proto_type;
 
 public:
+    ////////////////////////////////////////////////////////////
     BasicListenSocket(proto_type proto = proto_type::V4()) {
         _sockfd = ErrWrap(::socket(proto.domain(), proto.type(), proto.protocol()));
     }
@@ -44,6 +45,7 @@ public:
 
     BasicListenSocket(BasicListenSocket const & rhs) : _sockfd(rhs._sockfd) { }
 
+    ////////////////////////////////////////////////////////////
     // member funcs
     bool Bind(sockaddr_type const & local) {
         return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
@@ -84,6 +86,21 @@ public:
             return sockaddr_type(proto_type::V6());
     }
 
+    ////////////////////////////////////////////////////////////
+    // async funcs
+    template<typename ServiceType, typename HandlerType>
+    bool AsyncAccept(ServiceType & io_service, HandlerType const & handler)
+    {
+        return io_service.AsyncAccept(*this, handler);
+    }
+
+    template<typename ServiceType>
+    void CloseAsync(ServiceType & io_service)
+    {
+        io_service.CloseAsync(_sockfd);
+    }
+
+    ////////////////////////////////////////////////////////////
     // SetSockOpt funcs
     bool SetNonBlock() {
         return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0;
@@ -110,8 +127,8 @@ public:
 
     int  GetSockFd() const { return _sockfd; }
 
+    ////////////////////////////////////////////////////////////
     // bool func
-
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 

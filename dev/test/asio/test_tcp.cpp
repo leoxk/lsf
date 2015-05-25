@@ -62,7 +62,6 @@ LSF_TEST_CASE(test_sock_op_v4)
     LSF_ASSERT(socket.Connect(tcp::SockAddr(ip::Address::Any(), listen_port)));
     LSF_ASSERT(socket.LocalSockAddr()  == tcp::SockAddr(ip::Address::Loopback(), bind_port));
     LSF_ASSERT(socket.RemoteSockAddr() == tcp::SockAddr(ip::Address::Loopback(), listen_port));
-    std::cout << socket.GetSockFd() << std::endl;
 
     // test accept
     tcp::Socket accept_socket;
@@ -72,8 +71,6 @@ LSF_TEST_CASE(test_sock_op_v4)
     LSF_ASSERT(accept_socket.LocalSockAddr() == socket.RemoteSockAddr());
     LSF_ASSERT(accept_socket.RemoteSockAddr() == socket.LocalSockAddr());
     LSF_ASSERT(accept_socket.GetSockFd() != socket.GetSockFd());
-    std::cout << accept_socket.GetSockFd() << std::endl;
-    sleep(1000);
     LSF_ASSERT(socket.Close());
 
     // test connect wrong addr

@@ -34,11 +34,12 @@ public:
 struct CompletionFunc
 {
 public:
-    static const int ACTION_ACCEPT = 1;
-    static const int ACTION_READ   = 2;
-    static const int ACTION_WRITE  = 3;
-    static const int ACTION_TIMER  = 4;
-    static const int ACTION_RDHUP  = 5;
+    static const int ACTION_ACCEPT     = 1;
+    static const int ACTION_READ       = 2;
+    static const int ACTION_PEER_CLOSE = 3;
+    static const int ACTION_CONNECT    = 4;
+    static const int ACTION_WRITE      = 5;
+    static const int ACTION_TIMER      = 6;
 
     typedef std::function<bool(AsyncInfo &)>  func_type;
 
@@ -74,10 +75,11 @@ public:
                 break;
                 
             case CompletionFunc::ACTION_WRITE:
+            case CompletionFunc::ACTION_CONNECT:
                 pfunc = &_write_func[fd];
                 break;
 
-            case CompletionFunc::ACTION_RDHUP:
+            case CompletionFunc::ACTION_PEER_CLOSE:
                 pfunc = &_rdhup_func[fd];
                 break;
 
@@ -107,7 +109,7 @@ public:
         return true;
     }
 
-    bool GetRdHupCompletionTask(int fd, CompletionFunc ** pfunc)
+    bool GetPeerCloseCompletionTask(int fd, CompletionFunc ** pfunc)
     {
         func_map_type::iterator iter = _rdhup_func.find(fd);
         if (iter == _rdhup_func.end()) return false;

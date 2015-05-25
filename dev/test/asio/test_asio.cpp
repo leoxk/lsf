@@ -16,43 +16,86 @@ using namespace lsf::basic;
 using namespace lsf::util;
 
 uint32_t listen_port = SingleRandom::Instance()->GetRand(15000, 16000);
+string content = "this is async message";
+EpollService epoll_service;
 
-bool AcceptFunc(AsyncInfo & info, tcp::Socket client_socket)
+bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket server_socket)
 {
+    LSF_ASSERT(info.fd == server_socket.GetSockFd());
+
+    return true;
+}
+
+bool OnRecvFunc(AsyncInfo & info, tcp::Socket server_socket)
+{
+    LSF_ASSERT(info.fd == server_socket.GetSockFd());
+
+    // test msg
+    LSF_ASSERT(info.buffer == content);
+
+    return true;
+}
+
+bool OnSendFunc(AsyncInfo & info, tcp::Socket server_socket)
+{
+    // test address
+    tcp::Socket client_socket(info.fd);
+    LSF_ASSERT(server_socket.RemoteSockAddr() == client_socket.LocalSockAddr());
+    LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
+    
+    // read data
+    LSF_ASSERT(server_socket.AsyncRead(epoll_service, 
+                std::bind(OnRecvFunc, std::placeholders::_1, server_socket), 
+                std::bind(OnPeerCloseFunc, std::placeholders::_1, server_socket)));
+
+    // client shutdown
+    client_socket.CloseAsync(epoll_service);
+    return true;
+}
+
+bool OnAcceptFunc(AsyncInfo & info, tcp::Socket client_socket)
+{
+    // test listen address
     tcp::Socket listen_socket(info.fd);
-    tcp::Socket accept_socket(info.accept_fd);
-    std::cout << info.fd << " " << info.accept_fd << std::endl;
+    LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(ip::Address::Any(), listen_port));
 
-    LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(ip::Address("192.168.7.172"), listen_port));
-    LSF_ASSERT(accept_socket.RemoteSockAddr() == client_socket.LocalSockAddr());
-    LSF_ASSERT(accept_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
-    std::cout << client_socket.GetSockFd() << " " << client_socket.LocalSockAddr().ToString() << " " << client_socket.RemoteSockAddr().ToString() << std::endl;
-    std::cout << accept_socket.GetSockFd() << " " << accept_socket.LocalSockAddr().ToString() << " " << accept_socket.RemoteSockAddr().ToString() << std::endl;
+    // test address
+    tcp::Socket server_socket(info.accept_fd);
+    LSF_ASSERT(server_socket.RemoteSockAddr() == client_socket.LocalSockAddr());
+    LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
 
-    sleep(1000);
+    // send msg
+    LSF_ASSERT(client_socket.AsyncWrite(epoll_service, content.c_str(), content.size(), 
+                std::bind(OnSendFunc, std::placeholders::_1, server_socket)));
+    
+    return true;
+}
+
+bool OnConnectFunc(AsyncInfo & info, tcp::ListenSocket listen_socket)
+{
+    // test listen address
+    LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(ip::Address::Any(), listen_port));
+
+    // async accept
+    tcp::Socket socket(info.fd);
+    LSF_ASSERT(listen_socket.AsyncAccept(epoll_service, std::bind(OnAcceptFunc, std::placeholders::_1, socket)));
 
     return true;
 }
 
 LSF_TEST_CASE(test_asio)
 {
-
     // listen
     tcp::ListenSocket listen_socket;
-    LSF_ASSERT(listen_socket.Bind(tcp::SockAddr(ip::Address("192.168.7.172"), listen_port)));
+    LSF_ASSERT(listen_socket.Bind(tcp::SockAddr(ip::Address::Any(), listen_port)));
     LSF_ASSERT(listen_socket.Listen());
 
-    // connect
+    // async connect
     tcp::Socket socket;
-    std::cout << socket.GetSockFd() << std::endl;
-    LSF_ASSERT(socket.Connect(tcp::SockAddr(ip::Address("192.168.7.172"), listen_port)));
+    LSF_ASSERT(socket.AsyncConnect(epoll_service, tcp::SockAddr(ip::Address::Any(), listen_port),
+                std::bind(OnConnectFunc, std::placeholders::_1, listen_socket)));
 
-    // async accept
-    EpollIOService io_service;
-    LSF_ASSERT(io_service.AsyncAccept(listen_socket, std::bind(AcceptFunc, std::placeholders::_1, socket)));
-    std::cout << socket.GetSockFd() << " " << socket.LocalSockAddr().ToString() << " " << socket.RemoteSockAddr().ToString() << std::endl;
-
-    io_service.Run();
+    epoll_service.Run();
 }
 
 int main(int argc, char **argv)

@@ -14,10 +14,11 @@ namespace asio {
 
 using async::AsyncInfo;
 
-typedef async::BasicProactorSerivce<async::EpollEvent> EpollIOService;
+typedef detail::BasicSocket<> Socket;
 
-typedef async::BasicProactorSerivce<async::PollEvent>  PollIOService;
+typedef async::BasicProactorSerivce<async::EpollEvent> EpollService;
 
+typedef async::BasicProactorSerivce<async::PollEvent>  PollService;
 
 } // end of namespace asio
 } // end of namespace lsf

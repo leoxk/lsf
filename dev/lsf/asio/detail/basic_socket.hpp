@@ -1,6 +1,6 @@
 // File:        basic_socket.hpp
 // Description: ---
-// Notes:       TODO add send and recv from msg
+// Notes:       
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-07 by leoxiang
 
@@ -42,6 +42,7 @@ public:
     typedef TransLayerProtocol                 proto_type;
 
 public:
+    ////////////////////////////////////////////////////////////
     BasicSocket(proto_type proto = proto_type::V4()) {
         _sockfd = ErrWrap(::socket(proto.domain(), proto.type(), proto.protocol()));
     }
@@ -57,8 +58,7 @@ public:
 
     BasicSocket(BasicSocket const & rhs) : _sockfd(rhs._sockfd) { }
 
-    ~BasicSocket() { ::close(_sockfd); }
-
+    ////////////////////////////////////////////////////////////
     // member funcs
     bool Bind(sockaddr_type const & local) {
         return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
@@ -89,14 +89,37 @@ public:
         return ErrWrap(::recvfrom(_sockfd, buf, len, 0, remote.Data(), &socklen));
     }
 
+    ////////////////////////////////////////////////////////////
     // async funcs
-    // udp: send
-    // tcp: try send, timeout then use async send
-    void AsyncSend();
+    template<typename ServiceType, typename SockAddrType, typename HandlerType>
+    bool AsyncConnect(ServiceType & io_service, SockAddrType const & sockaddr, HandlerType const & handler)
+    {
+        return io_service.AsyncConnect(*this, sockaddr, handler);
+    }
 
-    void AsyncRecv();
+    template<typename ServiceType, typename HandlerType>
+    bool AsyncWrite(ServiceType & io_service, void const * buffer, size_t buflen, HandlerType const & handler)
+    {
+        return io_service.AsyncWrite(*this, buffer, buflen, handler);
+    }
 
-    void AsyncAccept();
+    template<typename ServiceType, typename HandlerType1, typename HandlerType2>
+    bool AsyncRead(ServiceType & io_service, HandlerType1 const & read_handler, HandlerType2 const & rdhup_handler)
+    {
+        return io_service.AsyncRead(*this, read_handler, rdhup_handler);
+    }
+
+    template<typename ServiceType, typename HandlerType>
+    bool AsyncRead(ServiceType & io_service, HandlerType const & handler)
+    {
+        return io_service.AsyncRead(*this, handler);
+    }
+
+    template<typename ServiceType>
+    void CloseAsync(ServiceType & io_service)
+    {
+        io_service.CloseAsync(_sockfd);
+    }
 
     void AsyncConnect();
 
@@ -118,6 +141,7 @@ public:
             return sockaddr_type(proto_type::V6());
     }
 
+    ////////////////////////////////////////////////////////////
     // SetSockOpt funcs
     bool SetNonBlock() {
         return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0;

@@ -1,6 +1,6 @@
 // File:        log.hpp
 // Description: ---
-// Notes:       TODO support stream style log operator
+// Notes:       
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2011-09-19 by leoxiang
 

@@ -1,6 +1,6 @@
 // File:        system.hpp
 // Description: ---
-// Notes:       TODO use C API in System::Rm
+// Notes:       
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-05-19 by leoxiang
 
