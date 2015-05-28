@@ -19,19 +19,34 @@ uint32_t listen_port = SingleRandom::Instance()->GetRand(15000, 16000);
 string content = "this is async message";
 EpollService epoll_service;
 
-bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket server_socket)
+bool OnTimerFunc(AsyncInfo & info)
 {
-    LSF_ASSERT(info.fd == server_socket.GetSockFd());
+    static int counter= 0;
+    counter++;
+
+    if (counter >= 2)
+    {
+        epoll_service.SetExit();
+    }
+    return true;
+}
+
+bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket client_socket)
+{
+    int fd = -1;
+    LSF_ASSERT(epoll_service.AsyncAddTimer(0, 1, OnTimerFunc, &fd));
+    LSF_ASSERT(fd != -1);
 
     return true;
 }
 
-bool OnRecvFunc(AsyncInfo & info, tcp::Socket server_socket)
+bool OnRecvFunc(AsyncInfo & info, tcp::Socket client_socket)
 {
-    LSF_ASSERT(info.fd == server_socket.GetSockFd());
-
     // test msg
     LSF_ASSERT(info.buffer == content);
+
+    // client close conn
+    client_socket.Close();
 
     return true;
 }
@@ -45,8 +60,8 @@ bool OnSendFunc(AsyncInfo & info, tcp::Socket server_socket)
     
     // read data
     LSF_ASSERT(server_socket.AsyncRead(epoll_service, 
-                std::bind(OnRecvFunc, std::placeholders::_1, server_socket), 
-                std::bind(OnPeerCloseFunc, std::placeholders::_1, server_socket)));
+                std::bind(OnRecvFunc, std::placeholders::_1, client_socket), 
+                std::bind(OnPeerCloseFunc, std::placeholders::_1, client_socket)));
 
     // client shutdown
     client_socket.CloseAsync(epoll_service);

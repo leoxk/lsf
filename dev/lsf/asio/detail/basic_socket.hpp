@@ -90,6 +90,73 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
+    // Nonblock
+    size_t NonBlockRecv(void * buf, size_t len)
+    {
+        size_t total = 0;
+        while (total < len)
+        {
+            // recv
+            int ret = Recv(buf + total, len - total);
+
+            // handle error
+            if (ret < 0)
+            {
+                if (errno == EINTR) // signal interrupt
+                {
+                    continue;
+                }
+                else if ( errno == EAGAIN || errno == EWOULDBLOCK)   // no data
+                {
+                    break;
+                }
+                else // error
+                {
+                    break;
+                }
+            }
+
+            // handle socket close
+            if (ret == 0)
+            {
+                break;
+            }
+
+            // handle recv data
+            total += ret;
+        }
+        
+        return total;
+    }
+
+    size_t NonBlockSend(void * buf, size_t len)
+    {
+        size_t total = 0;
+        while (total < len)
+        {
+            int ret = Send(buf + total, len - total);
+
+            // handle error
+            if (ret < 0)
+            {
+                if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) // signal interrupt or not ready
+                {
+                    continue;
+                }
+                else // error
+                {
+                    break;
+                }
+            }
+
+            // handle send data
+            total += ret;
+        }
+
+        return total;
+    }
+
+    ////////////////////////////////////////////////////////////
     // async funcs
     template<typename ServiceType, typename SockAddrType, typename HandlerType>
     bool AsyncConnect(ServiceType & io_service, SockAddrType const & sockaddr, HandlerType const & handler)

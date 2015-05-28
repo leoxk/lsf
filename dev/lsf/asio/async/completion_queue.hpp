@@ -80,7 +80,7 @@ public:
                 break;
 
             case CompletionFunc::ACTION_PEER_CLOSE:
-                pfunc = &_rdhup_func[fd];
+                pfunc = &_peer_close_func[fd];
                 break;
 
             default:
@@ -98,7 +98,7 @@ public:
     {
         _read_func.erase(fd);
         _write_func.erase(fd);
-        _rdhup_func.erase(fd);
+        _peer_close_func.erase(fd);
     }
 
     bool GetReadCompletionTask(int fd, CompletionFunc ** pfunc)
@@ -111,8 +111,8 @@ public:
 
     bool GetPeerCloseCompletionTask(int fd, CompletionFunc ** pfunc)
     {
-        func_map_type::iterator iter = _rdhup_func.find(fd);
-        if (iter == _rdhup_func.end()) return false;
+        func_map_type::iterator iter = _peer_close_func.find(fd);
+        if (iter == _peer_close_func.end()) return false;
         *pfunc = &iter->second;
         return true;
     }
@@ -129,7 +129,7 @@ public:
 private:
     func_map_type   _read_func;
     func_map_type   _write_func;
-    func_map_type   _rdhup_func;;
+    func_map_type   _peer_close_func;;
 };
 
 } // end of namespace async
