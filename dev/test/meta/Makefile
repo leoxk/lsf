@@ -4,9 +4,9 @@
 #                make clean      :remove objects, executable, prerequisits
 #
 #   DESCRIPTION: ---
-#         NOTES: config.mk - define project configuration
-#                build.mk  - auto-generate dependencies for c/c++ files
-#                Remember to inlcude build.mk after all your targets!
+#         NOTES: Makefile.shared - define project configuration
+#                Makefile.rule  - auto-generate dependencies for c/c++ files
+#                Remember to inlcude Makefile.rule after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
 #       COMPANY: 
 #      REVISION: 2011-09-13 by leoxiang

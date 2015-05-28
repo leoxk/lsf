@@ -19,18 +19,20 @@ uint32_t listen_port = SingleRandom::Instance()->GetRand(15000, 16000);
 string content = "this is async message";
 EpollService epoll_service;
 
+////////////////////////////////////////////////////////////
 bool OnTimerFunc(AsyncInfo & info)
 {
     static int counter= 0;
     counter++;
 
-    if (counter >= 2)
+    if (counter >= 100)
     {
         epoll_service.SetExit();
     }
     return true;
 }
 
+////////////////////////////////////////////////////////////
 bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket client_socket)
 {
     int fd = -1;
@@ -40,6 +42,7 @@ bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket client_socket)
     return true;
 }
 
+////////////////////////////////////////////////////////////
 bool OnRecvFunc(AsyncInfo & info, tcp::Socket client_socket)
 {
     // test msg
@@ -51,6 +54,7 @@ bool OnRecvFunc(AsyncInfo & info, tcp::Socket client_socket)
     return true;
 }
 
+////////////////////////////////////////////////////////////
 bool OnSendFunc(AsyncInfo & info, tcp::Socket server_socket)
 {
     // test address
@@ -68,6 +72,7 @@ bool OnSendFunc(AsyncInfo & info, tcp::Socket server_socket)
     return true;
 }
 
+////////////////////////////////////////////////////////////
 bool OnAcceptFunc(AsyncInfo & info, tcp::Socket client_socket)
 {
     // test listen address
@@ -86,6 +91,7 @@ bool OnAcceptFunc(AsyncInfo & info, tcp::Socket client_socket)
     return true;
 }
 
+////////////////////////////////////////////////////////////
 bool OnConnectFunc(AsyncInfo & info, tcp::ListenSocket listen_socket)
 {
     // test listen address
