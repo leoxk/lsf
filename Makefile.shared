@@ -27,13 +27,14 @@ export CXXFLAGS  = -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing
 
 # define dirs
 DEV_DIR 	:= $(PROJECT_DIR)/dev
-LIB_DIR 	:= $(PROJECT_DIR)/dev/lib
+LIB_DIR 	:= $(DEV_DIR)/svr/lib
 
-RELEASE_DIR := $(PROJECT_DIR)/release
-BIN_DIR 	:= $(PROJECT_DIR)/release/bin
+TEST_DIR 	:= ../../bin
+BIN_DIR 	:= ../bin
 
 # define options
-export INC_FLAGS = -I$(DEV_DIR)
+export INC_FLAGS += -I$(DEV_DIR)
+export LD_FLAGS  += -L$(LIB_DIR) $(LIB_DIR)/libcommon.a -lproto
 
 # define dep dirs
 DEP_DIR := ./objdep
