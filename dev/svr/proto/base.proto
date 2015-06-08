@@ -1,0 +1,22 @@
+// File:        base.proto
+// Description: ---
+// Notes:       ---
+// Author:      leoxiang <leoxiang727@qq.com>
+// Revision:    2015-05-28 by leoxiang
+
+package base;
+
+message TcpHead
+{
+    optional string client_ip   = 1;
+    optional uint32 client_port = 2;
+
+}
+
+message ProxyHead
+{
+    optional uint32 key = 1;
+}
+
+
+// vim:ts=4:sw=4:et:
