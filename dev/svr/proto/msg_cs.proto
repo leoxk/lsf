@@ -1,0 +1,13 @@
+// File:        msg_cs.proto
+// Description: ---
+// Notes:       ---
+// Author:      leoxiang <leoxiang727@qq.com>
+// Revision:    2015-06-09 by leoxiang
+
+import "msg_base.proto";
+package msg;
+
+////////////////////////////////////////////////////////////
+// client to server messages
+
+// vim:ts=4:sw=4:et:ft=proto:

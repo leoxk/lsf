@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include "lsf/basic/macro.hpp"
 #include "lsf/basic/type_cast.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/error.hpp"
@@ -45,7 +46,7 @@ public:
         std::ifstream infile(filename.c_str());
 
         if (!infile) {
-            ErrString() = std::string("ifstream::open: ") + SysErrString();
+            ErrString() = LSF_DEBUG_INFO + SysErrString();
             return false;
         }
         infile >> *this;

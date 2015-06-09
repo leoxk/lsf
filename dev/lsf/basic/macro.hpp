@@ -13,6 +13,10 @@
 #define __LSF_TOKEN_TO_STRING1(x)   #x
 
 // debug
-#define LSF_DEBUG_INFO "[" __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) "]"
+#define LSF_DEBUG_INFO "[" __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) "] "
+
+// short cut for c_str()
+#define ToCharStr()  ToString().c_str()
+#define ErrCharStr() ErrString().c_str()
 
 // vim:ts=4:sw=4:et:ft=cpp:

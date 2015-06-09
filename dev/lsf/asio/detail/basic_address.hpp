@@ -90,7 +90,7 @@ public:
         if (IsV4()) return inet_ntop(AF_INET,  &_addr.v4, tmp, sizeof(tmp));
         else        return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
     }
-    
+
     void const * ToBytes() const { return &_addr; }
 
     bool operator==(BasicAddress const & rhs) const {

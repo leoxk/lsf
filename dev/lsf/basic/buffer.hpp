@@ -40,7 +40,7 @@ public:
     template<size_t OTHER_SIZE>
     Buffer & operator=(Buffer<OTHER_SIZE> const & rhs) { base_type::operator=(rhs); return *this; }
 
-    std::string ToHexString() const { return BinToHexString(base_type::Begin(), base_type::Size()); }
+    std::string ToHexString()   const { return BinToHexString(base_type::Begin(), base_type::Size()); }
 
     std::string ToString()    const { return BinToString(base_type::Begin(), base_type::Size()); }
 

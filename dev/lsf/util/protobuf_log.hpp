@@ -19,45 +19,21 @@ static void ProtoBufLogHandler(google::protobuf::LogLevel level, char const * fi
 } // end of namespace detail
 
 // ProtobufLog
-class ProtobufLog : public lsf::basic::Singleton<ProtobufLog>
+class ProtobufLog : 
+    public basic::Singleton<ProtobufLog>,
+    public basic::Error
 {
 public:
-    ProtobufLog() : _need_clear(false) { }
-
     void Init() { google::protobuf::SetLogHandler(detail::ProtoBufLogHandler); }
 
     void LogHandle(google::protobuf::LogLevel level, char const * filename, int line, std::string const & message)
     {
-        _CheckClear();
-        _err_string += "[[" + 
+        ErrString() = "[[" + 
                        lsf::basic::TypeCast<std::string>(level) + "|" +
                        filename + ":" + lsf::basic::TypeCast<std::string>(line) + "|" +
                        message +
                        "]]";
     }
-
-    std::string GetErrString() { 
-        _CheckClear();
-        return _err_string; 
-    }
-
-    std::string PopErrString() { 
-        _CheckClear();
-        _need_clear = true; return _err_string; 
-    }
-
-private:
-    void _CheckClear()
-    {
-        if (_need_clear) {
-            _need_clear = false;
-            _err_string.clear();
-        }
-    }
-
-private:
-    bool           _need_clear;
-    std::string    _err_string;
 };
 
 namespace detail {

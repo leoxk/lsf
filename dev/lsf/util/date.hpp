@@ -90,9 +90,7 @@ public:
         return std::string(tmp);
     }
  
-    std::string ToString() {
-        return ToFormatString("%Y-%m-%d %H:%M:%S");
-    }
+    std::string ToString() { return ToFormatString("%Y-%m-%d %H:%M:%S"); }
 
     time_t ToCalendarTime() { return ::mktime(&_date); }
 

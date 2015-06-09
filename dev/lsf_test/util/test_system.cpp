@@ -5,10 +5,12 @@
 // Revision:    2012-05-19 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
+#include "lsf/basic/string_ext.hpp"
 #include "lsf/util/system.hpp"
 
 using namespace std;
 using namespace lsf::util;
+using namespace lsf::basic;
 
 LSF_TEST_CASE(file_related)
 {
@@ -22,6 +24,8 @@ LSF_TEST_CASE(file_related)
     LSF_ASSERT(System::IsReadable("/bin/ls"));
 
     LSF_ASSERT(System::IsWritable(System::GetPwd()));
+
+    LSF_ASSERT(StringExt::GetDirName(System::GetAbsPath("./test")) == System::GetPwd());
 
     LSF_ASSERT(System::IsExecutable("/bin/ls"));
     LSF_ASSERT(System::IsExecutable("/bin/cp"));

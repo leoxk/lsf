@@ -1,0 +1,39 @@
+// File:        msg_ss.proto
+// Description: ---
+// Notes:       ---
+// Author:      leoxiang <leoxiang727@qq.com>
+// Revision:    2015-06-09 by leoxiang
+
+import "conf_deploy.proto";
+import "msg_base.proto";
+package msg;
+
+////////////////////////////////////////////////////////////
+// server to server messages
+message GetConfigReq
+{
+   optional conf.ENServerType  server_type = 1;
+   optional uint32              server_id = 2;
+}
+
+message GetConfigRsp
+{
+    optional bool result = 1;
+    optional conf.Server config = 2;
+}
+
+enum ENSS
+{
+   SS_GET_CONFIG_REQ = 1;
+   SS_GET_CONFIG_RSP = 2;
+}
+
+message SS
+{
+    optional ENSS         type = 1;
+    optional GetConfigReq get_config_req = 10;
+    optional GetConfigRsp get_config_rsp = 11;
+}
+
+
+// vim:ts=4:sw=4:et:ft=proto:

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <iterator>
+#include "lsf/basic/macro.hpp"
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/empty_type.hpp"
@@ -23,9 +24,9 @@ class EmptyIterator { };
 // BasicBasicContainer
 ////////////////////////////////////////////////////////////
 template<
-    typename ElemType,
-    typename SizeType,
-    typename StoreType,
+typename ElemType,
+typename SizeType,
+typename StoreType,
     typename StateType,
     typename IteratorType = EmptyIterator>
 class BasicContainer :
@@ -48,12 +49,12 @@ public:
         _store = store;
 
         if (_store.GetPtr() == NULL) {
-            ErrString() = std::string("Store::GetPtr : ") + _store.ErrString();
+            ErrString() = LSF_DEBUG_INFO + _store.ErrString();
             return false;
         }
 
         if (((StateType *)_store.GetPtr())->ElemByteSize() != sizeof(value_type)) {
-            ErrString() = std::string("ElemSize Not Equal");
+            ErrString() = LSF_DEBUG_INFO;
             return false;
         }
 
@@ -67,7 +68,7 @@ public:
         _store = store;
 
         if (_store.GetPtr() == NULL) {
-            ErrString() = std::string("Store::GetPtr : ") + _store.ErrString();
+            ErrString() = LSF_DEBUG_INFO + _store.ErrString();
             return false;
         }
 

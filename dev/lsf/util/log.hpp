@@ -15,14 +15,28 @@
 #include "lsf/util/date.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/error.hpp"
+#include "lsf/basic/macro.hpp"
 
 namespace lsf {
 namespace util {
 
 ////////////////////////////////////////////////////////////
+// BasicLogDriver
+////////////////////////////////////////////////////////////
+class BasicLogDriver : public basic::Error
+{
+public:
+    virtual size_t Write(char const * str, size_t len) = 0;
+
+    virtual void Flush() = 0;
+
+    virtual bool IsReady() const = 0;
+};
+
+////////////////////////////////////////////////////////////
 // FileLogDriver
 ////////////////////////////////////////////////////////////
-class FileLogDriver : public basic::Error
+class FileLogDriver : public BasicLogDriver
 {
 public:
     const static uint16_t SHIFT_NONE  = 0;
@@ -38,35 +52,21 @@ public:
           _prefix(prefix)
     { _Open(); }
 
-    FileLogDriver(FileLogDriver const & rhs)
-        : _shift(rhs._shift),
-          _prefix(rhs._prefix)
-    { _Open(); }
-
-    FileLogDriver & operator=(FileLogDriver const & rhs) {
-        if (this == &rhs) return *this;
-        _Shift();
-        _shift  = rhs._shift;
-        _prefix = rhs._prefix;
-        _Open();
-        return *this;
-    }
-
     ~FileLogDriver() {
         _Shift();
     }
 
-    // member funcs
-    size_t Write(char const * str, size_t len) {
+public:
+    virtual size_t Write(char const * str, size_t len)
+    {
         if (_Shift()) _Open();
-        
         _ofs.write(str, len);
         return len;
     }
 
-    void Flush() { if (!IsReady()) return; _ofs.flush(); }
+    virtual void Flush() { if (!IsReady()) return; _ofs.flush(); }
 
-    bool IsReady() const { return _ofs.is_open(); } 
+    virtual bool IsReady() const { return _ofs.is_open(); } 
 
 private:
     bool _Open()
@@ -74,33 +74,40 @@ private:
         if (_ofs.is_open()) _ofs.close();
 
         // mkdir if necessary
-        if (!System::IsExist(basic::StringExt::GetDirName(_prefix))) {
-            if (!System::MkDir(basic::StringExt::GetDirName(_prefix))) {
-                ErrString() = std::string("System::Mkdir: ") + System::ErrString();
+        if (!System::IsExist(basic::StringExt::GetDirName(_prefix)))
+        {
+            if (!System::MkDir(basic::StringExt::GetDirName(_prefix)))
+            {
+                ErrString() = LSF_DEBUG_INFO + System::ErrString();
                 return false;
             }
         }
 
         // construct file path
-        if (SHIFT_DAY == _shift) {
+        if (SHIFT_DAY == _shift)
+        {
             _last_shift = Date().GetDay();
             _log_path = _prefix + "." + Date().ToFormatString("%Y-%m-%d");
         }
-        else if (SHIFT_MONTH == _shift) {
+        else if (SHIFT_MONTH == _shift)
+        {
             _last_shift = Date().GetMonth();
             _log_path = _prefix + "." + Date().ToFormatString("%Y-%m");
         }
-        else {
+        else
+        {
             _log_path = _prefix; 
         }
 
         // open file
         _ofs.open(_log_path.c_str(), std::ios_base::app | std::ios_base::out);
 
-        if (!_ofs.is_open()) {
-            ErrString() = std::string("ofstream::open: ") + SysErrString();
+        if (!_ofs.is_open())
+        {
+            ErrString() = LSF_DEBUG_INFO + SysErrString();
             return false;
         }
+
         return true;
     }
 
@@ -131,15 +138,16 @@ private:
         // mkdir and rename
         if (!System::IsExist(basic::StringExt::GetDirName(dest_path)))
         {
-            if (!System::MkDir(basic::StringExt::GetDirName(dest_path))) {
-                ErrString() = std::string("System::Mkdir: ") + System::ErrString();
+            if (!System::MkDir(basic::StringExt::GetDirName(dest_path)))
+            {
+                ErrString() = LSF_DEBUG_INFO + System::ErrString();
                 return false;
             }
         }
 
         if (!System::Rename(_log_path, dest_path))
         {
-            ErrString() = std::string("System::Rename: ") +  System::ErrString();
+            ErrString() = LSF_DEBUG_INFO + System::ErrString();
             return false;
         }
 
@@ -158,10 +166,25 @@ private:
 };
 
 ////////////////////////////////////////////////////////////
+// TermLogDriver
+////////////////////////////////////////////////////////////
+class TermLogDriver : public BasicLogDriver
+{
+public:
+    virtual size_t Write(char const * str, size_t len) {
+        std::cerr.write(str, len);
+        return len;
+    }
+
+    virtual void Flush() { std::cerr.flush(); }
+
+    virtual bool IsReady() const { return std::cerr.good(); } 
+};
+
+////////////////////////////////////////////////////////////
 // Log
 ////////////////////////////////////////////////////////////
-template<typename DriverType>
-class BasicLog : public basic::Error
+class Log : public basic::Error
 {
 public:
     // constants
@@ -174,24 +197,35 @@ public:
 
 public:
     // constructor
-    explicit BasicLog(uint16_t log_mask = TYPE_ALL) 
-        : _log_mask(log_mask) { }
+    Log(uint16_t mask = TYPE_ALL) 
+        : _pdriver(NULL), _mask(mask) { }
+
+    ~Log() { if (_pdriver) delete _pdriver; }
 
     // membet funcs
-    bool BindOutput(DriverType const & driver) {
-        _driver = driver;
+    bool BindOutput(BasicLogDriver * pdriver)
+    {
+        // release old
+        if (_pdriver) delete _pdriver;
+
+        // assign new
+        _pdriver = pdriver;
         
-        if (!_driver.IsReady())
+        // check
+        if (!_pdriver->IsReady())
         {
-            ErrString() = std::string("Driver::IsReady() : ") + _driver.ErrString();
+            ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
+            _pdriver = NULL;
             return false;
         }
+
         return true;
     }
 
-    size_t WriteLog(uint16_t type, char const * fmt, ...) {
+    size_t WriteLog(uint16_t type, char const * fmt, ...)
+    {
         if (!IsBindOuput()) return 0;
-        if (!(type & _log_mask)) return 0;
+        if (!(type & _mask)) return 0;
         if (fmt == NULL) return 0;
 
         // get time prefix
@@ -215,49 +249,45 @@ public:
 
         // do ouotput
         size_t len = 0;
-        len += _driver.Write(prefix.c_str(), prefix.size());
-        len += _driver.Write(tmp, strlen(tmp));
-        len += _driver.Write("\n", 1);
-        _driver.Flush();
+        len += _pdriver->Write(prefix.c_str(), prefix.size());
+        len += _pdriver->Write(tmp, strlen(tmp));
+        len += _pdriver->Write("\n", 1);
+        _pdriver->Flush();
 
         return len;
     }
     
     // accessor
-    void SetTypeMask(uint16_t type) { _log_mask = type; }
+    void SetTypeMask(uint16_t type) { _mask = type; }
 
-    bool IsBindOuput() const { return _driver.IsReady(); }
+    bool IsBindOuput() const { return _pdriver && _pdriver->IsReady(); }
 
 private:
-    DriverType      _driver;
-    uint16_t        _log_mask;
+    BasicLogDriver * _pdriver;
+    uint16_t         _mask;
 }; 
-
-////////////////////////////////////////////////////////////
-// provide macro for convient access
-typedef BasicLog<FileLogDriver>     FileLog;
 
 ////////////////////////////////////////////////////////////
 // Singleton Log, provide macros for convient access
 class SingleLog : 
-    public FileLog, 
+    public Log, 
     public basic::Singleton<SingleLog>
 { };
 
 #define LSF_LOG_INFO(fmt, args...)  lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::FileLog::TYPE_INFO,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_INFO,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
 
 #define LSF_LOG_DEBUG(fmt, args...) lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::FileLog::TYPE_DEBUG, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_DEBUG, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
 
 #define LSF_LOG_WARN(fmt, args...)  lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::FileLog::TYPE_WARN,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_WARN,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
 
 #define LSF_LOG_ERR(fmt, args...)   lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::FileLog::TYPE_ERR,   "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_ERR,   "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
 
 #define LSF_LOG_FATAL(fmt, args...) lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::FileLog::TYPE_FATAL, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_FATAL, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
 
 
 } // end of namespace util

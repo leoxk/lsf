@@ -41,6 +41,8 @@ public:
     typedef BasicSockAddr<TransLayerProtocol>  sockaddr_type;
     typedef TransLayerProtocol                 proto_type;
 
+    static const size_t MAX_BUFFER_LEN = 128 * 1024;
+
 public:
     ////////////////////////////////////////////////////////////
     BasicSocket(proto_type proto = proto_type::V4()) {
@@ -76,28 +78,19 @@ public:
         return ErrWrap(::send(_sockfd, buf, len, MSG_NOSIGNAL));
     }
 
-    ssize_t SendTo(void const * buf, size_t len, sockaddr_type const & remote) {
-        return ErrWrap(::sendto(_sockfd, buf, len, MSG_NOSIGNAL, remote.Data(), remote.DataSize()));
-    }
-
     ssize_t Recv(void * buf, size_t len) {
         return ErrWrap(::recv(_sockfd, buf, len, 0));
     }
 
-    ssize_t RecvFrom(void * buf, size_t len, sockaddr_type & remote) {
-        size_t socklen;
-        return ErrWrap(::recvfrom(_sockfd, buf, len, 0, remote.Data(), &socklen));
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Nonblock
-    size_t NonBlockRecv(void * buf, size_t len)
+    bool RecvAll(std::string & content)
     {
-        size_t total = 0;
-        while (total < len)
+        content.clear();
+
+        while (true)
         {
             // recv
-            int ret = Recv(buf + total, len - total);
+            static char buffer[MAX_BUFFER_LEN];
+            int ret = Recv(buffer, sizeof(buffer));
 
             // handle error
             if (ret < 0)
@@ -106,7 +99,7 @@ public:
                 {
                     continue;
                 }
-                else if ( errno == EAGAIN || errno == EWOULDBLOCK)   // no data
+                else if (errno == EAGAIN || errno == EWOULDBLOCK)   // no data
                 {
                     break;
                 }
@@ -117,24 +110,21 @@ public:
             }
 
             // handle socket close
-            if (ret == 0)
-            {
-                break;
-            }
+            if (ret == 0) break;
 
             // handle recv data
-            total += ret;
+            content.append(buffer, ret);
         }
         
-        return total;
+        return !content.empty();
     }
 
-    size_t NonBlockSend(void * buf, size_t len)
+    bool SendAll(void const * buf, size_t len)
     {
         size_t total = 0;
         while (total < len)
         {
-            int ret = Send(buf + total, len - total);
+            int ret = Send((char const *)buf + total, len - total);
 
             // handle error
             if (ret < 0)
@@ -153,7 +143,12 @@ public:
             total += ret;
         }
 
-        return total;
+        return total == len;
+    }
+
+    bool SendAll(std::string const & content)
+    {
+        return SendAll(content.data(), content.size());
     }
 
     ////////////////////////////////////////////////////////////

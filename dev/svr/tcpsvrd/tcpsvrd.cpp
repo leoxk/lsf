@@ -6,11 +6,14 @@
 
 #include "tcpsvrd.h"
 
+bool TcpServer::OnRun()
+{
+    return true;
+}
+
 int main(int argc, char** argv)
 {
-    TcpServer server;
-    server.UseEpoll();
-    server.Run(argc, argv);
+    TcpServer::Instance()->Run(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -37,9 +38,15 @@ public:
         return true;
     }
 
+    static std::string GetAbsPath(std::string const & path)
+    {
+        static char buffer[PATH_MAX];
+        return ::realpath(path.c_str(), buffer) == NULL ? "" : buffer;
+    }
+
     static std::string GetPwd() {
-        char tmp[4096];
-        return ::getcwd(tmp, sizeof(tmp)) == NULL ? std::string() : std::string(tmp);
+        static char buffer[PATH_MAX];
+        return ::getcwd(buffer, sizeof(buffer)) == NULL ? "" : buffer;
     }
 
     static bool IsFile(std::string const & path) { return S_ISREG(GetFileMode(path)); }
