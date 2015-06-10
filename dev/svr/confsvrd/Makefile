@@ -36,5 +36,4 @@ clean:
 # default dependency rule
 -include  $(PROJECT_DIR)/Makefile.rule
 
-
 # vim:ts=4:sw=4:ft=make:

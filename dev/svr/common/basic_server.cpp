@@ -5,19 +5,22 @@
 // Revision:    2015-06-08 by leoxiang
 
 #include <iostream>
+#include <functional>  
 #include "lsf/basic/type_cast.hpp"
 #include "lsf/basic/macro.hpp"
 #include "lsf/basic/string_ext.hpp"
 #include "lsf/util/system.hpp"
 #include "lsf/util/log.hpp"
 #include "lsf/util/protobuf_log.hpp"
-#include "../proto/msg_ss.pb.h"
+#include "svr/proto/msg_ss.pb.h"
 #include "basic_server.h"
 
 using namespace lsf::basic;
 using namespace lsf::asio;
 using namespace lsf::util;
 
+////////////////////////////////////////////////////////////
+// init logic
 void BasicServer::Run(int argc, char** argv)
 {
     // bind log to terminal
@@ -41,6 +44,9 @@ void BasicServer::Run(int argc, char** argv)
     // demonize
     if (!OnDeamonize()) return;
 
+    // start listen socket
+    if (!OnInitListenSocket()) return;
+
     // init proxy
 
     // init net log
@@ -49,7 +55,7 @@ void BasicServer::Run(int argc, char** argv)
     if (!OnRun()) return;
 
     // start async machine
-    _io_service.Run();
+    RunAsync();
 }
 
 bool BasicServer::OnParseCommond(int argc, char** argv)
@@ -71,7 +77,7 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
 bool BasicServer::OnGetConfig()
 {
     // init a connection
-    tcp::Socket socket;
+    tcp::Socket socket = tcp::Socket::CreateSocket();
     if (!socket.Connect(_confsvrd_addrss))
     {
         LSF_LOG_ERR("addr=%s, %s", _confsvrd_addrss.ToCharStr(), socket.ErrCharStr());
@@ -154,6 +160,41 @@ bool BasicServer::OnDeamonize()
     return true;
 }
 
+bool BasicServer::OnInitListenSocket()
+{
+    for (int i = 0; i < _server_config.listen_address_size(); ++i)
+    {
+        tcp::ListenSocket lsocket = tcp::ListenSocket::CreateListenSocket();
+        tcp::SockAddr lsockaddr = tcp::SockAddr(
+                _server_config.listen_address(i).ip(),
+                _server_config.listen_address(i).port());
+
+        // init listen socket
+        if (!lsocket.Bind(lsockaddr))
+        {
+            LSF_LOG_ERR("address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
+            lsocket.Close();
+            return false;
+        }
+        if (!lsocket.Listen())
+        {
+            LSF_LOG_ERR("address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
+            lsocket.Close();
+            return false;
+        }
+
+        // async accept
+        if (!lsocket.AsyncAccept(*this, std::bind(&BasicServer::OnNewConnection, std::ref(*this), std::placeholders::_1)))
+        {
+            LSF_LOG_ERR("%s", this->ErrCharStr());
+            lsocket.Close();
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool BasicServer::OnInitProxy()
 {
     return true;
@@ -161,6 +202,14 @@ bool BasicServer::OnInitProxy()
 
 bool BasicServer::OnInitNetLog()
 {
+    return true;
+}
+
+////////////////////////////////////////////////////////////
+// main logic
+bool BasicServer::OnNewConnection(lsf::asio::AsyncInfo & info)
+{
+
     return true;
 }
 

@@ -35,13 +35,9 @@ public:
         return BasicListenSocket(sockfd);
     }
 
-    ////////////////////////////////////////////////////////////
     BasicListenSocket(int sockfd) : _sockfd(sockfd) { }
 
-    BasicListenSocket(BasicListenSocket const & rhs) : _sockfd(rhs._sockfd) { }
-
     ////////////////////////////////////////////////////////////
-    // member funcs
     bool Bind(sockaddr_type const & local) {
         return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
     }
@@ -53,7 +49,7 @@ public:
     bool Accept(socket_type & socket) {
         int      sockfd;
         if ((sockfd = ErrWrap(::accept(_sockfd, NULL, NULL))) >= 0) {
-            socket.SetSockFd(sockfd);
+            socket._sockfd = sockfd;
             return true;
         }
         return false;
@@ -122,10 +118,10 @@ public:
 
     int  GetSockFd() const { return _sockfd; }
 
-    ////////////////////////////////////////////////////////////
-    // bool func
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
+
+    bool operator!() const { return _sockfd >= 0; }
 
 private:
     int             _sockfd;

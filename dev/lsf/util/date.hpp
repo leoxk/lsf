@@ -24,13 +24,9 @@ public:
     const static time_t SECONDS_PER_MONTH   = 30 * SECONDS_PER_DAY;
 
 public:
-    Date() {
-        new(this) Date(::time(NULL));
-    }
+    Date(time_t calendar_time = ::time(NULL)) { _date = *::localtime(&calendar_time); }
 
-    Date(time_t calendar_time) { 
-        _date = *::localtime(&calendar_time);
-    }
+    Date(tm const & date) : _date(date) { }
 
     // must be this format "year-month-day hour:minute:second"
     Date(std::string const & date_string) {
@@ -56,17 +52,6 @@ public:
         _date.tm_min  = minute;
         _date.tm_sec  = second;
         _Reset();
-    }
-
-    Date(tm const & date) : _date(date) { }
-
-    Date(Date const & rhs) : _date(rhs._date) { }
-
-    Date & operator=(Date const & rhs) {
-        if (this == &rhs) return *this;
-
-        _date = rhs._date;
-        return *this;
     }
 
     // member funcs

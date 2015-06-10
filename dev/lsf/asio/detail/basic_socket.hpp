@@ -18,6 +18,10 @@ namespace lsf {
 namespace asio {
 namespace detail {
 
+// forward declare
+template<typename TransLayerProtocol>
+class BasicListenSocket;
+
 ////////////////////////////////////////////////////////////
 // DummyProtocol
 ////////////////////////////////////////////////////////////
@@ -44,29 +48,19 @@ public:
 
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
 
-public:
-    static BasicSocket CreateSocket() 
-    {
+    template<typename TransLayerProtocol2>
+    friend class BasicListenSocket;
 
-    }
-    ////////////////////////////////////////////////////////////
-    BasicSocket(proto_type proto = proto_type::V4()) {
-        _sockfd = ErrWrap(::socket(proto.domain(), proto.type(), proto.protocol()));
+public:
+    static BasicSocket CreateSocket(proto_type proto = proto_type::V4()) 
+    {
+        int sockfd = ::socket(proto.domain(), proto.type(), proto.protocol());
+        return BasicSocket(sockfd);
     }
 
     BasicSocket(int sockfd) : _sockfd(sockfd) { }
 
-    BasicSocket(BasicSocket const & rhs) : _sockfd(rhs._sockfd) { }
-
-    BasicSocket & operator=(BasicSocket const & rhs)
-    {
-        if (this == &rhs) return *this;
-        _sockfd = rhs._sockfd;
-        return *this;
-    }
-
     ////////////////////////////////////////////////////////////
-    // member funcs
     bool Bind(sockaddr_type const & local) {
         return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
     }
@@ -258,10 +252,10 @@ public:
 
     int  GetSockFd() const { return _sockfd; }
 
-    void SetSockFd(int sockfd) { _sockfd = sockfd; }
-
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
+
+    bool operator!() const { return _sockfd >= 0; }
 
 private:
     int             _sockfd;

@@ -27,8 +27,8 @@ message Server
     optional ENServerType server_type = 1;
     optional uint32       server_id = 2; 
     repeated NetAddress   listen_address = 3;
-    repeated NetAddress   proxysvrd_address = 4;
-    repeated NetAddress   logsvrd_address = 5;
+    repeated NetAddress   proxy_address = 4;
+    repeated NetAddress   log_address = 5;
     optional string       local_log_path = 6;
 }
 

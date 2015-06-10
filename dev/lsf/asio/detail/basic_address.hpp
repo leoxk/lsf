@@ -71,6 +71,8 @@ public:
 
     BasicAddress(proto_type type, std::string const & ip_str, uint32_t scope_id = 0) : BasicAddress(type, ip_str.c_str(), scope_id) { }
 
+    BasicAddress(char const * ip_str) : BasicAddress(proto_type::V4(), ip_str) { }
+
     BasicAddress(std::string const & ip_str) : BasicAddress(proto_type::V4(), ip_str) { }
 
     ////////////////////////////////////////////////////////////
@@ -81,10 +83,6 @@ public:
         else        return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
     }
 
-    char const * ToCharStr() const {
-        return ToString.c_str();
-    }
-    
     bool operator==(BasicAddress const & rhs) const {
         if (_type != rhs._type) return false;
 

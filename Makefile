@@ -19,7 +19,8 @@ SVR_MODULE = \
 			  dev/svr/proto 	\
 			  dev/svr/common 	\
 			  dev/svr/confsvrd	\
-			  dev/svr/tcpsvrd	\
+			  dev/svr/proxysvrd	\
+			  #dev/svr/tcpsvrd	\
 
 TEST_MODULE = \
 			  dev/lsf_test/algorithm	\

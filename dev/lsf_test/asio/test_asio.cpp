@@ -112,11 +112,11 @@ LSF_TEST_CASE(test_asio)
     LSF_ASSERT(listen_socket.Listen());
 
     // async connect
-    tcp::Socket socket;
+    tcp::Socket socket = tcp::Socket::CreateSocket();
     LSF_ASSERT(socket.AsyncConnect(epoll_service, tcp::SockAddr(ip::Address::Any(), listen_port),
                 std::bind(OnConnectFunc, std::placeholders::_1, listen_socket)));
 
-    epoll_service.Run();
+    epoll_service.RunAsync();
 }
 
 int main(int argc, char **argv)

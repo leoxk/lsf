@@ -35,7 +35,7 @@ LSF_TEST_CASE(test_sockaddr_v4_and_v6)
 
 LSF_TEST_CASE(test_sock_op_v4)
 {
-    udp::Socket socket;
+    udp::Socket socket = udp::Socket::CreateSocket();
     LSF_ASSERT(socket.IsV4());
     LSF_ASSERT(socket.LocalSockAddr() == udp::SockAddr::Any());
     LSF_ASSERT(socket.RemoteSockAddr() == udp::SockAddr::Any());

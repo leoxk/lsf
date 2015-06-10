@@ -4,7 +4,7 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-08 by leoxiang
 
-#include "tcpsvrd.h"
+#include "svr/tcpsvrd/tcpsvrd.h"
 
 bool TcpServer::OnRun()
 {

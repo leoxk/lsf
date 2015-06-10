@@ -10,7 +10,7 @@
 #include "lsf/basic/error.hpp"
 #include "lsf/util/log.hpp"
 #include "lsf/util/protobuf_log.hpp"
-#include "deploy_conf_mng.h"
+#include "svr/confsvrd/deploy_conf_mng.h"
 
 using namespace google::protobuf;
 using namespace lsf::basic;

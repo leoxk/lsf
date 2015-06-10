@@ -4,15 +4,15 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-08 by leoxiang
 
-#include "../common/basic_server.h"
-#include "../common/common_func.h"
+#include "svr/common/basic_server.h"
+#include "svr/common/common_func.h"
 
 class TcpServer : 
     public BasicServer,
     public lsf::basic::Singleton<TcpServer>
 {
 public:
-    TcpServer() : BasicServer(conf::SERVER_TYPE_TCP_SERVER, true) { }
+    TcpServer() : BasicServer(conf::SERVER_TYPE_TCP_SERVER) { }
 
 public:
     virtual bool OnInitProxy() { return true; }

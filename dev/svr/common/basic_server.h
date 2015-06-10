@@ -9,15 +9,16 @@
 #include "lsf/basic/noncopyable.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
-class BasicServer : public lsf::basic::NonCopyable
+class BasicServer : public lsf::asio::EpollService
 {
 public:
-    BasicServer(conf::ENServerType server_type, bool use_epoll) : 
+    BasicServer(conf::ENServerType server_type) : 
         _server_type(server_type), _server_id(0) { }
 
     void Run(int argc, char** argv);
 
 protected:
+    // init logic
     virtual bool OnParseCommond(int argc, char** argv);
 
     virtual bool OnGetConfig();
@@ -28,12 +29,21 @@ protected:
 
     virtual bool OnDeamonize();
 
+    virtual bool OnInitListenSocket();
+
     virtual bool OnInitProxy();
 
     virtual bool OnInitNetLog();
     
-    // every one should override this
+protected:
+    // main logic
     virtual bool OnRun() = 0;
+
+    virtual bool OnNewConnection(lsf::asio::AsyncInfo & info);
+
+    virtual bool OnClientMessage() = 0;
+
+    //virtual bool OnProxyMessage() = 0;
 
 protected:
     lsf::asio::EpollService     _io_service;

@@ -272,7 +272,7 @@ public:
 
     ////////////////////////////////////////////////////////////
     // Main Routine
-    void Run()
+    void RunAsync()
     {
         while (true)
         {
@@ -346,7 +346,7 @@ public:
         info.fd = fd;
 
         // accept
-        detail::BasicSocket<detail::DummyProtocol> accept_socket;
+        detail::BasicSocket<detail::DummyProtocol> accept_socket(-1);
         if (!listen_socket.Accept(accept_socket))
         {
             ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
@@ -356,7 +356,11 @@ public:
 
         // call accept handler
         CompletionFunc * pfunc = NULL;
-        if (!_queue.GetReadCompletionTask(fd, &pfunc)) return;
+        if (!_queue.GetReadCompletionTask(fd, &pfunc))
+        {
+            accept_socket.Close();
+            return;
+        }
         pfunc->func(info);
     }
 

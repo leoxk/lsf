@@ -49,7 +49,7 @@ LSF_TEST_CASE(test_sock_op_v4)
     LSF_ASSERT(lsock.Listen());
 
     // test socket create
-    tcp::Socket socket;
+    tcp::Socket socket = tcp::Socket::CreateSocket();
     LSF_ASSERT(socket.IsV4());
     LSF_ASSERT(socket.LocalSockAddr()  == tcp::SockAddr::Any());
     LSF_ASSERT(socket.RemoteSockAddr() == tcp::SockAddr::Any());
@@ -65,7 +65,7 @@ LSF_TEST_CASE(test_sock_op_v4)
     LSF_ASSERT(socket.RemoteSockAddr() == tcp::SockAddr(ip::Address::Loopback(), listen_port));
 
     // test accept
-    tcp::Socket accept_socket;
+    tcp::Socket accept_socket(-1);
     LSF_ASSERT(lsock.Accept(accept_socket));
     LSF_ASSERT(accept_socket.LocalSockAddr()  == tcp::SockAddr(ip::Address::Loopback(), listen_port));
     LSF_ASSERT(accept_socket.RemoteSockAddr() == tcp::SockAddr(ip::Address::Loopback(), bind_port));

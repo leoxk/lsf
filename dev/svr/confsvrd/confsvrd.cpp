@@ -8,8 +8,8 @@
 #include "google/protobuf/text_format.h"
 #include "lsf/util/log.hpp"
 #include "lsf/util/system.hpp"
-#include "confsvrd.h"
-#include "deploy_conf_mng.h"
+#include "svr/confsvrd/confsvrd.h"
+#include "svr/confsvrd/deploy_conf_mng.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;
@@ -50,6 +50,11 @@ bool ConfigServer::OnGetConfig()
 }
 
 bool ConfigServer::OnRun()
+{
+    return true;
+}
+
+bool ConfigServer::OnClientMessage()
 {
     return true;
 }
