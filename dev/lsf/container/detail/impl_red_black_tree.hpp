@@ -784,18 +784,6 @@ public:
         : _ptr_state(ptr_state), _pos(pos)
     { }
 
-    RBTreeIterator(RBTreeIterator const & rhs)
-        : _ptr_state(rhs._ptr_state), _pos(rhs._pos)
-    { }
-
-    RBTreeIterator & operator=(RBTreeIterator const & rhs) {
-        if (&rhs == this) return *this;
-
-        _ptr_state = rhs._ptr_state;
-        _pos       = rhs._pos;
-        return *this;
-    }
-
     // member funcs
     RBTreeIterator operator+(difference_type diff) const 
     {

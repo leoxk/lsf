@@ -29,18 +29,13 @@ public:
     typedef TransLayerProtocol                    proto_type;
 
 public:
+    static BasicListenSocket CreateListenSocket(proto_type proto = proto_type::V4())
+    {
+        int sockfd = ::socket(proto.domain(), proto.type(), proto.protocol());
+        return BasicListenSocket(sockfd);
+    }
+
     ////////////////////////////////////////////////////////////
-    BasicListenSocket(proto_type proto = proto_type::V4()) {
-        _sockfd = ErrWrap(::socket(proto.domain(), proto.type(), proto.protocol()));
-    }
-
-    BasicListenSocket(sockaddr_type const & local) {
-        if (local.IsV4()) *this = BasicListenSocket(proto_type::V4());
-        else              *this = BasicListenSocket(proto_type::V6());
-
-        Bind(local);
-    }
-
     BasicListenSocket(int sockfd) : _sockfd(sockfd) { }
 
     BasicListenSocket(BasicListenSocket const & rhs) : _sockfd(rhs._sockfd) { }

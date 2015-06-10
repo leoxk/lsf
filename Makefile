@@ -25,7 +25,6 @@ TEST_MODULE = \
 			  dev/lsf_test/algorithm	\
 			  dev/lsf_test/asio			\
 			  dev/lsf_test/basic		\
-			  dev/lsf_test/meta 		\
 			  dev/lsf_test/container	\
 			  dev/lsf_test/encrypt 		\
 			  dev/lsf_test/util 		\
@@ -55,7 +54,7 @@ test : 				\
 	test_encrypt 	\
 	test_util 		\
 
-clean_test :
+test_clean :
 	for dir in $(TEST_MODULE); do \
 		make clean -C $$dir; \
 	done
@@ -107,7 +106,7 @@ test_util :
 	./test/bin/test_shared_ptr
 	./test/bin/test_system
 
-.PHONY : all clean test clean_test
+.PHONY : all clean test test_clean
 
 
 # vim:ts=4:sw=4:ft=make:

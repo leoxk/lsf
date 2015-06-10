@@ -233,7 +233,7 @@ inline static void MD5FinalA(unsigned char digest[16], MD5Context *ctx)
     MD5TransformA(ctx->buf, (uint32_t *) ctx->in);
     byteReverse((unsigned char *) ctx->buf, 4);
     memmove(digest, ctx->buf, 16);
-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
+    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
 }
 
 } // end of namespace detail

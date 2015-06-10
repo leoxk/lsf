@@ -36,6 +36,12 @@ public:
 
 public:
     ////////////////////////////////////////////////////////////
+    static BasicSockAddr Any(proto_type proto = proto_type::V4()) { 
+        if (proto.domain() == AF_INET) return BasicSockAddr(proto_type::V4());
+        else                           return BasicSockAddr(proto_type::V6());
+    }
+
+    ////////////////////////////////////////////////////////////
     BasicSockAddr(proto_type proto = proto_type::V4()) {
         if (proto.domain() == AF_INET) *this = BasicSockAddr(address_type(net_layer_proto::V4()), 0);
         else                           *this = BasicSockAddr(address_type(net_layer_proto::V6()), 0);
@@ -45,27 +51,19 @@ public:
         if (addr.IsV4()) {
             _sockaddr.v4.sin_family = AF_INET;
             _sockaddr.v4.sin_port   = ::htons(port);
-            ::memcpy(&_sockaddr.v4.sin_addr,  addr.ToBytes(), 4);
+            ::memcpy(&_sockaddr.v4.sin_addr, &addr._addr, 4);
         }
         else {
             _sockaddr.v6.sin6_family = AF_INET6;
             _sockaddr.v6.sin6_port   = ::htons(port);
             _sockaddr.v6.sin6_flowinfo = 0;
             _sockaddr.v6.sin6_scope_id = addr.GetScopeId();
-            ::memcpy(&_sockaddr.v6.sin6_addr, addr.ToBytes(), 16);
+            ::memcpy(&_sockaddr.v6.sin6_addr, &addr._addr, 16);
         }
     }
 
     BasicSockAddr(sockaddr const * paddr) {
         memcpy(&_sockaddr, paddr, sizeof(_sockaddr));
-    }
-
-    BasicSockAddr(BasicSockAddr const & rhs) : _sockaddr(rhs._sockaddr) { }
-
-    BasicSockAddr & operator=(BasicSockAddr const & rhs) {
-        if (this == &rhs) return *this;
-        _sockaddr = rhs._sockaddr;
-        return *this;
     }
 
     ////////////////////////////////////////////////////////////
@@ -83,8 +81,7 @@ public:
         if (IsV4()) 
             return address_type(net_layer_proto::V4(), &_sockaddr.v4.sin_addr);
         else        
-            return address_type(net_layer_proto::V6(), &_sockaddr.v6.sin6_addr, 
-                    _sockaddr.v6.sin6_scope_id);
+            return address_type(net_layer_proto::V6(), &_sockaddr.v6.sin6_addr, _sockaddr.v6.sin6_scope_id);
     }
 
     bool IsV4() const { return _sockaddr.base.sa_family == AF_INET; }
@@ -103,9 +100,7 @@ public:
                    ::memcmp(&_sockaddr.v6.sin6_addr, &_sockaddr.v6.sin6_addr, sizeof(_sockaddr.v6.sin6_addr));
     }
 
-    bool operator!=(BasicSockAddr const & rhs) const {
-        return !(*this == rhs);
-    }
+    bool operator!=(BasicSockAddr const & rhs) const { return !(*this == rhs); }
 
     sockaddr *       Data()       { return &_sockaddr.base; }
     sockaddr const * Data() const { return &_sockaddr.base; }
@@ -113,13 +108,6 @@ public:
     size_t DataSize() const { 
         if (IsV4()) return sizeof(_sockaddr.v4);
         else        return sizeof(_sockaddr.v6);
-    }
-
-    ////////////////////////////////////////////////////////////
-    // static funcs
-    static BasicSockAddr Any(proto_type proto = proto_type::V4()) { 
-        if (proto.domain() == AF_INET) return BasicSockAddr(proto_type::V4());
-        else                           return BasicSockAddr(proto_type::V6());
     }
 
 public:

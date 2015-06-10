@@ -7,6 +7,7 @@
 #pragma once
 
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -44,21 +45,25 @@ public:
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
 
 public:
+    static BasicSocket CreateSocket() 
+    {
+
+    }
     ////////////////////////////////////////////////////////////
     BasicSocket(proto_type proto = proto_type::V4()) {
         _sockfd = ErrWrap(::socket(proto.domain(), proto.type(), proto.protocol()));
     }
 
-    BasicSocket(sockaddr_type const & local) {
-        if (local.IsV4()) *this = BasicSocket(proto_type::V4());
-        else              *this = BasicSocket(proto_type::V6());
-
-        Bind(local);
-    }
-
     BasicSocket(int sockfd) : _sockfd(sockfd) { }
 
     BasicSocket(BasicSocket const & rhs) : _sockfd(rhs._sockfd) { }
+
+    BasicSocket & operator=(BasicSocket const & rhs)
+    {
+        if (this == &rhs) return *this;
+        _sockfd = rhs._sockfd;
+        return *this;
+    }
 
     ////////////////////////////////////////////////////////////
     // member funcs

@@ -18,6 +18,10 @@ namespace lsf {
 namespace asio {
 namespace detail {
 
+// forward declare
+template<typename TransLayerProtocol>
+class BasicSockAddr;
+
 ////////////////////////////////////////////////////////////
 // BasicAddress
 ////////////////////////////////////////////////////////////
@@ -31,34 +35,28 @@ public:
         in6_addr    v6;
     }                           addr_type;
 
+    template<typename TransLayerProtocol> 
+    friend class BasicSockAddr;
+
 public:
     ////////////////////////////////////////////////////////////
-    // without address
-    explicit BasicAddress(proto_type type = proto_type::V4()) 
-        : _type(type), _scope_id(0) 
+    static BasicAddress Any(proto_type type = proto_type::V4()) { return BasicAddress(type); }
+
+    static BasicAddress Loopback(proto_type type = proto_type::V4()) {
+        if (type == proto_type::V4()) return BasicAddress(proto_type::V4(), "127.0.0.1"); 
+        else                          return BasicAddress(proto_type::V6(), "::1");
+    }
+
+    ////////////////////////////////////////////////////////////
+    explicit BasicAddress(proto_type type = proto_type::V4(), uint32_t scope_id = 0) 
+        : _type(type), _scope_id(scope_id) 
     {
         if (IsV4()) _addr.v4.s_addr = INADDR_ANY;
         else        _addr.v6 = in6addr_any;
     }
 
-    // with address
-    BasicAddress(std::string const & ip_str, uint32_t scope_id = 0) : _type(proto_type::V4())
-    {
-        *this = BasicAddress(proto_type::V4(), ip_str, scope_id);
-    }
-
-    BasicAddress(char const * ip_str, uint32_t scope_id = 0) : _type(proto_type::V4())
-    {
-        *this = BasicAddress(proto_type::V4(), ip_str, scope_id);
-    }
-
-    BasicAddress(proto_type type, std::string const & ip_str, uint32_t scope_id = 0) : _type(type)
-    {
-        *this = BasicAddress(type, ip_str.c_str(), scope_id);
-    }
-
     BasicAddress(proto_type type, char const * ip_str, uint32_t scope_id = 0) 
-        : _type(type), _scope_id(scope_id) 
+        : _type(type), _scope_id(scope_id)
     {
         if (IsV4()) inet_pton(AF_INET,  ip_str, &_addr.v4);
         else        inet_pton(AF_INET6, ip_str, &_addr.v6);
@@ -71,17 +69,9 @@ public:
         else        ::memcpy(&_addr.v6, bytes, sizeof(_addr.v6));
     }
 
-    BasicAddress(BasicAddress const & rhs) 
-        : _type(rhs._type), _addr(rhs._addr), _scope_id(rhs._scope_id) { }
+    BasicAddress(proto_type type, std::string const & ip_str, uint32_t scope_id = 0) : BasicAddress(type, ip_str.c_str(), scope_id) { }
 
-    BasicAddress & operator=(BasicAddress const & rhs) {
-        if (this == &rhs) return *this;
-
-        _type       = rhs._type;
-        _addr       = rhs._addr;
-        _scope_id   = rhs._scope_id;
-        return *this;
-    }
+    BasicAddress(std::string const & ip_str) : BasicAddress(proto_type::V4(), ip_str) { }
 
     ////////////////////////////////////////////////////////////
     // mem funcs
@@ -91,8 +81,10 @@ public:
         else        return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
     }
 
-    void const * ToBytes() const { return &_addr; }
-
+    char const * ToCharStr() const {
+        return ToString.c_str();
+    }
+    
     bool operator==(BasicAddress const & rhs) const {
         if (_type != rhs._type) return false;
 
@@ -101,25 +93,13 @@ public:
         else
             return ::memcmp(&_addr.v6, &rhs._addr.v6, sizeof(_addr.v4)) == 0 && _scope_id == rhs._scope_id;
     }
-
-    bool operator!=(BasicAddress const & rhs) const {
-        return !(*this == rhs);
-    }
+    bool operator!=(BasicAddress const & rhs) const { return !(*this == rhs); }
     
     bool IsV4() const { return _type == proto_type::V4(); }
     bool IsV6() const { return _type == proto_type::V6(); }
 
     uint32_t GetScopeId() const { return _scope_id; }
     void     SetScopeId(uint32_t scope_id) { _scope_id = scope_id; }
-
-    ////////////////////////////////////////////////////////////
-    // static funcs
-    static BasicAddress Any(proto_type type = proto_type::V4()) { return BasicAddress(type); }
-
-    static BasicAddress Loopback(proto_type type = proto_type::V4()) {
-        if (type == proto_type::V4()) return BasicAddress(proto_type::V4(), "127.0.0.1"); 
-        else                          return BasicAddress(proto_type::V6(), "::1");
-    }
 
 private:
     proto_type  _type;

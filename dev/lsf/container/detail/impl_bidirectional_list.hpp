@@ -176,18 +176,6 @@ public:
         : _ptr_state(ptr_state), _pos(pos)
     { }
 
-    ListIterator(ListIterator const & rhs)
-        : _ptr_state(rhs._ptr_state), _pos(rhs._pos)
-    { }
-
-    ListIterator & operator=(ListIterator const & rhs) {
-        if (&rhs == this) return *this;
-
-        _ptr_state = rhs._ptr_state;
-        _pos       = rhs._pos;
-        return *this;
-    }
-
     // member funcs
     ListIterator operator+(difference_type diff) const {
         ListIterator tmp = *this;

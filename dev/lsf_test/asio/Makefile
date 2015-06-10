@@ -25,7 +25,7 @@ BIN = $(TEST_BIN_DIR)/test_ip 		\
 all: $(BIN)
 
 $(BIN): $(TEST_BIN_DIR)/%: $(DEP_DIR)/%.o
-	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ -lrt
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ $(LD_FLAGS)
 
 clean:
 	$(RM) $(BIN) $(DEP_DIR)

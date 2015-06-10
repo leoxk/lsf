@@ -73,18 +73,6 @@ public:
         : _ptr_state(ptr_state), _pos(pos)
     { }
 
-    StaticArrayIterator(StaticArrayIterator const & rhs)
-        : _ptr_state(rhs._ptr_state), _pos(rhs._pos)
-    { }
-
-    StaticArrayIterator & operator=(StaticArrayIterator const & rhs) {
-        if (&rhs == this) return *this;
-
-        _ptr_state = rhs._ptr_state;
-        _pos       = rhs._pos;
-        return *this;
-    }
-
     // member funcs
     StaticArrayIterator & operator++() { _pos++; return *this; }
     StaticArrayIterator & operator--() { _pos--; return *this; } 

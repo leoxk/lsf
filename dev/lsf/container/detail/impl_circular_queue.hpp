@@ -93,18 +93,6 @@ public:
         }
     }
 
-    QueueIterator(QueueIterator const & rhs)
-        : _ptr_state(rhs._ptr_state), _pos(rhs._pos)
-    { }
-
-    QueueIterator & operator=(QueueIterator const & rhs) {
-        if (&rhs == this) return *this;
-
-        _ptr_state = rhs._ptr_state;
-        _pos       = rhs._pos;
-        return *this;
-    }
-
     // member funcs
     QueueIterator & operator++() {
         _pos = _ptr_state->CalcAbsolutePos(_pos + 1);

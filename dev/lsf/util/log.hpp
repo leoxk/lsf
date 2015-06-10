@@ -26,6 +26,8 @@ namespace util {
 class BasicLogDriver : public basic::Error
 {
 public:
+    virtual ~BasicLogDriver() { }
+
     virtual size_t Write(char const * str, size_t len) = 0;
 
     virtual void Flush() = 0;

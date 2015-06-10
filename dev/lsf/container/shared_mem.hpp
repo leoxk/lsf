@@ -87,25 +87,16 @@ public:
     // constructor
     explicit SharedMem() : _key(0), _ptr_mem(NULL) { }
     
-    explicit SharedMem(key_t key) 
-        : _key(0), _ptr_mem(NULL) {
-        Attach(key);
-    }
+    explicit SharedMem(key_t key) : _key(0), _ptr_mem(NULL) { Attach(key); }
 
-    SharedMem(SharedMem const & rhs)
-        : _key(0), _ptr_mem(NULL) {
-        if (rhs.IsAttached()) Attach(rhs._key);
-    }
+    SharedMem(SharedMem const & rhs) : _key(0), _ptr_mem(NULL) { if (rhs.IsAttached()) Attach(rhs._key); }
 
     ~SharedMem() { Detach(); }
 
-    SharedMem & operator=(SharedMem const & rhs) {
-        if (this == &rhs) {
-            return *this;
-        }
-        if (rhs.IsAttached()) {
-            Attach(rhs._key);
-        }
+    SharedMem & operator=(SharedMem const & rhs)
+    {
+        if (this == &rhs) return *this;
+        if (rhs.IsAttached()) Attach(rhs._key);
         return *this;
     }
 

@@ -15,7 +15,7 @@ namespace ip {
 class Protocol
 {
 public:
-    Protocol(int domain) : _domain(domain) { }
+    Protocol(int domain = AF_INET) : _domain(domain) { }
 
     static Protocol V4() { return Protocol(AF_INET ); }
     static Protocol V6() { return Protocol(AF_INET6); }

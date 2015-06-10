@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "lsf/basic/error.hpp"
 
 namespace lsf {

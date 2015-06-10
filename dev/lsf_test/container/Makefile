@@ -25,7 +25,6 @@ BIN = \
 	  $(TEST_BIN_DIR)/test_map				\
 	  $(TEST_BIN_DIR)/test_rb_tree			\
 	  $(TEST_BIN_DIR)/test_benchmark 		\
-	  $(TEST_BIN_DIR)/test_variant 			\
 	  $(TEST_BIN_DIR)/test_basic_container 	\
 	  $(TEST_BIN_DIR)/test_shared_mem 		\
 

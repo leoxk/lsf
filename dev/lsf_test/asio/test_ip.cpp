@@ -16,7 +16,6 @@ LSF_TEST_CASE(test_address)
     // test v4
     ip::Address ipv4(ip::V4, "127.0.0.1");
 
-    LSF_ASSERT(ip::Address(ip::V4, ipv4.ToBytes()) == ipv4);
     LSF_ASSERT(ip::Address(ip::V4, "127.0.0.1") == ipv4);
     LSF_ASSERT(ip::Address(ipv4) == ipv4);
     LSF_ASSERT(ipv4.ToString() == "127.0.0.1");
@@ -31,7 +30,6 @@ LSF_TEST_CASE(test_address)
     // test v6
     ip::Address ipv6(ip::V6, "::1");
 
-    LSF_ASSERT(ip::Address(ip::V6, ipv6.ToBytes()) == ipv6);
     LSF_ASSERT(ip::Address(ipv6) == ipv6);
     LSF_ASSERT(ip::Address(ip::V6, "::1") == ipv6);
     LSF_ASSERT(ipv6.ToString() == "::1");

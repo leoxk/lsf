@@ -22,7 +22,7 @@ namespace basic {
 ////////////////////////////////////////////////////////////
 #define _LSF_TYPE_CAST_FORCE_CONVERT(type)      \
 template<typename OutType>                      \
-inline OutType TypeCast(type input) {    \
+inline OutType TypeCast(type input) {           \
     return (OutType)input;                      \
 }
 

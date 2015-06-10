@@ -44,7 +44,8 @@ LSF_TEST_CASE(test_sock_op_v4)
     uint32_t wrong_port = SingleRandom::Instance()->GetRand(19000, 20000);
 
     // test listen
-    tcp::ListenSocket lsock(tcp::SockAddr(ip::Address::Any(), listen_port));
+    tcp::ListenSocket lsock = tcp::ListenSocket::CreateListenSocket();
+    LSF_ASSERT(lsock.Bind(tcp::SockAddr(ip::Address::Any(), listen_port)));
     LSF_ASSERT(lsock.Listen());
 
     // test socket create

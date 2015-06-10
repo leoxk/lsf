@@ -107,7 +107,7 @@ bool OnConnectFunc(AsyncInfo & info, tcp::ListenSocket listen_socket)
 LSF_TEST_CASE(test_asio)
 {
     // listen
-    tcp::ListenSocket listen_socket;
+    tcp::ListenSocket listen_socket = tcp::ListenSocket::CreateListenSocket();
     LSF_ASSERT(listen_socket.Bind(tcp::SockAddr(ip::Address::Any(), listen_port)));
     LSF_ASSERT(listen_socket.Listen());
 

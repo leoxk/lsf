@@ -16,8 +16,8 @@
 # User Settings
 ############################################################
 # tools
-export CC        = gcc
-export CXX       = g++
+export CC        = /opt/rh/devtoolset-2/root/usr/bin/gcc
+export CXX       = /opt/rh/devtoolset-2/root/usr/bin/g++
 export RM        = rm -rf
 export CP        = cp -rf
 export AR        = ar rcs
@@ -39,7 +39,7 @@ LIB := $(LIB_DIR)/libcommon.a \
 	   $(LIB_DIR)/libproto.a \
 
 export INC_FLAGS := -I$(DEV_DIR)
-export LD_FLAGS  := -lprotobuf -lrt
+export LD_FLAGS  := -lpthread -lrt -lprotobuf
 
 # define dep dirs
 DEP_DIR := ./objdep
