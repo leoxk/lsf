@@ -4,15 +4,15 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-08 by leoxiang
 
+#include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_server.h"
-#include "svr/common/common_func.h"
 
 class ConfigServer : 
     public BasicServer,
     public lsf::basic::Singleton<ConfigServer>
 {
 public:
-    ConfigServer() : BasicServer(conf::SERVER_TYPE_CONFIG_CENTER) { }
+    ConfigServer() : BasicServer(conf::SERVER_TYPE_CONFIG_CENTER, lsf::asio::poll_service) { }
 
 public:
     virtual bool OnParseCommond(int argc, char** argv);

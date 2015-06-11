@@ -32,7 +32,7 @@ declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
 function usage 
 {
   echo "Usage: $(path::basename $0) [start|stop|restart] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
-  echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')]"
+  echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
   #echo "       $(path::basename $0) [backup|rollback]"
   echo "       $(path::basename $0) [clearshm]"
 }
@@ -175,7 +175,7 @@ function server::status
 function server::start 
 {
   ulimit -c unlimited
-  sudo sysctl -w kernel.shmmax=4000000000
+  sudo sysctl -w kernel.shmmax=4000000000 >/dev/null
   ! server::is_alive "${@}" && eval "${@}"
 
   for ((_cnt = 1; _cnt < ${var_max_try}; _cnt++)); do

@@ -4,9 +4,7 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-10 by leoxiang
 
-#include <iostream>
-#include "lsf/util/log.hpp"
-#include "lsf/util/system.hpp"
+#include "svr/common/common_header.h"
 #include "svr/proxysvrd/proxysvrd.h"
 
 using namespace google::protobuf;

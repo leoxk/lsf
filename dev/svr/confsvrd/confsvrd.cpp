@@ -5,13 +5,12 @@
 // Revision:    2015-06-08 by leoxiang
 
 #include <iostream>
-#include "google/protobuf/text_format.h"
-#include "lsf/util/log.hpp"
-#include "lsf/util/system.hpp"
+#include "svr/common/common_header.h"
 #include "svr/confsvrd/confsvrd.h"
 #include "svr/confsvrd/deploy_conf_mng.h"
 
 using namespace google::protobuf;
+using namespace lsf::basic;
 using namespace lsf::util;
 
 bool ConfigServer::OnParseCommond(int argc, char** argv)
@@ -25,6 +24,7 @@ bool ConfigServer::OnParseCommond(int argc, char** argv)
     
     // parse content
     _server_id = 0;
+    _server_name = StringExt::GetBaseName(argv[0]);
 
     // convert to abs path
     _config_path = System::GetAbsPath(argv[1]);
@@ -46,11 +46,22 @@ bool ConfigServer::OnGetConfig()
     }
     _server_config.CopyFrom(*pconf);
 
+    // check server type and id
+    if (_server_type != _server_config.server_type() ||
+        _server_id != _server_config.server_id())
+    {
+        LSF_LOG_ERR("input=%u %u, config=%u %u", _server_type, _server_id, 
+                _server_config.server_type(), _server_config.server_id());
+        return false;
+    }
+
+    LSF_LOG_INFO("get config from %s", _config_path.c_str());
     return true;
 }
 
 bool ConfigServer::OnRun()
 {
+    // output all config
     return true;
 }
 

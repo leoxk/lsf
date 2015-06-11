@@ -11,11 +11,14 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include "lsf/basic/type_cast.hpp"
+#include "lsf/basic/string_ext.hpp"
 #include "lsf/asio/detail/basic_address.hpp"
 
 namespace lsf {
 namespace asio {
 namespace detail {
+
+static const std::string DEF_DELIMIT = "|";
 
 ////////////////////////////////////////////////////////////
 // BasicSockAddr
@@ -33,6 +36,7 @@ public:
     typedef TransLayerProtocol                      proto_type;
     typedef typename proto_type::net_layer_proto    net_layer_proto;
     typedef BasicAddress<net_layer_proto>           address_type;
+
 
 public:
     ////////////////////////////////////////////////////////////
@@ -57,7 +61,6 @@ public:
             _sockaddr.v6.sin6_family = AF_INET6;
             _sockaddr.v6.sin6_port   = ::htons(port);
             _sockaddr.v6.sin6_flowinfo = 0;
-            _sockaddr.v6.sin6_scope_id = addr.GetScopeId();
             ::memcpy(&_sockaddr.v6.sin6_addr, &addr._addr, 16);
         }
     }
@@ -66,10 +69,15 @@ public:
         memcpy(&_sockaddr, paddr, sizeof(_sockaddr));
     }
 
+    BasicSockAddr(std::string const & str) : BasicSockAddr(
+                address_type(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
+                basic::TypeCast<uint16_t>(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 1)))
+    { }
+
     ////////////////////////////////////////////////////////////
     // member funcs
     std::string ToString() const {
-        return GetAddress().ToString() + "|" + basic::TypeCast< std::string>(GetPort());
+        return GetAddress().ToString() + DEF_DELIMIT + basic::TypeCast< std::string>(GetPort());
     }
 
     uint16_t GetPort() const { 
@@ -78,10 +86,8 @@ public:
     }
 
     address_type GetAddress() const {
-        if (IsV4()) 
-            return address_type(net_layer_proto::V4(), &_sockaddr.v4.sin_addr);
-        else        
-            return address_type(net_layer_proto::V6(), &_sockaddr.v6.sin6_addr, _sockaddr.v6.sin6_scope_id);
+        if (IsV4()) return address_type(_sockaddr.v4.sin_addr);
+        else        return address_type(_sockaddr.v6.sin6_addr);
     }
 
     bool IsV4() const { return _sockaddr.base.sa_family == AF_INET; }
@@ -96,7 +102,6 @@ public:
             return _sockaddr.v6.sin6_family     == rhs._sockaddr.v6.sin6_family &&
                    _sockaddr.v6.sin6_port       == rhs._sockaddr.v6.sin6_port &&
                    _sockaddr.v6.sin6_flowinfo   == rhs._sockaddr.v6.sin6_flowinfo &&
-                   _sockaddr.v6.sin6_scope_id   == rhs._sockaddr.v6.sin6_scope_id &&
                    ::memcmp(&_sockaddr.v6.sin6_addr, &_sockaddr.v6.sin6_addr, sizeof(_sockaddr.v6.sin6_addr));
     }
 

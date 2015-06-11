@@ -6,14 +6,10 @@
 
 #include <iostream>
 #include <functional>  
-#include "lsf/basic/type_cast.hpp"
-#include "lsf/basic/macro.hpp"
-#include "lsf/basic/string_ext.hpp"
-#include "lsf/util/system.hpp"
-#include "lsf/util/log.hpp"
-#include "lsf/util/protobuf_log.hpp"
 #include "svr/proto/msg_ss.pb.h"
-#include "basic_server.h"
+#include "svr/common/basic_server.h"
+#include "svr/common/common_func.h"
+#include "svr/common/common_header.h"
 
 using namespace lsf::basic;
 using namespace lsf::asio;
@@ -44,18 +40,11 @@ void BasicServer::Run(int argc, char** argv)
     // demonize
     if (!OnDeamonize()) return;
 
-    // start listen socket
-    if (!OnInitListenSocket()) return;
-
-    // init proxy
-
-    // init net log
-
-    // call user init
+    // main logic
     if (!OnRun()) return;
 
     // start async machine
-    RunAsync();
+    _io_service.Run();
 }
 
 bool BasicServer::OnParseCommond(int argc, char** argv)
@@ -68,8 +57,9 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
     }
     
     // parse content
-    _confsvrd_addrss = tcp::SockAddr(argv[1], TypeCast<uint32_t>(argv[2]));
+    _confsvrd_addrss = tcp::SockAddr(ip::Address(argv[1]), TypeCast<uint32_t>(argv[2]));
     _server_id = TypeCast<uint32_t>(argv[3]);
+    _server_name = StringExt::GetBaseName(argv[0]);
 
     return true;
 }
@@ -85,40 +75,21 @@ bool BasicServer::OnGetConfig()
         return false;
     }
 
-    // send request
+    // construct message
     msg::SS message;
     std::string content;
     message.set_type(msg::SS_GET_CONFIG_REQ);
     message.mutable_get_config_req()->set_server_type(_server_type);
     message.mutable_get_config_req()->set_server_id(_server_id);
-    if (!message.SerializeToString(&content))
+
+    // send and recv
+    if (!CommonFunc::SendAndRecv(socket, message))
     {
-        LSF_LOG_ERR("%s", ProtobufLog::Instance()->ErrCharStr());
-        socket.Close();
-        return false;
-    }
-    if (!socket.SendAll(content))
-    {
-        LSF_LOG_ERR("size=%u, %s", content.size(), socket.ErrCharStr());
         socket.Close();
         return false;
     }
 
-    // get response
-    if (!socket.RecvAll(content))
-    {
-        LSF_LOG_ERR("%s", socket.ErrCharStr());
-        socket.Close();
-        return false;
-    }
-
-    // parse config
-    if (!message.ParseFromString(content))
-    {
-        LSF_LOG_ERR("size=%u, %s", content.size(), ProtobufLog::Instance()->ErrCharStr());
-        socket.Close();
-        return false;
-    }
+    // check ret
     if (!message.get_config_rsp().result())
     {
         LSF_LOG_ERR("get config failed");
@@ -127,6 +98,16 @@ bool BasicServer::OnGetConfig()
     }
     _server_config.CopyFrom(message.get_config_rsp().config());
 
+    // check server type and id
+    if (_server_type != _server_config.server_type() ||
+        _server_id != _server_config.server_id())
+    {
+        LSF_LOG_ERR("input=%u %u, config=%u %u", _server_type, _server_id, 
+                _server_config.server_type(), _server_config.server_id());
+        return false;
+    }
+
+    LSF_LOG_INFO("get config from confsvrd successs");
     socket.Close();
     return true;
 }
@@ -140,76 +121,28 @@ bool BasicServer::OnSetCurrentPath(char const * command)
         return false;
     }
 
+    LSF_LOG_INFO("set current path to %s", path.c_str());
     return true;
 }
 
 bool BasicServer::OnInitLocalLog()
 {
-    if (!SingleLog::Instance()->BindOutput(new FileLogDriver(
-                    _server_config.local_log_path(), FileLogDriver::SHIFT_DAY)))
+    std::string local_log_path = 
+        "../log/" + _server_name + "/" + _server_name + "." + TypeCast<std::string>(_server_id);
+
+    if (!SingleLog::Instance()->BindOutput(new FileLogDriver(local_log_path, FileLogDriver::SHIFT_DAY)))
     {
         LSF_LOG_ERR("%s", SingleLog::Instance()->ErrCharStr());
         return false;
     }
+
+    LSF_LOG_INFO("init local log at %s", local_log_path.c_str());
     return true;
 }
 
 bool BasicServer::OnDeamonize()
 {
     System::Daemonize();
-    return true;
-}
-
-bool BasicServer::OnInitListenSocket()
-{
-    for (int i = 0; i < _server_config.listen_address_size(); ++i)
-    {
-        tcp::ListenSocket lsocket = tcp::ListenSocket::CreateListenSocket();
-        tcp::SockAddr lsockaddr = tcp::SockAddr(
-                _server_config.listen_address(i).ip(),
-                _server_config.listen_address(i).port());
-
-        // init listen socket
-        if (!lsocket.Bind(lsockaddr))
-        {
-            LSF_LOG_ERR("address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
-            lsocket.Close();
-            return false;
-        }
-        if (!lsocket.Listen())
-        {
-            LSF_LOG_ERR("address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
-            lsocket.Close();
-            return false;
-        }
-
-        // async accept
-        if (!lsocket.AsyncAccept(*this, std::bind(&BasicServer::OnNewConnection, std::ref(*this), std::placeholders::_1)))
-        {
-            LSF_LOG_ERR("%s", this->ErrCharStr());
-            lsocket.Close();
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool BasicServer::OnInitProxy()
-{
-    return true;
-}
-
-bool BasicServer::OnInitNetLog()
-{
-    return true;
-}
-
-////////////////////////////////////////////////////////////
-// main logic
-bool BasicServer::OnNewConnection(lsf::asio::AsyncInfo & info)
-{
-
     return true;
 }
 

@@ -5,11 +5,7 @@
 // Revision:    2015-06-09 by leoxiang
 
 #include <fstream>
-#include "google/protobuf/io/zero_copy_stream_impl.h"
-#include "google/protobuf/text_format.h"
-#include "lsf/basic/error.hpp"
-#include "lsf/util/log.hpp"
-#include "lsf/util/protobuf_log.hpp"
+#include "svr/common/common_header.h"
 #include "svr/confsvrd/deploy_conf_mng.h"
 
 using namespace google::protobuf;
@@ -33,15 +29,11 @@ bool DeployConfigManager::Init(char const * path)
         return false;
     }
 
-    // set default value 
+    // merge default conf
     conf::Server const & def_conf = _deploy_config.default_config();
     for (int i = 0; i < _deploy_config.server_config_size(); ++i)
     {
-        conf::Server & conf = *_deploy_config.mutable_server_config(i);
-        conf::Server tmp;
-        tmp.CopyFrom(def_conf);
-        tmp.MergeFrom(conf);
-        conf.CopyFrom(tmp);
+        _deploy_config.mutable_server_config(i)->MergeFrom(def_conf);
     }
 
     return true;

@@ -17,7 +17,6 @@ using namespace lsf::util;
 
 uint32_t listen_port = SingleRandom::Instance()->GetRand(15000, 16000);
 string content = "this is async message";
-EpollService epoll_service;
 
 ////////////////////////////////////////////////////////////
 bool OnTimerFunc(AsyncInfo & info)

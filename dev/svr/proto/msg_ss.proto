@@ -12,8 +12,8 @@ package msg;
 // server to server messages
 message GetConfigReq
 {
-   optional conf.ENServerType  server_type = 1;
-   optional uint32              server_id = 2;
+    optional conf.ENServerType  server_type = 1;
+    optional uint32             server_id = 2;
 }
 
 message GetConfigRsp
@@ -22,17 +22,34 @@ message GetConfigRsp
     optional conf.Server config = 2;
 }
 
+message ReisterToProxyReq
+{
+    optional conf.ENServerType  server_type = 1;
+    optional uint32             server_id = 2;
+}
+
+message ReisterToProxyRsp
+{
+    optional bool result = 1;
+}
+
+////////////////////////////////////////////////////////////
+// big server to server message
 enum ENSS
 {
    SS_GET_CONFIG_REQ = 1;
    SS_GET_CONFIG_RSP = 2;
+   SS_REGISTER_TO_RPOXY_REQ = 3;
+   SS_REGISTER_TO_RPOXY_RSP = 4;
 }
 
 message SS
 {
-    optional ENSS         type = 1;
-    optional GetConfigReq get_config_req = 10;
-    optional GetConfigRsp get_config_rsp = 11;
+    optional ENSS                 type = 1;
+    optional GetConfigReq         get_config_req = 10;
+    optional GetConfigRsp         get_config_rsp = 11;
+    optional ReisterToProxyReq    register_to_proxy_req = 12;
+    optional ReisterToProxyRsp    register_to_proxy_rsp = 13;
 }
 
 

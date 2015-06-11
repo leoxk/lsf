@@ -13,23 +13,38 @@ enum ENServerType
     SERVER_TYPE_CONFIG_CENTER = 1;
     SERVER_TYPE_PROXY_SERVER = 2;
     SERVER_TYPE_LOG_SERVER = 3;
-    SERVER_TYPE_TCP_SERVER = 4;
+    SERVER_TYPE_CONN_SERVER = 4;
+    SERVER_TYPE_GAME_SERVER = 5;
+    SERVER_TYPE_ROOM_SERVER = 6;
+    SERVER_TYPE_DB_SERVER = 7;
 }
 
-message NetAddress
+enum ENServiceType
 {
-    optional string ip   = 1;
-    optional uint32 port = 2;
+    SERVICE_TYPE_CLIENT_MSG     = 9; // receive client msg and response
+    SERVICE_TYPE_CONN_ACTIVE    = 1; // transfer client message
+    SERVICE_TYPE_CONN_PASSIVE   = 2; // transfer client message
+    SERVICE_TYPE_PROXY_ACTIVE   = 3; // transfer server to server message
+    SERVICE_TYPE_PROXY_PASSIVE  = 4; // transfer server to server message
+    SERVICE_TYPE_LOG_ACTIVE     = 5; // process net log
+    SERVICE_TYPE_LOG_PASSIVE    = 6; // process net log
+    SERVICE_TYPE_CONFIG_ACTIVE  = 7; // request and push configs
+    SERVICE_TYPE_CONFIG_PASSIVE = 8; // request and push configs
+}
+
+message Service
+{
+    optional ENServiceType service_type = 1;
+    repeated string listen_address = 2;
+    repeated string connect_address = 3;
 }
 
 message Server
 {
     optional ENServerType server_type = 1;
     optional uint32       server_id = 2; 
-    repeated NetAddress   listen_address = 3;
-    repeated NetAddress   proxy_address = 4;
-    repeated NetAddress   log_address = 5;
-    optional string       local_log_path = 6;
+    optional string       local_log_path = 3;
+    repeated Service      services = 4;
 }
 
 message Deploy

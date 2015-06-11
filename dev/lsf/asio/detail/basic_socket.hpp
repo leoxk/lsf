@@ -182,8 +182,6 @@ public:
         io_service.CloseAsync(_sockfd);
     }
 
-    void AsyncConnect();
-
     sockaddr_type LocalSockAddr() { 
         sockaddr addr;
         socklen_t   addrlen = sizeof(addr);
@@ -206,6 +204,10 @@ public:
     // SetSockOpt funcs
     bool SetNonBlock() {
         return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0;
+    }
+
+    bool SetBlock() {
+        return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) & (~O_NONBLOCK))) == 0;
     }
 
     bool SetSendBuf(size_t buflen) {

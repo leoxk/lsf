@@ -25,7 +25,7 @@ LSF_TEST_CASE(test_address)
     LSF_ASSERT(ip::Address::Any().IsV4());
     
     LSF_ASSERT(ip::Address::Any().IsV4());
-    LSF_ASSERT(ip::Address("127.0.01").IsV4());
+    LSF_ASSERT(ip::Address("127.0.0.1").IsV4());
 
     // test v6
     ip::Address ipv6(ip::V6, "::1");
@@ -35,10 +35,19 @@ LSF_TEST_CASE(test_address)
     LSF_ASSERT(ipv6.ToString() == "::1");
     LSF_ASSERT(ipv4.IsV4());
 
+    // test auto detect
+    LSF_ASSERT(ip::Address("127.0.0.1").IsV4());
+    LSF_ASSERT(ip::Address("255.255.255.255").IsV4());
+    LSF_ASSERT(ip::Address("255.255.255.256").IsV6());
+    LSF_ASSERT(ip::Address("0.0.0.0").IsV4());
+    LSF_ASSERT(ip::Address("::1").IsV6());
+    LSF_ASSERT(ip::Address("1:0:0:0:0:0:0:8").IsV6());
+    LSF_ASSERT(ip::Address("0:0:0:0:0:FFFF:204.152.189.116").IsV6());
+    LSF_ASSERT(ip::Address("::ffff:255.255.255.255").IsV6());
+
     // test static funcs
     LSF_ASSERT(ip::Address::Loopback(ip::V4).ToString() == "127.0.0.1");
     LSF_ASSERT(ip::Address::Loopback(ip::V6).ToString() == "::1");
-    LSF_ASSERT(ip::Address::Loopback(ip::V6).GetScopeId() == 0);
     LSF_ASSERT(ip::Address(ip::V4) == ip::Address::Any(ip::V4));
     LSF_ASSERT(ip::Address(ip::V6) == ip::Address::Any(ip::V6));
     LSF_ASSERT(ip::Address::Any(ip::V4).ToString() == "0.0.0.0");

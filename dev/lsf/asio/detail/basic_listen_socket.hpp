@@ -48,11 +48,9 @@ public:
 
     bool Accept(socket_type & socket) {
         int      sockfd;
-        if ((sockfd = ErrWrap(::accept(_sockfd, NULL, NULL))) >= 0) {
-            socket._sockfd = sockfd;
-            return true;
-        }
-        return false;
+        if ((sockfd = ErrWrap(::accept(_sockfd, NULL, NULL))) < 0) return false;
+        socket._sockfd = sockfd;
+        return true;
     }
 
     bool  Close() {
