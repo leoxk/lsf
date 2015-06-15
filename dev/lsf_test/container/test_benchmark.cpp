@@ -57,7 +57,7 @@ LSF_TEST_CASE(test_lsf_rbtree)
         if (line.empty()) continue;
         LSF_ASSERT_ERR_ONLY(sets.Insert(TypeCast<uint32_t>(line)));
     }
-    LSF_ASSERT(sets.Size() == TREE_SIZE);
+    LSF_ASSERT(sets.size() == TREE_SIZE);
     
     // erase
     ifs.close();
@@ -67,7 +67,7 @@ LSF_TEST_CASE(test_lsf_rbtree)
         if (line.empty()) continue;
         LSF_ASSERT_EXIT_ERR_ONLY(sets.Erase(TypeCast<uint32_t>(line)));
     }
-    LSF_ASSERT(sets.Size() == 0);
+    LSF_ASSERT(sets.size() == 0);
 }
 
 int main(int argc, char **argv)
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
         conf_path = argv[1];
     }
 
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -23,16 +23,16 @@ LSF_TEST_CASE(bind_to_new_mem)
 
     LSF_ASSERT(list.BindAndInitStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.IsBindStorage());
-    LSF_ASSERT(list.MaxSize() == QUEUE_SIZE);
-    LSF_ASSERT(list.Size() == 0);
-    LSF_ASSERT(list.IsEmpty());
-    LSF_ASSERT(!list.IsFull());
-    LSF_ASSERT(list.Size() == 0);
+    LSF_ASSERT(list.max_size() == QUEUE_SIZE);
+    LSF_ASSERT(list.size() == 0);
+    LSF_ASSERT(list.empty());
+    LSF_ASSERT(!list.full());
+    LSF_ASSERT(list.size() == 0);
 
     LSF_ASSERT(list.PushBack(TestNode()));
     LSF_ASSERT(list.PushBack(TestNode()));
     LSF_ASSERT(list.PushBack(TestNode()));
-    LSF_ASSERT(list.Size() == 3);
+    LSF_ASSERT(list.size() == 3);
 }
 
 LSF_TEST_CASE(recovery_from_exist_mem)
@@ -42,8 +42,8 @@ LSF_TEST_CASE(recovery_from_exist_mem)
     LSF_ASSERT(list.BindAndRecoverStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(list.IsBindStorage());
 
-    LSF_ASSERT(list.MaxSize() == QUEUE_SIZE);
-    LSF_ASSERT(list.Size() == 3);
+    LSF_ASSERT(list.max_size() == QUEUE_SIZE);
+    LSF_ASSERT(list.size() == 3);
     LSF_ASSERT(list.ElemByteSize() == sizeof(TestNode));
 }
 
@@ -59,7 +59,7 @@ LSF_TEST_CASE(recovery_from_new_type)
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:

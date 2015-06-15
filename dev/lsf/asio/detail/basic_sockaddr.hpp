@@ -107,8 +107,8 @@ public:
 
     bool operator!=(BasicSockAddr const & rhs) const { return !(*this == rhs); }
 
-    sockaddr *       Data()       { return &_sockaddr.base; }
-    sockaddr const * Data() const { return &_sockaddr.base; }
+    sockaddr *       data()       { return &_sockaddr.base; }
+    sockaddr const * data() const { return &_sockaddr.base; }
 
     size_t DataSize() const { 
         if (IsV4()) return sizeof(_sockaddr.v4);

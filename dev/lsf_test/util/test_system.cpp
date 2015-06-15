@@ -76,7 +76,7 @@ LSF_TEST_CASE(rlimit_funcs)
 
 int main(int argc, char** argv)
 {
-    LSF_TEST_ALL();
+    LSF_TEST_ALL(argc, argv);
 }
 
 

@@ -40,7 +40,6 @@ function usage {
   echo "       $(path::basename $0) [coldbackup]"
 }
 
-#TODO do_install do_setmaster do_setslave 
 function main {
   cd $var_project_path
 

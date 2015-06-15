@@ -16,14 +16,18 @@
 # User Settings
 ############################################################
 # tools
-export CC        = /opt/rh/devtoolset-2/root/usr/bin/gcc
-export CXX       = /opt/rh/devtoolset-2/root/usr/bin/g++
-export RM        = rm -rf
-export CP        = cp -rf
-export AR        = ar rcs
-export LD        = ld
-export CFLAGS    = -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing
-export CXXFLAGS  = -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing
+export CC       	= /opt/rh/devtoolset-2/root/usr/bin/gcc
+export CXX      	= /opt/rh/devtoolset-2/root/usr/bin/g++
+export RM       	= rm -rf
+export CP       	= cp -rf
+export AR       	= ar rcs
+export LD       	= ld
+export CFLAGS   	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing 
+export CXXFLAGS 	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing
+export DEBUGFLAGS 	= -rdynamic
+
+# TODO
+CXXFLAGS += $(DEBUGFLAGS)
 
 # define dirs
 DEV_DIR 	 := $(PROJECT_DIR)/dev

@@ -8,14 +8,27 @@
 
 #include <string>
 #include "lsf/util/protobuf_log.hpp"
+#include "lsf/util/backtrace.hpp"
 #include "lsf/util/log.hpp"
+#include "lsf/asio/tcp.hpp"
+#include "svr/proto/conf_deploy.pb.h"
 
 class CommonFunc
 {
 ////////////////////////////////////////////////////////////
 // common func
 public:
+    ////////////////////////////////////////////////////////////
+    // pack and unpack
+    static bool PackMsg(std::string & content, google::protobuf::MessageLite const & message);
 
+    static bool UnPackMsg(std::string const & content, google::protobuf::MessageLite & message);
+
+    ////////////////////////////////////////////////////////////
+    // send and recv
+    static bool SendAll(lsf::asio::tcp::Socket socket, std::string const & content);
+
+    static bool RecvAll(lsf::asio::tcp::Socket socket, std::string & content);
 
 ////////////////////////////////////////////////////////////
 // template func
@@ -25,30 +38,15 @@ public:
     {
         // send request
         std::string content;
-        if (!message.SerializeToString(&content))
-        {
-            LSF_LOG_ERR("%s", lsf::util::ProtobufLog::Instance()->ErrCharStr());
-            return false;
-        }
-        if (!socket.SendAll(content))
-        {
-            LSF_LOG_ERR("size=%u, %s", content.size(), socket.ErrCharStr());
-            return false;
-        }
+        if (!PackMsg(content, message)) return false;
+        if (!SendAll(socket, content)) return false;
 
         // get response
-        if (!socket.RecvAll(content))
-        {
-            LSF_LOG_ERR("%s", socket.ErrCharStr());
-            return false;
-        }
+        if (!RecvAll(socket, content)) return false;
+
 
         // parse config
-        if (!message.ParseFromString(content))
-        {
-            LSF_LOG_ERR("size=%u, %s", content.size(), lsf::util::ProtobufLog::Instance()->ErrCharStr());
-            return false;
-        }
+        if (!UnPackMsg(content, message)) return false;
 
         return true;
     }

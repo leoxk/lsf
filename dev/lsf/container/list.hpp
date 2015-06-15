@@ -44,7 +44,7 @@ public:
 public:
     // common list funcs
     bool PushBack(value_type const & val) {
-        if (base_type::IsFull())         return false;
+        if (base_type::full())         return false;
 
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetPrevPos(_GetHeadPos()));
         new(_GetDataPtr(pos)) value_type(val);
@@ -52,7 +52,7 @@ public:
     }
 
     bool PushFront(value_type const & val) {
-        if (base_type::IsFull())         return false;
+        if (base_type::full())         return false;
 
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetHeadPos());
         new(_GetDataPtr(pos)) value_type(val);
@@ -60,21 +60,21 @@ public:
     }
 
     bool PopFront() {
-        if (base_type::IsEmpty())         return false;
+        if (base_type::empty())         return false;
 
         base_type::_ptr_state->FreeNode(_GetHeadPos());
         return true;
     }
 
     bool PopBack() {
-        if (base_type::IsEmpty())         return false;
+        if (base_type::empty())         return false;
 
         base_type::_ptr_state->FreeNode(_GetPrevPos(_GetHeadPos()));
         return true;
     }
 
     bool Insert(iterator iter, value_type const & val) {
-        if (base_type::IsFull())         return false;
+        if (base_type::full())         return false;
 
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(iter.GetPos());
         new(_GetDataPtr(pos)) value_type(val);
@@ -82,7 +82,7 @@ public:
     }
 
     bool Erase(iterator iter) {
-        if (base_type::IsEmpty())        return false;
+        if (base_type::empty())        return false;
 
         // call destructor
         iter->~value_type();
@@ -104,18 +104,18 @@ public:
             if (*_GetDataPtr(pos) == val)
                 return iterator(base_type::_ptr_state, pos);
         }
-        return End();
+        return end();
     }
 
     // accessor
     iterator GetFront() { return iterator(base_type::_ptr_state, _GetHeadPos()); }
     iterator GetBack()  { return iterator(base_type::_ptr_state, _GetPrevPos(_GetPrevPos(_GetHeadPos()))); }
 
-    iterator Begin() { return iterator(base_type::_ptr_state, _GetHeadPos()); }
-    iterator End()   { return iterator(base_type::_ptr_state, _GetPrevPos(_GetHeadPos())); }
+    iterator begin() { return iterator(base_type::_ptr_state, _GetHeadPos()); }
+    iterator end()   { return iterator(base_type::_ptr_state, _GetPrevPos(_GetHeadPos())); }
 
-    reverse_iterator RBegin() { return reverse_iterator(End()); }
-    reverse_iterator REnd()   { return reverse_iterator(Begin()); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend()   { return reverse_iterator(begin()); }
 
 private:
     value_type * _GetDataPtr(size_type pos) { return base_type::_ptr_state->GetDataPtr(pos); }

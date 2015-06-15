@@ -45,41 +45,41 @@ public:
 public:
     // access func
     value_type & operator[](size_type index) {
-        if (index >= base_type::MaxSize()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (index >= base_type::max_size()) throw std::runtime_error(LSF_DEBUG_INFO);
         return *(base_type::_ptr_state->GetDataPtr(index));
     }
 
     value_type const & operator[](size_type index) const {
-        if (index >= base_type::MaxSize()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (index >= base_type::max_size()) throw std::runtime_error(LSF_DEBUG_INFO);
         return *(base_type::_ptr_state->GetDataPtr(index));
     }
 
     value_type & Get(size_type index) {
-        if (index >= base_type::MaxSize()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (index >= base_type::max_size()) throw std::runtime_error(LSF_DEBUG_INFO);
         return *(base_type::_ptr_state->GetDataPtr(index));
     }
 
     value_type const & Get(size_type index) const {
-        if (index >= base_type::MaxSize()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (index >= base_type::max_size()) throw std::runtime_error(LSF_DEBUG_INFO);
         return *(base_type::_ptr_state->GetDataPtr(index));
     }
 
     value_type * GetPtr(size_type index) {
-        if (index >= base_type::MaxSize()) return NULL;
+        if (index >= base_type::max_size()) return NULL;
         return base_type::_ptr_state->GetDataPtr(index);
     }
 
     value_type const * GetPtr(size_type index) const {
-        if (index >= base_type::MaxSize()) return NULL;
+        if (index >= base_type::max_size()) return NULL;
         return base_type::_ptr_state->GetDataPtr(index);
     }
 
     // iterator
-    iterator Begin() { return iterator(base_type::_ptr_state, 0); }
-    iterator End()   { return iterator(base_type::_ptr_state, base_type::MaxSize()); }
+    iterator begin() { return iterator(base_type::_ptr_state, 0); }
+    iterator end()   { return iterator(base_type::_ptr_state, base_type::max_size()); }
 
-    reverse_iterator RBegin() { return reverse_iterator(End()); }
-    reverse_iterator REnd()   { return reverse_iterator(Begin()); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend()   { return reverse_iterator(begin()); }
 };
 
 

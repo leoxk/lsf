@@ -21,8 +21,8 @@
 #define LSF_TEST_EOC    "\e[m"
 
 // run test
-#define LSF_TEST_ALL()                                              \
-    if (!::lsf::basic::UnitTest::Instance()->Run()) exit(-1);       \
+#define LSF_TEST_ALL(argc,argv)                                              \
+    if (!::lsf::basic::UnitTest::Instance()->Run(argc,argv)) exit(-1);       \
 
 // declare test case
 #define LSF_TEST_CASE(arg_case_name)                                                                        \
@@ -126,15 +126,21 @@ public:
         return ptr_test_case;
     }
 
-    bool Run() {
+    bool Run(int argc, char** argv) 
+    {
         size_t passed_num = 0;
         size_t failed_num = 0;
         size_t cnt = 1;
         bool   result = true;
         timeval tv_begin, tv_end;
 
-        gettimeofday(&tv_begin, NULL);
+        // top delimit
+        std::cout << LSF_TEST_GREEN << "============================================================" << LSF_TEST_EOC << std::endl;
+        std::cout << LSF_TEST_GREEN << "Start Testing " << argv[0] << LSF_TEST_EOC << std::endl;
+        std::cout << LSF_TEST_GREEN << "============================================================" << LSF_TEST_EOC << std::endl;
 
+        // unit test content
+        gettimeofday(&tv_begin, NULL);
         for (UnitTest::iterator it = _case_list.begin();
              it != _case_list.end(); it++, cnt++)
         {
@@ -157,29 +163,28 @@ public:
             if (lsf::basic::lsf_test_case_result) {
                 std::cout << LSF_TEST_GREEN << "[  Result  ] Passed" << LSF_TEST_EOC << std::endl;
                 std::cout << LSF_TEST_GREEN << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
-                std::cout << std::endl;
                 passed_num++;
             }
             else {
                 std::cout << LSF_TEST_RED   << "[  Result  ] Failed" << LSF_TEST_EOC << std::endl;
                 std::cout << LSF_TEST_RED   << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
-                std::cout << std::endl;
                 failed_num++;
                 result = false;
             }
 
         }
-
         gettimeofday(&tv_end, NULL);
 
+        // middle delimit
         uint64_t milli_sec = (tv_end.tv_sec * 1000 + tv_end.tv_usec / 1000) - (tv_begin.tv_sec * 1000 + tv_begin.tv_usec / 1000);
 
-        std::cout << LSF_TEST_GREEN << "==============================" << LSF_TEST_EOC << std::endl;
+        // unit test statics
+        std::cout << LSF_TEST_GREEN << "============================================================" << LSF_TEST_EOC << std::endl;
         std::cout << LSF_TEST_GREEN << "Total TestCase: " << passed_num + failed_num << LSF_TEST_EOC << std::endl;
-        std::cout << LSF_TEST_GREEN << "Time: " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
-        std::cout << LSF_TEST_GREEN << "Passed: " << passed_num << LSF_TEST_EOC << std::endl;
-        std::cout << LSF_TEST_RED   << "Failed: " << failed_num << LSF_TEST_EOC << std::endl;
-        
+        std::cout << LSF_TEST_GREEN << "Total Time: " << milli_sec / 1000 << "." << milli_sec % 1000 << LSF_TEST_EOC << std::endl;
+        std::cout << LSF_TEST_GREEN << "Total Passed: " << passed_num << LSF_TEST_EOC << std::endl;
+        std::cout << LSF_TEST_RED   << "Total Failed: " << failed_num << LSF_TEST_EOC << std::endl;
+
         return result;
     }
 

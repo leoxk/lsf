@@ -49,7 +49,6 @@ test : 				\
 	test_compile 	\
 	test_asio 		\
 	test_basic 		\
-	test_meta 		\
 	test_container 	\
 	test_encrypt 	\
 	test_util 		\
@@ -65,46 +64,47 @@ test_compile:
 	done
 
 test_asio :
-	./test/bin/test_ip
-	./test/bin/test_tcp
-	./test/bin/test_udp
+	@./test/bin/test_ip
+	@./test/bin/test_tcp
+	@./test/bin/test_udp
+	@./test/bin/test_asio
 
 test_basic :
-	./test/bin/test_basic_array
-	./test/bin/test_buffer
-	./test/bin/test_string_ext
-	./test/bin/test_type_cast
+	@./test/bin/test_basic_array
+	@./test/bin/test_buffer
+	@./test/bin/test_string_ext
+	@./test/bin/test_type_cast
 
 test_meta :
-	./test/bin/test_macro
-	./test/bin/test_type_list
-	./test/bin/test_type_traits
+	@./test/bin/test_macro
+	@./test/bin/test_type_list
+	@./test/bin/test_type_traits
 
 test_container :
-	./test/bin/test_array
-	./test/bin/test_benchmark ./test/conf/test_rb_tree1.conf
-	./test/bin/test_benchmark ./test/conf/test_rb_tree2.conf
-	./test/bin/test_list
-	./test/bin/test_map
-	./test/bin/test_pool
-	./test/bin/test_queue
-	./test/bin/test_rb_tree
-	./test/bin/test_set
-	./test/bin/test_variant
-	./test/bin/test_basic_container
-	./test/bin/test_shared_mem
+	@./test/bin/test_array
+	@./test/bin/test_benchmark ./test/conf/test_rb_tree1.conf
+	@./test/bin/test_benchmark ./test/conf/test_rb_tree2.conf
+	@./test/bin/test_list
+	@./test/bin/test_map
+	@./test/bin/test_pool
+	@./test/bin/test_queue
+	@./test/bin/test_rb_tree
+	@./test/bin/test_set
+	@./test/bin/test_basic_container
+	@./test/bin/test_shared_mem
 
 test_encrypt :
-	./test/bin/test_base64
-	./test/bin/test_md5
+	@./test/bin/test_base64
+	@./test/bin/test_md5
 	
 test_util :
-	./test/bin/test_config ./test/conf/test_config.conf
-	./test/bin/test_date
-	./test/bin/test_log
-	./test/bin/test_random
-	./test/bin/test_shared_ptr
-	./test/bin/test_system
+	@./test/bin/test_config ./test/conf/test_config.conf
+	@./test/bin/test_date
+	@./test/bin/test_log
+	@./test/bin/test_random
+	@./test/bin/test_shared_ptr
+	@./test/bin/test_system
+	@./test/bin/test_backtrace
 
 .PHONY : all clean test test_clean
 

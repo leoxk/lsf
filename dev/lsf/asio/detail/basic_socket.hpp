@@ -62,11 +62,11 @@ public:
 
     ////////////////////////////////////////////////////////////
     bool Bind(sockaddr_type const & local) {
-        return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
+        return ErrWrap(::bind(_sockfd, local.data(), local.DataSize())) == 0;
     }
 
     bool Connect(sockaddr_type const & remote) {
-        return ErrWrap(::connect(_sockfd, remote.Data(), remote.DataSize())) == 0;
+        return ErrWrap(::connect(_sockfd, remote.data(), remote.DataSize())) == 0;
     }
 
     bool  Close() {

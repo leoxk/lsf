@@ -22,7 +22,7 @@ LSF_TEST_CASE(test_common)
     LSF_ASSERT(SharedMem::Create(SHM_KEY, array.CalcByteSize(ARRAY_SIZE)));
 
     LSF_ASSERT(array.BindAndInitStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(array.MaxSize() == ARRAY_SIZE);
+    LSF_ASSERT(array.max_size() == ARRAY_SIZE);
     LSF_ASSERT(array.IsBindStorage());
 
     LSF_ASSERT(array.Get(0) == TestNode());
@@ -51,19 +51,19 @@ LSF_TEST_CASE(test_iterator)
     LSF_ASSERT(SharedMem::Create(SHM_KEY, array.CalcByteSize(ARRAY_SIZE)));
     LSF_ASSERT(array.BindAndInitStorage(SharedMem(SHM_KEY)));
 
-    for (array_type::iterator iter = array.Begin(); iter != array.End(); iter++) {
+    for (array_type::iterator iter = array.begin(); iter != array.end(); iter++) {
         iter->key = 8;
         iter->data = 88;
     }
 
-    for (array_type::reverse_iterator riter = array.RBegin(); riter != array.REnd(); riter++) {
+    for (array_type::reverse_iterator riter = array.rbegin(); riter != array.rend(); riter++) {
         LSF_ASSERT(*riter == TestNode(8, 88));
     }
 }
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

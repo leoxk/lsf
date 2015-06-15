@@ -46,7 +46,7 @@ public:
     // common list funcs
     size_type Malloc() 
     {
-        if (base_type::IsFull()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (base_type::full()) throw std::runtime_error(LSF_DEBUG_INFO);
 
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetPrevPos(_GetHeadPos()));
         new(_GetDataPtr(pos)) value_type();
@@ -55,7 +55,7 @@ public:
 
     size_type Malloc(value_type const & val) 
     {
-        if (base_type::IsFull()) throw std::runtime_error(LSF_DEBUG_INFO);
+        if (base_type::full()) throw std::runtime_error(LSF_DEBUG_INFO);
 
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(_GetPrevPos(_GetHeadPos()));
         new(_GetDataPtr(pos)) value_type(val);
@@ -86,11 +86,11 @@ public:
     }
 
     // accessor
-    iterator Begin() { return iterator(base_type::_ptr_state, _GetHeadPos()); }
-    iterator End()   { return iterator(base_type::_ptr_state, _GetPrevPos(_GetHeadPos())); }
+    iterator begin() { return iterator(base_type::_ptr_state, _GetHeadPos()); }
+    iterator end()   { return iterator(base_type::_ptr_state, _GetPrevPos(_GetHeadPos())); }
 
-    reverse_iterator RBegin() { return reverse_iterator(End()); }
-    reverse_iterator REnd()   { return reverse_iterator(Begin()); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend()   { return reverse_iterator(begin()); }
 
 private:
     value_type * _GetDataPtr(size_type pos) const { return base_type::_ptr_state->GetDataPtr(pos); }

@@ -56,7 +56,7 @@ LSF_TEST_CASE(test_address)
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 

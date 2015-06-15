@@ -24,7 +24,7 @@ LSF_TEST_CASE(test_static_funcs)
 
     Buffer<1024> buf;
     LSF_ASSERT(HexStringToBin(BinToHexString(content, sizeof(content)), buf));
-    LSF_ASSERT(buf.Size() == 32);
+    LSF_ASSERT(buf.size() == 32);
     LSF_ASSERT(Buffer<1024>(content, sizeof(content)).ToHexString() == buf.ToHexString());
     LSF_ASSERT(Buffer<1024>(content, sizeof(content)) == buf);
 }
@@ -45,13 +45,13 @@ LSF_TEST_CASE(test_with_static_bytes)
 
     // length < 16
     bytes.Copy("short string");
-    LSF_ASSERT(string((char *)bytes.Data(), bytes.Size()) == "short string");
+    LSF_ASSERT(string((char *)bytes.data(), bytes.size()) == "short string");
     LSF_ASSERT(bytes.ToHexString() == "73686f727420737472696e67");
 }
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

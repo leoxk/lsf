@@ -54,37 +54,37 @@ LSF_TEST_CASE(test_load_batch)
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, sets.CalcByteSize(line_count)));
     LSF_ASSERT(sets.BindAndInitStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(sets.MaxSize() == line_count);
+    LSF_ASSERT(sets.max_size() == line_count);
 
     // insert
     ifs.close();
     ifs.open(conf_path.c_str());
     for (string line; !ifs.eof(); getline(ifs, line)) {
         if (line.empty()) continue;
-        //if (sets.Size() >= 0 && sets.Size() % (line_count / 10) == 0) {
-            //cout << "size: " << sets.Size() << endl;
+        //if (sets.size() >= 0 && sets.size() % (line_count / 10) == 0) {
+            //cout << "size: " << sets.size() << endl;
             //LSF_ASSERT_EXIT(sets.CheckConsist());
         //}
         LSF_ASSERT_EXIT_ERR_ONLY(sets.Insert(TypeCast<uint32_t>(line)));
     }
 
     LSF_ASSERT(sets.CheckConsist());
-    LSF_ASSERT(sets.Size() == line_count);
+    LSF_ASSERT(sets.size() == line_count);
     
     // erase
     ifs.close();
     ifs.open(conf_path.c_str());
     for (string line; !ifs.eof(); getline(ifs, line)) {
         if (line.empty()) continue;
-        if (sets.Size() <= line_count && sets.Size() % (line_count / 10) == 0) {
-            cout << "size: " << sets.Size() << endl;
+        if (sets.size() <= line_count && sets.size() % (line_count / 10) == 0) {
+            cout << "size: " << sets.size() << endl;
             LSF_ASSERT_EXIT(sets.CheckConsist());
         }
         LSF_ASSERT_EXIT_ERR_ONLY(sets.Erase(TypeCast<uint32_t>(line)));
     }
 
     LSF_ASSERT(sets.CheckConsist());
-    LSF_ASSERT(sets.Size() == 0);
+    LSF_ASSERT(sets.size() == 0);
 }
 
 int main(int argc, char **argv)
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
         conf_path = argv[1];
     }
 
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

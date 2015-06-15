@@ -112,7 +112,7 @@ LSF_TEST_CASE(cast_between_string)
 
 int main(int argc, char** argv)
 {
-    LSF_TEST_ALL();
+    LSF_TEST_ALL(argc, argv);
 }
 
 

@@ -26,7 +26,7 @@ bool OnTimerFunc(AsyncInfo & info)
 
     if (counter >= 100)
     {
-        epoll_service.SetExit();
+        IOService::Instance()->SetExit();
     }
     return true;
 }
@@ -35,7 +35,7 @@ bool OnTimerFunc(AsyncInfo & info)
 bool OnPeerCloseFunc(AsyncInfo & info, tcp::Socket client_socket)
 {
     int fd = -1;
-    LSF_ASSERT(epoll_service.AsyncAddTimer(0, 1, OnTimerFunc, &fd));
+    LSF_ASSERT(IOService::Instance()->AsyncAddTimer(0, 1, OnTimerFunc, &fd));
     LSF_ASSERT(fd != -1);
 
     return true;
@@ -62,12 +62,12 @@ bool OnSendFunc(AsyncInfo & info, tcp::Socket server_socket)
     LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
     
     // read data
-    LSF_ASSERT(server_socket.AsyncRead(epoll_service, 
+    LSF_ASSERT(server_socket.AsyncRead(*IOService::Instance(), 
                 std::bind(OnRecvFunc, std::placeholders::_1, client_socket), 
                 std::bind(OnPeerCloseFunc, std::placeholders::_1, client_socket)));
 
     // client shutdown
-    client_socket.CloseAsync(epoll_service);
+    client_socket.CloseAsync(*IOService::Instance());
     return true;
 }
 
@@ -84,7 +84,7 @@ bool OnAcceptFunc(AsyncInfo & info, tcp::Socket client_socket)
     LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
 
     // send msg
-    LSF_ASSERT(client_socket.AsyncWrite(epoll_service, content.c_str(), content.size(), 
+    LSF_ASSERT(client_socket.AsyncWrite(*IOService::Instance(), content.c_str(), content.size(), 
                 std::bind(OnSendFunc, std::placeholders::_1, server_socket)));
     
     return true;
@@ -98,7 +98,7 @@ bool OnConnectFunc(AsyncInfo & info, tcp::ListenSocket listen_socket)
 
     // async accept
     tcp::Socket socket(info.fd);
-    LSF_ASSERT(listen_socket.AsyncAccept(epoll_service, std::bind(OnAcceptFunc, std::placeholders::_1, socket)));
+    LSF_ASSERT(listen_socket.AsyncAccept(*IOService::Instance(), std::bind(OnAcceptFunc, std::placeholders::_1, socket)));
 
     return true;
 }
@@ -112,15 +112,15 @@ LSF_TEST_CASE(test_asio)
 
     // async connect
     tcp::Socket socket = tcp::Socket::CreateSocket();
-    LSF_ASSERT(socket.AsyncConnect(epoll_service, tcp::SockAddr(ip::Address::Any(), listen_port),
+    LSF_ASSERT(socket.AsyncConnect(*IOService::Instance(), tcp::SockAddr(ip::Address::Any(), listen_port),
                 std::bind(OnConnectFunc, std::placeholders::_1, listen_socket)));
 
-    epoll_service.RunAsync();
+    IOService::Instance()->Run();
 }
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 

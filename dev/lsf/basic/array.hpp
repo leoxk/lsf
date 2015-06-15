@@ -34,22 +34,22 @@ public:
 
     Array(Array<ElemType, SIZE> const & rhs)
     {
-        _size = std::min(SIZE, rhs.Size());
-        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+        _size = std::min(SIZE, rhs.size());
+        std::copy(rhs.data(), rhs.data() + _size, data());
     }
 
     template<typename OtherType, size_t OTHER_SIZE>
     Array(Array<OtherType, OTHER_SIZE> const & rhs)
     {
-        _size = std::min(SIZE, rhs.Size());
-        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+        _size = std::min(SIZE, rhs.size());
+        std::copy(rhs.data(), rhs.data() + _size, data());
     }
 
     template<typename IterType>
     Array(IterType iter, size_t size)
     { 
         _size = size;
-        std::copy(iter, iter+size, Begin());
+        std::copy(iter, iter+size, begin());
     }
 
     ~Array() { }
@@ -58,8 +58,8 @@ public:
     Array<ElemType, SIZE> & operator=(Array<ElemType, SIZE> const & rhs) {
         if (this == &rhs) return *this;
 
-        _size = std::min(SIZE, rhs.Size());
-        std::copy(rhs.Begin(), rhs.End(), Data());
+        _size = std::min(SIZE, rhs.size());
+        std::copy(rhs.begin(), rhs.end(), data());
         return *this;
     }
 
@@ -67,8 +67,8 @@ public:
     Array<ElemType, SIZE> & operator=(Array<OtherType, OTHER_SIZE> const & rhs) {
         if (this == &rhs) return *this;
 
-        _size = std::min(SIZE, rhs.Size());
-        std::copy(rhs.Data(), rhs.Data() + _size, Data());
+        _size = std::min(SIZE, rhs.size());
+        std::copy(rhs.data(), rhs.data() + _size, data());
         return *this;
     }
 
@@ -76,7 +76,7 @@ public:
     template<typename IterType>
     void Copy(IterType it_begin, IterType it_end) {
         _size = it_end - it_begin;
-        std::copy(it_begin, it_end, Begin());
+        std::copy(it_begin, it_end, begin());
     }
 
     template<typename OtherType>
@@ -90,48 +90,48 @@ public:
         return Erase(pos, pos+1);
     }
 
-    iterator Erase(iterator begin, iterator end) {
-        if (begin < Begin() || begin >= End()) return End();
-        if (end < Begin() || end > End()) return End();
-        if (begin > end) return End();
-        std::copy(end , End(), begin);
-        _size -= (end - begin);
-        return begin;
+    iterator Erase(iterator begin_iter, iterator end_iter) {
+        if (begin_iter < begin() || begin_iter >= end()) return end();
+        if (end_iter < begin() || end_iter > end()) return end();
+        if (begin_iter > end_iter) return end();
+        std::copy(end_iter , end(), begin_iter);
+        _size -= (end_iter - begin_iter);
+        return begin_iter;
     }
 
     void SetSize(size_t size) { _size = std::min(SIZE, size); }
 
     void Reset() { _size = 0; }
 
-    void Fill(value_type & val) { _size = SIZE; std::fill(Begin(), End(), val); }
-    void Fill(value_type   val) { _size = SIZE; std::fill(Begin(), End(), val); }
+    void Fill(value_type & val) { _size = SIZE; std::fill(begin(), end(), val); }
+    void Fill(value_type   val) { _size = SIZE; std::fill(begin(), end(), val); }
 
     // member funcs
-    iterator       Begin()       { return _array; }
-    const_iterator Begin() const { return _array; }
-    reverse_iterator       RBegin()       { return reverse_iterator(End()); }
-    const_reverse_iterator RBegin() const { return const_reverse_iterator(End()); }
+    iterator       begin()       { return _array; }
+    const_iterator begin() const { return _array; }
+    reverse_iterator       rbegin()       { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
 
-    iterator       End()       { return _array + _size; }
-    const_iterator End() const { return _array + _size; }
-    reverse_iterator       REnd()       { return reverse_iterator(Begin()); }
-    const_reverse_iterator REnd() const { return const_reverse_iterator(Begin()); }
+    iterator       end()       { return _array + _size; }
+    const_iterator end() const { return _array + _size; }
+    reverse_iterator       rend()       { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
     
     const_reference operator[](size_t idx) const { return _array[idx]; }
     reference       operator[](size_t idx)       { return _array[idx]; }
 
-    value_type *        Data() { return _array; }
-    value_type const *  Data() const { return _array; }
+    value_type *        data() { return _array; }
+    value_type const *  data() const { return _array; }
 
-    size_t Size() const { return _size; }
-    size_t MaxSize() const { return SIZE; }
+    size_t size() const { return _size; }
+    size_t max_size() const { return SIZE; }
 
-    bool IsEmpty() const { return _size == 0; }
-    bool IsFull()  const { return _size == SIZE; }
+    bool empty() const { return _size == 0; }
+    bool full()  const { return _size == SIZE; }
 
     template<typename OtherType, size_t OTHER_SIZE>
     bool operator==(Array<OtherType, OTHER_SIZE> const & rhs) {
-        return std::equal(Begin(), End(), rhs.Begin());
+        return std::equal(begin(), end(), rhs.begin());
     }
 
     template<typename OtherType, size_t OTHER_SIZE>
@@ -141,9 +141,9 @@ public:
 
     std::string ToString(std::string const & delimit = ",") const {
         std::string tmp;
-        for (const_iterator it = Begin(); it != End(); ++it) {
+        for (const_iterator it = begin(); it != end(); ++it) {
             tmp += it->ToString();
-            if ((it+1) != End()) tmp += delimit;
+            if ((it+1) != end()) tmp += delimit;
         }
         return tmp;
     }
@@ -153,7 +153,7 @@ protected:
     value_type      _array[SIZE];
 };
 
-} // End of namespace basic
-} // End of namespace lsf
+} // end of namespace basic
+} // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

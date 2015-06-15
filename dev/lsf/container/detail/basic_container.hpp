@@ -78,14 +78,14 @@ public:
     }
 
     // accessor funcs
-    size_type Size() const { return _ptr_state->Size(); }
+    size_type size() const { return _ptr_state->size(); }
 
-    size_type MaxSize() const { return _ptr_state->MaxSize(); }
+    size_type max_size() const { return _ptr_state->max_size(); }
 
     size_t ElemByteSize() const { return _ptr_state->ElemByteSize(); }
 
-    bool IsFull()  const { return _ptr_state->IsFull();  }
-    bool IsEmpty() const { return _ptr_state->IsEmpty(); }
+    bool full()  const { return _ptr_state->full();  }
+    bool empty() const { return _ptr_state->empty(); }
     bool IsBindStorage() const { return _ptr_state != NULL; }
 
     // static funcs

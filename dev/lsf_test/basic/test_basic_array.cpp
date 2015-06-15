@@ -28,10 +28,10 @@ LSF_TEST_CASE(test_array_with_pod_type)
     Array<int,10>     array;
     Array<int,10>     array_copy;
 
-    LSF_ASSERT(array.Size() == 0);
+    LSF_ASSERT(array.size() == 0);
 
     array.Fill(88);
-    for (Array<int,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
+    for (Array<int,10>::iterator iter = array.begin(); iter != array.end(); iter++) {
         LSF_ASSERT(*iter == 88);
     }
 
@@ -39,7 +39,7 @@ LSF_TEST_CASE(test_array_with_pod_type)
     LSF_ASSERT(array_copy == array);
 
     // test copy raw data
-    array_copy.Copy(array.Begin(), array.End());
+    array_copy.Copy(array.begin(), array.end());
     LSF_ASSERT(array_copy == array);
 }
 
@@ -48,17 +48,17 @@ LSF_TEST_CASE(test_array_with_class_type)
     Array<TestType,10>      array;
     Array<TestType,10>      array_copy;
 
-    LSF_ASSERT(array.Size() == 0);
+    LSF_ASSERT(array.size() == 0);
 
     array.Fill(TestType(1,1));
-    for (Array<TestType,10>::iterator iter = array.Begin(); iter != array.End(); iter++) {
+    for (Array<TestType,10>::iterator iter = array.begin(); iter != array.end(); iter++) {
         LSF_ASSERT(*iter == TestType(1,1));
     }
 
     array_copy = array;
     LSF_ASSERT(array_copy == array);
 
-    array_copy.Copy(array.Begin(), array.End());
+    array_copy.Copy(array.begin(), array.end());
     LSF_ASSERT(array_copy == array);
 }
 
@@ -77,18 +77,18 @@ LSF_TEST_CASE(test_erase)
     LSF_ASSERT(array[2] == TestType(2,2));
     LSF_ASSERT(array[3] == TestType(3,3));
     LSF_ASSERT(array[4] == TestType(4,4));
-    LSF_ASSERT(array.Size() == 5);
+    LSF_ASSERT(array.size() == 5);
 
-    LSF_ASSERT(array.Erase(array.Begin()+4) == array.End());
-    LSF_ASSERT(array.Erase(array.End()-1) == array.End());
+    LSF_ASSERT(array.Erase(array.begin()+4) == array.end());
+    LSF_ASSERT(array.Erase(array.end()-1) == array.end());
 
-    LSF_ASSERT(array.Erase(array.Begin(), array.End()) == array.End());
-    LSF_ASSERT(array.IsEmpty());
+    LSF_ASSERT(array.Erase(array.begin(), array.end()) == array.end());
+    LSF_ASSERT(array.empty());
 }
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

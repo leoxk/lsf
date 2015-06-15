@@ -16,6 +16,18 @@ using namespace lsf::asio;
 using namespace lsf::util;
 
 ////////////////////////////////////////////////////////////
+// utility funcs
+conf::Service const * BasicServer::GetServiceConfig(conf::ENServiceType service_type)
+{
+    for (conf::Service const & iter : _server_config.services())
+    {
+        if (iter.service_type() == service_type) return &iter;
+    }
+    LSF_LOG_ERR("type=%u", service_type);
+    return NULL;
+}
+
+////////////////////////////////////////////////////////////
 // init logic
 void BasicServer::Run(int argc, char** argv)
 {
@@ -29,7 +41,7 @@ void BasicServer::Run(int argc, char** argv)
     if (!OnParseCommond(argc, argv)) return;
 
     // get config from confsvrd
-    if (!OnGetConfig()) return;
+    if (!OnInitDeployConfig()) return;
 
     // set current path
     if (!OnSetCurrentPath(argv[0])) return;
@@ -44,7 +56,7 @@ void BasicServer::Run(int argc, char** argv)
     if (!OnRun()) return;
 
     // start async machine
-    _io_service.Run();
+    IOService::Instance()->Run();
 }
 
 bool BasicServer::OnParseCommond(int argc, char** argv)
@@ -64,7 +76,7 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
     return true;
 }
 
-bool BasicServer::OnGetConfig()
+bool BasicServer::OnInitDeployConfig()
 {
     // init a connection
     tcp::Socket socket = tcp::Socket::CreateSocket();

@@ -20,11 +20,11 @@ LIB = $(LIB_DIR)/libproto.a
 OBJ = \
 		 $(DEP_DIR)/conf_deploy.o	\
 		 $(DEP_DIR)/conf_game.o		\
-		 $(DEP_DIR)/data_player.o	\
-		 $(DEP_DIR)/data_mem.o		\
 		 $(DEP_DIR)/msg_base.o		\
 		 $(DEP_DIR)/msg_cs.o		\
 		 $(DEP_DIR)/msg_ss.o		\
+		 $(DEP_DIR)/data_player.o	\
+		 $(DEP_DIR)/data_mem.o		\
 
 $(LIB) :  $(OBJ) 
 	$(AR) $@ $^

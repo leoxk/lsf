@@ -8,6 +8,7 @@
 
 #include <vector>
 #include "google/protobuf/stubs/common.h"
+#include "lsf/basic/error.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/type_cast.hpp"
 

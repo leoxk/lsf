@@ -39,7 +39,7 @@ public:
 
     ////////////////////////////////////////////////////////////
     bool Bind(sockaddr_type const & local) {
-        return ErrWrap(::bind(_sockfd, local.Data(), local.DataSize())) == 0;
+        return ErrWrap(::bind(_sockfd, local.data(), local.DataSize())) == 0;
     }
 
     bool Listen(int backlog = DEF_LISTEN_QUEUE_SIZE) {

@@ -35,7 +35,6 @@ function network::help {
 function network::is_valid_ip {
   util::is_empty "$1" && echo "Usage: ${FUNCNAME} [ip] " && return 1
 
-  #TODO: this is not perfect
   [ "$1" == "0.0.0.0" ] && return 1
   [ "$1" == "255.255.255.255" ] && return 1
   ! (echo $1 | grep -Eq '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$') && return 1

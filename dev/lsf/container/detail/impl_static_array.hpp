@@ -34,14 +34,14 @@ public:
 
     static size_t CalcByteSize(size_type size) { return size * sizeof(value_type) + sizeof(this_type); }
     static size_t CalcElemByteSize(void const * ptr) { return ((this_type const *)ptr)->ElemByteSize(); }
-    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->MaxSize(); }
+    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->max_size(); }
 
-    size_type Size()    const { return _max_size; }
-    size_type MaxSize() const { return _max_size; }
+    size_type size()    const { return _max_size; }
+    size_type max_size() const { return _max_size; }
     size_t ElemByteSize() const { return _elem_byte_size; }
 
-    bool IsEmpty() const { return true; }
-    bool IsFull()  const { return true; }
+    bool empty() const { return true; }
+    bool full()  const { return true; }
 
     value_type * GetDataPtr(size_type pos) const { return (value_type *)(this + 1) + pos; }
 

@@ -34,7 +34,7 @@ message ReisterToProxyRsp
 }
 
 ////////////////////////////////////////////////////////////
-// big server to server message
+// server to server message
 enum ENSS
 {
    SS_GET_CONFIG_REQ = 1;

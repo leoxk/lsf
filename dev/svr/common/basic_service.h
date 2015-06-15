@@ -11,43 +11,37 @@
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
+#include "svr/common/basic_server.h"
 
 class BasicService : public lsf::basic::NonCopyable
 {
 public:
-    BasicService(conf::ENServiceType service_type, conf::Service const & service_config,  lsf::asio::ProactorSerivce & io_service)
-        : _service_type(service_type), _service_config(service_config), _io_service(io_service) { }
+    BasicService(conf::ENServiceType service_type) : _service_type(service_type){ }
 
-    bool Run();
+    bool Run(BasicServer * pserver);
+
+public:
+    // async handler
+    virtual bool OnSocketAccept(lsf::asio::AsyncInfo & info);
+
+    virtual bool OnSocketConnect(lsf::asio::AsyncInfo & info);
+
+    virtual bool OnSocketRead(lsf::asio::AsyncInfo & info);
+
+    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo & info);
 
 protected:
-    // connection callback
-    virtual bool OnConnectionCreate(lsf::asio::tcp::Socket socket);
-
-    virtual bool OnConnectionRead(lsf::asio::tcp::Socket socket);
-
-    virtual bool OnConnectionPeerClose(lsf::asio::tcp::Socket socket);
-
-private:
     // init logic
+    bool OnInitConfig();
+
     bool OnInitListenSocket();
 
     bool OnInitConnectSocket();
 
-    // async handler
-    bool OnSocketAccept(lsf::asio::AsyncInfo & info);
-
-    bool OnSocketConnect(lsf::asio::AsyncInfo & info);
-
-    bool OnSocketRead(lsf::asio::AsyncInfo & info);
-
-    bool OnSocketPeerClose(lsf::asio::AsyncInfo & info);
-
-
 private:
     conf::ENServiceType             _service_type;
-    conf::Service const &           _service_config;
-    lsf::asio::ProactorSerivce &    _io_service;
+    conf::Service                   _service_config;
+    BasicServer *                   _pserver;
 };
                      
 // vim:ts=4:sw=4:et:ft=cpp:

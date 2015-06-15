@@ -120,14 +120,14 @@ public:
 
     static size_t CalcByteSize(size_type size) { return (size + 1) * sizeof(node_type) + sizeof(this_type); }
     static size_t CalcElemByteSize(void const * ptr) { return ((this_type const *)ptr)->ElemByteSize(); }
-    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->MaxSize(); }
+    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->max_size(); }
 
-    size_type Size()    const { return _size; }
-    size_type MaxSize() const { return _max_size - 1; }
+    size_type size()    const { return _size; }
+    size_type max_size() const { return _max_size - 1; }
     size_t ElemByteSize() const { return _elem_byte_size; }
 
-    bool IsFull()  const { return _size == _max_size - 1; }
-    bool IsEmpty() const { return _size == 0; }
+    bool full()  const { return _size == _max_size - 1; }
+    bool empty() const { return _size == 0; }
 
     node_type  * GetNodePtr(size_type pos) const { return (node_type *)(this + 1) + pos; }
 

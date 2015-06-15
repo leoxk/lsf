@@ -16,7 +16,8 @@
 #define LSF_DEBUG_INFO "[" __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) "] "
 
 // short cut for c_str()
-#define ToCharStr()  ToString().c_str()
-#define ErrCharStr() ErrString().c_str()
+#define ToCharStr()     ToString().c_str()
+#define ErrCharStr()    ErrString().c_str()
+#define SysErrCharStr() SysErrString().c_str()
 
 // vim:ts=4:sw=4:et:ft=cpp:

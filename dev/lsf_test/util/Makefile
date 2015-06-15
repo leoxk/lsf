@@ -24,6 +24,7 @@ BIN = \
 	  $(TEST_BIN_DIR)/test_system 	 		\
 	  $(TEST_BIN_DIR)/test_shared_ptr 		\
 	  $(TEST_BIN_DIR)/test_file_lock 		\
+	  $(TEST_BIN_DIR)/test_backtrace 		\
 
 # main targets
 all: $(BIN)

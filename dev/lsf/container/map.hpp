@@ -69,7 +69,7 @@ public:
 
 public:
     bool Insert(key_type const & key, map_type const & val) {
-        if (base_type::IsFull())         return false;
+        if (base_type::full())         return false;
 
         // get insert pos
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(value_type(key));
@@ -82,7 +82,7 @@ public:
     }
 
     bool Erase(key_type const & key) {
-        if (base_type::IsEmpty())        return false;
+        if (base_type::empty())        return false;
 
         // find pos
         std::pair<size_type, size_type> pos_pair = base_type::_ptr_state->FindNode(value_type(key));
@@ -99,7 +99,7 @@ public:
     iterator Find(key_type const & key) {
         size_type pos = base_type::_ptr_state->FindNode(value_type(key)).first;
         // not found
-        if (pos == state_type::NPOS) return End();
+        if (pos == state_type::NPOS) return end();
 
         return iterator(base_type::_ptr_state, pos);
     }
@@ -107,7 +107,7 @@ public:
     // if there is no node, just insert one
     map_type & operator[](key_type const & key) { 
         iterator iter = Find(key);
-        if (iter == End()) {
+        if (iter == end()) {
             if (!Insert(key, map_type())) throw std::runtime_error(LSF_DEBUG_INFO);
             iter = Find(key);
         }
@@ -115,15 +115,15 @@ public:
     }
 
     // accessor
-    iterator Begin() { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
-    iterator End()   { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
-    const_iterator Begin() const { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
-    const_iterator End()   const { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
+    iterator begin() { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
+    iterator end()   { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
+    const_iterator begin() const { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
+    const_iterator end()   const { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
 
-    reverse_iterator RBegin() { return reverse_iterator(End()); }
-    reverse_iterator REnd()   { return reverse_iterator(Begin()); }
-    const_reverse_iterator RBegin() const { return reverse_iterator(End()); }
-    const_reverse_iterator REnd()   const { return reverse_iterator(Begin()); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend()   { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    const_reverse_iterator rend()   const { return reverse_iterator(begin()); }
 };
 
 } // end of namespace container

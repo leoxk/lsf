@@ -23,7 +23,7 @@ LSF_TEST_CASE(test_pool)
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
     LSF_ASSERT(pool.BindAndInitStorage(SharedMem(SHM_KEY)));
-    LSF_ASSERT(pool.MaxSize() == 10);
+    LSF_ASSERT(pool.max_size() == 10);
 
     // test malloc
     size_t pos_arr[10];
@@ -44,26 +44,26 @@ LSF_TEST_CASE(test_pool)
     pool.Get(pos_arr[7]) = TestNode(7, 7);
     pool.Get(pos_arr[8]) = TestNode(8, 8);
     pool.Get(pos_arr[9]) = TestNode(9, 9); // 0 1 2 3 4 5 6 7 8 9
-    LSF_ASSERT(NULL != pool.GetPtr(pool.MaxSize()));
-    LSF_ASSERT(NULL == pool.GetPtr(pool.MaxSize() + 1));
-    LSF_ASSERT(TestNode(9, 9) == pool.Get(pool.MaxSize()));
+    LSF_ASSERT(NULL != pool.GetPtr(pool.max_size()));
+    LSF_ASSERT(NULL == pool.GetPtr(pool.max_size() + 1));
+    LSF_ASSERT(TestNode(9, 9) == pool.Get(pool.max_size()));
 
     // test iterator
-    LSF_ASSERT(*(pool.Begin() + 0) == TestNode(0, 0));
-    LSF_ASSERT(*(pool.Begin() + 1) == TestNode(1, 1));
-    LSF_ASSERT(*(pool.Begin() + 2) == TestNode(2, 2));
-    LSF_ASSERT(*(pool.Begin() + 3) == TestNode(3, 3));
-    LSF_ASSERT(*(pool.Begin() + 4) == TestNode(4, 4));
-    LSF_ASSERT(pool.Begin() + 10 == pool.End());
-    LSF_ASSERT(pool.Begin() != pool.End());
+    LSF_ASSERT(*(pool.begin() + 0) == TestNode(0, 0));
+    LSF_ASSERT(*(pool.begin() + 1) == TestNode(1, 1));
+    LSF_ASSERT(*(pool.begin() + 2) == TestNode(2, 2));
+    LSF_ASSERT(*(pool.begin() + 3) == TestNode(3, 3));
+    LSF_ASSERT(*(pool.begin() + 4) == TestNode(4, 4));
+    LSF_ASSERT(pool.begin() + 10 == pool.end());
+    LSF_ASSERT(pool.begin() != pool.end());
 
     // test reverse iterator
-    LSF_ASSERT(*(pool.RBegin() + 0) == TestNode(9, 9));
-    LSF_ASSERT(*(pool.RBegin() + 1) == TestNode(8, 8));
-    LSF_ASSERT(*(pool.RBegin() + 2) == TestNode(7, 7));
-    LSF_ASSERT(*(pool.RBegin() + 3) == TestNode(6, 6));
-    LSF_ASSERT(*(pool.RBegin() + 4) == TestNode(5, 5));
-    LSF_ASSERT(pool.RBegin() + 10 == pool.REnd());
+    LSF_ASSERT(*(pool.rbegin() + 0) == TestNode(9, 9));
+    LSF_ASSERT(*(pool.rbegin() + 1) == TestNode(8, 8));
+    LSF_ASSERT(*(pool.rbegin() + 2) == TestNode(7, 7));
+    LSF_ASSERT(*(pool.rbegin() + 3) == TestNode(6, 6));
+    LSF_ASSERT(*(pool.rbegin() + 4) == TestNode(5, 5));
+    LSF_ASSERT(pool.rbegin() + 10 == pool.rend());
 
     // test free
     LSF_ASSERT(pool.Free(pos_arr[1]));
@@ -95,12 +95,12 @@ LSF_TEST_CASE(test_used)
     LSF_ASSERT(pool.GetPtr(pos_arr[4]) != NULL);
 
     // iterator
-    LSF_ASSERT(*(pool.Begin() + 0) == TestNode(0, 0));
-    LSF_ASSERT(*(pool.Begin() + 1) == TestNode(1, 1));
-    LSF_ASSERT(*(pool.Begin() + 2) == TestNode(2, 2));
-    LSF_ASSERT(*(pool.Begin() + 3) == TestNode(3, 3));
-    LSF_ASSERT(*(pool.Begin() + 4) == TestNode(4, 4));
-    LSF_ASSERT(pool.Begin() + pool.Size() == pool.End());
+    LSF_ASSERT(*(pool.begin() + 0) == TestNode(0, 0));
+    LSF_ASSERT(*(pool.begin() + 1) == TestNode(1, 1));
+    LSF_ASSERT(*(pool.begin() + 2) == TestNode(2, 2));
+    LSF_ASSERT(*(pool.begin() + 3) == TestNode(3, 3));
+    LSF_ASSERT(*(pool.begin() + 4) == TestNode(4, 4));
+    LSF_ASSERT(pool.begin() + pool.size() == pool.end());
 
     // test free
     LSF_ASSERT(pool.GetPtr(pos_arr[0]) != NULL);
@@ -116,7 +116,7 @@ LSF_TEST_CASE(test_used)
 
 int main(int argc, char **argv)
 {
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 

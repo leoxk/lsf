@@ -22,7 +22,7 @@ struct TestNode {
         return key < rhs.key;
     }
 
-    bool IsEmpty() { return key == 0 && data == 0; }
+    bool empty() { return key == 0 && data == 0; }
 
     std::string ToString() const {
         std::string out = "[" + lsf::basic::TypeCast< std::string>(key) + "]";

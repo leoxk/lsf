@@ -12,19 +12,26 @@
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
+class BasicService;
+
 class BasicServer : public lsf::basic::NonCopyable
 {
 public:
-    BasicServer(conf::ENServerType server_type, lsf::asio::ProactorSerivce & io_service) : 
-        _io_service(io_service), _server_type(server_type), _server_id(0) { }
+    friend class BasicService;
+
+public:
+    BasicServer(conf::ENServerType server_type) : _server_type(server_type), _server_id(0) { }
 
     void Run(int argc, char** argv);
+
+protected:
+    conf::Service const * GetServiceConfig(conf::ENServiceType service_type);
 
 protected:
     // init logic
     virtual bool OnParseCommond(int argc, char** argv);
 
-    virtual bool OnGetConfig();
+    virtual bool OnInitDeployConfig();
 
     virtual bool OnSetCurrentPath(char const * command);
 
@@ -35,7 +42,6 @@ protected:
     virtual bool OnRun() = 0;
 
 protected:
-    lsf::asio::ProactorSerivce & _io_service;
     std::string                  _server_name;
     conf::ENServerType           _server_type;
     uint32_t                     _server_id;

@@ -47,7 +47,7 @@ public:
 public:
     bool Insert(value_type const & val) 
     {
-        if (base_type::IsFull())    return false;
+        if (base_type::full())    return false;
 
         // get insert pos
         size_type pos = base_type::_ptr_state->GetNewNodeAndInsert(val);
@@ -60,7 +60,7 @@ public:
 
     bool Erase(value_type const & val)
     {
-        if (base_type::IsEmpty())   return false;
+        if (base_type::empty())   return false;
 
         // find pos
         std::pair<size_type, size_type> pos_pair = base_type::_ptr_state->FindNode(val);
@@ -78,7 +78,7 @@ public:
     {
         size_type pos = base_type::_ptr_state->FindNode(val).first;
         // not found
-        if (pos == state_type::NPOS) return End();
+        if (pos == state_type::NPOS) return end();
 
         return iterator(base_type::_ptr_state, pos);
     }
@@ -86,15 +86,15 @@ public:
     // accessor
     iterator operator[](value_type const & val) { return Find(val); }
 
-    iterator Begin() { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
-    iterator End()   { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
-    const_iterator Begin() const { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
-    const_iterator End()   const { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
+    iterator begin() { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
+    iterator end()   { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
+    const_iterator begin() const { return iterator(base_type::_ptr_state, base_type::_ptr_state->FindSmallestPos()); }
+    const_iterator end()   const { return iterator(base_type::_ptr_state, base_type::_ptr_state->NPOS); }
 
-    reverse_iterator RBegin() { return reverse_iterator(End()); }
-    reverse_iterator REnd()   { return reverse_iterator(Begin()); }
-    const_reverse_iterator RBegin() const { return reverse_iterator(End()); }
-    const_reverse_iterator REnd()   const { return reverse_iterator(Begin()); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend()   { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    const_reverse_iterator rend()   const { return reverse_iterator(begin()); }
 
     ////////////////////////////////////////////////////////////
     // for debug
@@ -104,10 +104,10 @@ public:
 
     iterator FindRoot() 
     {
-        if (!base_type::IsBindStorage()) return End();
+        if (!base_type::IsBindStorage()) return end();
 
         size_type root_pos = base_type::_ptr_state->GetRootPos();
-        if (root_pos == state_type::NPOS) return End();
+        if (root_pos == state_type::NPOS) return end();
 
         return iterator(base_type::_ptr_state, root_pos);
     }

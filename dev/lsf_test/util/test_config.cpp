@@ -27,7 +27,7 @@ LSF_TEST_CASE(parse_from_file)
 
     // clear and reload
     cf.Clear();
-    LSF_ASSERT(cf.Size() == 0);
+    LSF_ASSERT(cf.size() == 0);
 
     LSF_ASSERT(cf.ParseFromFile(conf_path));
     LSF_ASSERT(cf.Get("host") 	== "192.168.0.1");
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
     else {
         conf_path = argv[1];
     }
-	LSF_TEST_ALL();
+	LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:

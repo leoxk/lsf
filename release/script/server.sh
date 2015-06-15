@@ -220,7 +220,7 @@ function server::restart
 function server::checklive 
 {
   if ! server::is_alive "${@}"; then
-    # alarm TODO
+    # TODO alarm
     #server::alarm "$(path::basename $1) running num is ${_process_cur_num}, restart it"
     server::start ${@}
   fi
@@ -235,15 +235,6 @@ function server::reload
 
   echo "success reload config $1"
   return 0
-}
-
-function server::alarm 
-{
-  # TODO
-  #for target in ${var_alarm_target[@]}; do
-    #util::alarm msg ${target} "$(hostname): ${@}"
-  #done
-  io::log_error ${var_log_file} "${@}"
 }
 
 #################################

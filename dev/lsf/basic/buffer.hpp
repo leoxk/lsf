@@ -40,9 +40,9 @@ public:
     template<size_t OTHER_SIZE>
     Buffer & operator=(Buffer<OTHER_SIZE> const & rhs) { base_type::operator=(rhs); return *this; }
 
-    std::string ToHexString()   const { return BinToHexString(base_type::Begin(), base_type::Size()); }
+    std::string ToHexString()   const { return BinToHexString(base_type::begin(), base_type::size()); }
 
-    std::string ToString()    const { return BinToString(base_type::Begin(), base_type::Size()); }
+    std::string ToString()    const { return BinToString(base_type::begin(), base_type::size()); }
 
     void Copy(char const * str) { base_type::Copy(str, str + ::strlen(str)); }
 };
@@ -134,7 +134,7 @@ static inline bool HexStringToBin(std::string input, Buffer<SIZE> & buf)
     return true;
 }
 
-} // End of namespace basic
-} // End of namespace lsf
+} // end of namespace basic
+} // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

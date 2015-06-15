@@ -9,5 +9,17 @@ package msg;
 
 ////////////////////////////////////////////////////////////
 // client to server messages
+enum ENCS
+{
+   CS_GET_CONFIG_REQ = 1;
+   CS_GET_CONFIG_RSP = 2;
+   CS_REGISTER_TO_RPOXY_REQ = 3;
+   CS_REGISTER_TO_RPOXY_RSP = 4;
+}
+
+message CS
+{
+    optional ENCS                 type = 1;
+}
 
 // vim:ts=4:sw=4:et:ft=proto:

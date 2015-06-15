@@ -12,7 +12,7 @@ class ProxyServer :
     public lsf::basic::Singleton<ProxyServer>
 {
 public:
-    ProxyServer() : BasicServer(conf::SERVER_TYPE_PROXY_SERVER, lsf::asio::poll_service) { }
+    ProxyServer() : BasicServer(conf::SERVER_TYPE_PROXY_SERVER) { }
 
 public:
     virtual bool OnInitProxy() { return true; }

@@ -107,7 +107,7 @@ public:
                 return false;
             }
         }
-        if (empty_sets.size() != MaxSize() - Size()) {
+        if (empty_sets.size() != max_size() - size()) {
             return false;
         }
 
@@ -121,8 +121,8 @@ public:
                 return false;
             }
         }
-        if (use_sets.size() != Size()) {
-            std::cout << use_sets.size() << "," << Size() << std::endl;
+        if (use_sets.size() != size()) {
+            std::cout << use_sets.size() << "," << size() << std::endl;
             return false;
         }
 
@@ -697,11 +697,11 @@ public:
     ////////////////////////////////////////////////////////////
     // accessor funcs
     ////////////////////////////////////////////////////////////
-    bool IsFull()  const { return _size == _max_size - 1; }
-    bool IsEmpty() const { return _size == 0; }
+    bool full()  const { return _size == _max_size - 1; }
+    bool empty() const { return _size == 0; }
 
-    size_type Size()    const { return _size; }
-    size_type MaxSize() const { return _max_size - 1; }
+    size_type size()    const { return _size; }
+    size_type max_size() const { return _max_size - 1; }
     size_t ElemByteSize() const { return _elem_byte_size; }
 
     node_type  * GetNodePtr(size_type pos) { return (node_type *)(this + 1) + pos; }
@@ -748,7 +748,7 @@ public:
 
     static size_t CalcByteSize(size_type size) { return (size + 1) * sizeof(node_type) + sizeof(this_type); }
     static size_t CalcElemByteSize(void const * ptr) { return ((this_type const *)ptr)->ElemByteSize(); }
-    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->MaxSize(); }
+    static size_t CalcElemMaxSize(void const * ptr) { return ((this_type const *)ptr)->max_size(); }
 
 private:
     size_type      _size;

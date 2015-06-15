@@ -87,7 +87,7 @@ public:
     void SetDelimit(std::string const & delimit) { _delimit = delimit; }
     void SetComment(std::string const & comment) { _comment = comment; }
 
-    size_t Size() const {  return _size; }
+    size_t size() const {  return _size; }
 
     // other func
     void PrintAll(std::ostream & os) { 

@@ -127,7 +127,7 @@ LSF_TEST_CASE(test_split)
 
 int main(int argc, char** argv)
 {
-    LSF_TEST_ALL();
+    LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

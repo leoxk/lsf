@@ -3,7 +3,7 @@
 #      FILENAME: lbf_test.sh
 #
 #   DESCRIPTION: ---
-#         NOTES: TODO fix test_case order problem
+#         NOTES: 
 #        AUTHOR: leoxiang, leoxiang@tencent.com
 #       COMPANY: Tencent Co.Ltd
 #      REVISION: 2012-07-03 by leoxiang
