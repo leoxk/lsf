@@ -21,30 +21,32 @@ enum ENServerType
 
 enum ENServiceType
 {
-    SERVICE_TYPE_CLIENT_MSG     = 9; // receive client msg and response
-    SERVICE_TYPE_CONN_ACTIVE    = 1; // transfer client message
-    SERVICE_TYPE_CONN_PASSIVE   = 2; // transfer client message
-    SERVICE_TYPE_PROXY_ACTIVE   = 3; // transfer server to server message
-    SERVICE_TYPE_PROXY_PASSIVE  = 4; // transfer server to server message
-    SERVICE_TYPE_LOG_ACTIVE     = 5; // process net log
-    SERVICE_TYPE_LOG_PASSIVE    = 6; // process net log
-    SERVICE_TYPE_CONFIG_ACTIVE  = 7; // request and push configs
-    SERVICE_TYPE_CONFIG_PASSIVE = 8; // request and push configs
+    SERVICE_TYPE_CLIENT_MSG             = 1; // receive client msg and response
+    SERVICE_TYPE_CLIENT_MSG_TRANSFER    = 2; // transfer client message
+    SERVICE_TYPE_SERVER_MSG_TRANSFER    = 3; // transfer server to server message
+    SERVICE_TYPE_NET_LOG                = 4; // process net log
+    SERVICE_TYPE_CONFIG_CENTER          = 5; // request and push configs
 }
 
-message Service
+message AcceptService
 {
     optional ENServiceType service_type = 1;
     repeated string listen_address = 2;
-    repeated string connect_address = 3;
+}
+
+message ConnectService
+{
+    optional ENServiceType service_type = 1;
+    repeated string connect_address = 2;
 }
 
 message Server
 {
-    optional ENServerType server_type = 1;
-    optional uint32       server_id = 2; 
-    optional string       local_log_path = 3;
-    repeated Service      services = 4;
+    optional ENServerType   server_type = 1;
+    optional uint32         server_id = 2; 
+    optional string         local_log_path = 3;
+    repeated ConnectService connect_service = 4;
+    repeated AcceptService  accept_service = 5;
 }
 
 message Deploy

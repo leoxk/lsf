@@ -17,7 +17,11 @@ namespace asio {
 using async::AsyncInfo;
 using async::ProactorSerivce;
 
+typedef detail::BasicSockAddr<> SockAddr;
+
 typedef detail::BasicSocket<> Socket;
+
+typedef detail::BasicListenSocket<> ListenSocket;
 
 namespace detail {
 

@@ -32,12 +32,6 @@ public:
     // constructor
     Array(size_t size = 0) : _size(size) { }
 
-    Array(Array<ElemType, SIZE> const & rhs)
-    {
-        _size = std::min(SIZE, rhs.size());
-        std::copy(rhs.data(), rhs.data() + _size, data());
-    }
-
     template<typename OtherType, size_t OTHER_SIZE>
     Array(Array<OtherType, OTHER_SIZE> const & rhs)
     {
@@ -52,21 +46,11 @@ public:
         std::copy(iter, iter+size, begin());
     }
 
-    ~Array() { }
-
     // assign operator
-    Array<ElemType, SIZE> & operator=(Array<ElemType, SIZE> const & rhs) {
-        if (this == &rhs) return *this;
-
-        _size = std::min(SIZE, rhs.size());
-        std::copy(rhs.begin(), rhs.end(), data());
-        return *this;
-    }
-
     template<typename OtherType, size_t OTHER_SIZE>
-    Array<ElemType, SIZE> & operator=(Array<OtherType, OTHER_SIZE> const & rhs) {
+    Array<ElemType, SIZE> & operator=(Array<OtherType, OTHER_SIZE> const & rhs)
+    {
         if (this == &rhs) return *this;
-
         _size = std::min(SIZE, rhs.size());
         std::copy(rhs.data(), rhs.data() + _size, data());
         return *this;

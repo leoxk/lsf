@@ -17,7 +17,7 @@ bool DeployConfigManager::Init(char const * path)
     // open file
     std::ifstream ifs(path);
     if (!ifs) {
-        LSF_LOG_ERR("path=%s, %s", path, strerror(errno));
+        LSF_LOG_ERR("open failed, path=%s, %s", path, strerror(errno));
         return false;
     }
 
@@ -25,7 +25,7 @@ bool DeployConfigManager::Init(char const * path)
     io::IstreamInputStream isis(&ifs);
     if (!TextFormat::Parse(&isis, &_deploy_config))
     {
-        LSF_LOG_ERR("path=%s, %s", path, ProtobufLog::Instance()->ErrCharStr());
+        LSF_LOG_ERR("parse failed, path=%s, %s", path, ProtobufLog::Instance()->ErrCharStr());
         return false;
     }
 

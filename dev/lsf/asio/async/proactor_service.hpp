@@ -338,13 +338,13 @@ public:
     // Accept Event
     void OnAcceptEvent(int fd)
     {
-        detail::BasicListenSocket<detail::DummyProtocol> listen_socket(fd);
+        detail::BasicListenSocket<detail::DummyTransLayerProtocol> listen_socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
 
         // accept
-        detail::BasicSocket<detail::DummyProtocol> accept_socket(-1);
+        detail::BasicSocket<detail::DummyTransLayerProtocol> accept_socket(-1);
         if (!listen_socket.Accept(accept_socket))
         {
             ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
@@ -369,7 +369,7 @@ public:
     // Read Event
     void OnReadEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
@@ -452,7 +452,7 @@ public:
     // Write Event
     void OnWriteEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
@@ -515,7 +515,7 @@ public:
     // Connect Event
     void OnConnectEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;

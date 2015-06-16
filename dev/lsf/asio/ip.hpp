@@ -22,8 +22,8 @@ public:
 
     int domain() const { return _domain; }
 
-    bool operator==(Protocol const rhs) const { return _domain == rhs._domain; }
-    bool operator!=(Protocol const rhs) const { return _domain != rhs._domain; }
+    bool operator==(Protocol const & rhs) const { return _domain == rhs._domain; }
+    bool operator!=(Protocol const & rhs) const { return _domain != rhs._domain; }
 
 private:
     int _domain;

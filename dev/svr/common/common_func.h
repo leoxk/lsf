@@ -13,43 +13,40 @@
 #include "lsf/asio/tcp.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
-class CommonFunc
-{
+namespace common {
+
 ////////////////////////////////////////////////////////////
-// common func
-public:
-    ////////////////////////////////////////////////////////////
-    // pack and unpack
-    static bool PackMsg(std::string & content, google::protobuf::MessageLite const & message);
+// pack and unpack
+bool PackMsg(std::string & content, google::protobuf::MessageLite const & message);
 
-    static bool UnPackMsg(std::string const & content, google::protobuf::MessageLite & message);
+bool UnPackMsg(std::string const & content, google::protobuf::MessageLite & message);
 
-    ////////////////////////////////////////////////////////////
-    // send and recv
-    static bool SendAll(lsf::asio::tcp::Socket socket, std::string const & content);
+////////////////////////////////////////////////////////////
+// send and recv
+bool SendAll(lsf::asio::tcp::Socket socket, std::string const & content);
 
-    static bool RecvAll(lsf::asio::tcp::Socket socket, std::string & content);
+bool RecvAll(lsf::asio::tcp::Socket socket, std::string & content);
 
 ////////////////////////////////////////////////////////////
 // template func
-public:
-    template<typename SocketType, typename MessageType>
-    static bool SendAndRecv(SocketType & socket, MessageType & message)
-    {
-        // send request
-        std::string content;
-        if (!PackMsg(content, message)) return false;
-        if (!SendAll(socket, content)) return false;
+template<typename SocketType, typename MessageType>
+bool SendAndRecv(SocketType & socket, MessageType & message)
+{
+    // send request
+    std::string content;
+    if (!PackMsg(content, message)) return false;
+    if (!SendAll(socket, content)) return false;
 
-        // get response
-        if (!RecvAll(socket, content)) return false;
+    // get response
+    if (!RecvAll(socket, content)) return false;
 
 
-        // parse config
-        if (!UnPackMsg(content, message)) return false;
+    // parse config
+    if (!UnPackMsg(content, message)) return false;
 
-        return true;
-    }
-};
+    return true;
+}
+
+} // end of namespace common
 
 // vim:ts=4:sw=4:et:ft=cpp:

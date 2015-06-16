@@ -42,7 +42,7 @@ bool ConfigServer::OnInitDeployConfig()
     conf::Server const * pconf = DeployConfigManager::Instance()->GetServerConfig(_server_type, _server_id);
     if (!pconf)
     {
-        LSF_LOG_ERR("server_type=%u, server_id=%u, %s", _server_type, _server_id);
+        LSF_LOG_ERR("get config failed, server_type=%u, server_id=%u, %s", _server_type, _server_id);
         return false;
     }
     _server_config.CopyFrom(*pconf);
@@ -51,7 +51,7 @@ bool ConfigServer::OnInitDeployConfig()
     if (_server_type != _server_config.server_type() ||
         _server_id != _server_config.server_id())
     {
-        LSF_LOG_ERR("input=%u %u, config=%u %u", _server_type, _server_id, 
+        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id, 
                 _server_config.server_type(), _server_config.server_id());
         return false;
     }

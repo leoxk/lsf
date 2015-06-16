@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "lsf/basic/error.hpp"
+#include "lsf/asio/detail/basic_sockaddr.hpp"
 
 namespace lsf {
 namespace asio {
@@ -18,7 +19,7 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 // BasicListenSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol>
+template<typename TransLayerProtocol = DummyTransLayerProtocol>
 class BasicListenSocket : public basic::Error
 {
 public:
@@ -28,6 +29,8 @@ public:
     typedef BasicSockAddr<TransLayerProtocol>     sockaddr_type;
     typedef TransLayerProtocol                    proto_type;
 
+    template<typename OtherTransLayerProtocol> friend class BasicListenSocket;
+
 public:
     static BasicListenSocket CreateListenSocket(proto_type proto = proto_type::V4())
     {
@@ -36,6 +39,17 @@ public:
     }
 
     BasicListenSocket(int sockfd) : _sockfd(sockfd) { }
+
+    template<typename OtherTransLayerProtocol>
+    BasicListenSocket(BasicListenSocket<OtherTransLayerProtocol> const & rhs) : _sockfd(rhs._sockfd) { }
+
+    template<typename OtherTransLayerProtocol>
+    BasicListenSocket<TransLayerProtocol> & operator=(BasicListenSocket<OtherTransLayerProtocol> const & rhs)
+    {
+        if (this == &rhs) return *this;
+        _sockfd = rhs._sockfd;
+        return *this;
+    }
 
     ////////////////////////////////////////////////////////////
     bool Bind(sockaddr_type const & local) {

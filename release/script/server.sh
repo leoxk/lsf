@@ -220,7 +220,6 @@ function server::restart
 function server::checklive 
 {
   if ! server::is_alive "${@}"; then
-    # TODO alarm
     #server::alarm "$(path::basename $1) running num is ${_process_cur_num}, restart it"
     server::start ${@}
   fi

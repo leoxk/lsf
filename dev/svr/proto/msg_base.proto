@@ -9,6 +9,11 @@ package msg;
 
 ////////////////////////////////////////////////////////////
 // network headers
+/*enum ENConstant*/
+/*{*/
+
+/*}*/
+
 message TcpHead
 {
     optional string client_ip   = 1;

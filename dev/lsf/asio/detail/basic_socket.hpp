@@ -23,23 +23,9 @@ template<typename TransLayerProtocol>
 class BasicListenSocket;
 
 ////////////////////////////////////////////////////////////
-// DummyProtocol
-////////////////////////////////////////////////////////////
-class DummyProtocol
-{
-public:
-    typedef void net_layer_proto;
-    static DummyProtocol V4() { return DummyProtocol(); }
-    static DummyProtocol V6() { return DummyProtocol(); }
-    int domain()   const { return 0; }
-    int type()     const { return 0; }
-    int protocol() const { return 0; }
-};
-
-////////////////////////////////////////////////////////////
 // BasicSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol = DummyProtocol>
+template<typename TransLayerProtocol = DummyTransLayerProtocol>
 class BasicSocket : public basic::Error
 {
 public:
@@ -48,8 +34,8 @@ public:
 
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
 
-    template<typename TransLayerProtocol2>
-    friend class BasicListenSocket;
+    template<typename OtherTransLayerProtocol> friend class BasicListenSocket;
+    template<typename OtherTransLayerProtocol> friend class BasicSocket;
 
 public:
     static BasicSocket CreateSocket(proto_type proto = proto_type::V4()) 
@@ -59,6 +45,17 @@ public:
     }
 
     BasicSocket(int sockfd) : _sockfd(sockfd) { }
+
+    template<typename OtherTransLayerProtocol>
+    BasicSocket(BasicSocket<OtherTransLayerProtocol> const & rhs) : _sockfd(rhs._sockfd) { }
+
+    template<typename OtherTransLayerProtocol>
+    BasicSocket<TransLayerProtocol> & operator=(BasicSocket<OtherTransLayerProtocol> const & rhs)
+    {
+        if (this == &rhs) return *this;
+        _sockfd = rhs._sockfd;
+        return *this;
+    }
 
     ////////////////////////////////////////////////////////////
     bool Bind(sockaddr_type const & local) {

@@ -12,9 +12,10 @@
 bool ConfigService::OnSocketRead(lsf::asio::AsyncInfo & info)
 {
     msg::SS message;
-    if (!CommonFunc::UnPackMsg(info.buffer, message)) return true;
+    if (!common::UnPackMsg(info.buffer, message)) return true;
 
     if (message.type() != msg::SS_GET_CONFIG_REQ) ;
+    // TODO
 
     return true;
 }

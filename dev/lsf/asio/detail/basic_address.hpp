@@ -18,13 +18,25 @@ namespace lsf {
 namespace asio {
 namespace detail {
 
-// forward declare
-template<typename TransLayerProtocol>
-class BasicSockAddr;
+////////////////////////////////////////////////////////////
+// DummyNetLayerProtocol
+////////////////////////////////////////////////////////////
+class DummyNetLayerProtocol
+{
+public:
+    static DummyNetLayerProtocol V4() { return DummyNetLayerProtocol(); }
+    static DummyNetLayerProtocol V6() { return DummyNetLayerProtocol(); }
+    int domain()   const { return 0; }
+    bool operator==(DummyNetLayerProtocol const & rhs) const { return true; }
+    bool operator!=(DummyNetLayerProtocol const & rhs) const { return false; }
+};
 
 ////////////////////////////////////////////////////////////
 // BasicAddress
 ////////////////////////////////////////////////////////////
+// forward declare
+template<typename TransLayerProtocol> class BasicSockAddr;
+
 template<typename NetLayerProtocol>
 class BasicAddress
 {
@@ -35,8 +47,7 @@ public:
         in6_addr    v6;
     }                           addr_type;
 
-    template<typename TransLayerProtocol> 
-    friend class BasicSockAddr;
+    template<typename TransLayerProtocol> friend class BasicSockAddr;
 
 public:
     ////////////////////////////////////////////////////////////

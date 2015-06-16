@@ -5,15 +5,15 @@
 // Revision:    2015-06-15 by leoxiang
 
 #include "lsf/basic/singleton.hpp"
-#include "svr/common/basic_service.h"
+#include "svr/common/basic_accept_service.h"
 #include "svr/common/session_mng.h"
 
 class ConfigService : 
-    public BasicService,
+    public BasicAcceptService,
     public lsf::basic::Singleton<ConfigService>
 {
 public:
-    ConfigService() : BasicService(conf::SERVICE_TYPE_CONFIG_PASSIVE) { }
+    ConfigService() : BasicAcceptService(conf::SERVICE_TYPE_CONFIG_CENTER) { }
 
 public:
     virtual bool OnSocketRead(lsf::asio::AsyncInfo & info);

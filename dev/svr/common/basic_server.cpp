@@ -17,13 +17,23 @@ using namespace lsf::util;
 
 ////////////////////////////////////////////////////////////
 // utility funcs
-conf::Service const * BasicServer::GetServiceConfig(conf::ENServiceType service_type)
+conf::ConnectService const * BasicServer::GetConnectServiceConfig(conf::ENServiceType service_type)
 {
-    for (conf::Service const & iter : _server_config.services())
+    for (conf::ConnectService const & iter : _server_config.connect_service())
     {
         if (iter.service_type() == service_type) return &iter;
     }
-    LSF_LOG_ERR("type=%u", service_type);
+    LSF_LOG_ERR("get config failed, type=%u", service_type);
+    return NULL;
+}
+
+conf::AcceptService const * BasicServer::GetAcceptServiceConfig(conf::ENServiceType service_type)
+{
+    for (conf::AcceptService const & iter : _server_config.accept_service())
+    {
+        if (iter.service_type() == service_type) return &iter;
+    }
+    LSF_LOG_ERR("get config failed, type=%u", service_type);
     return NULL;
 }
 
@@ -82,7 +92,7 @@ bool BasicServer::OnInitDeployConfig()
     tcp::Socket socket = tcp::Socket::CreateSocket();
     if (!socket.Connect(_confsvrd_addrss))
     {
-        LSF_LOG_ERR("addr=%s, %s", _confsvrd_addrss.ToCharStr(), socket.ErrCharStr());
+        LSF_LOG_ERR("connect failed, addr=%s, %s", _confsvrd_addrss.ToCharStr(), socket.ErrCharStr());
         socket.Close();
         return false;
     }
@@ -95,7 +105,7 @@ bool BasicServer::OnInitDeployConfig()
     message.mutable_get_config_req()->set_server_id(_server_id);
 
     // send and recv
-    if (!CommonFunc::SendAndRecv(socket, message))
+    if (!common::SendAndRecv(socket, message))
     {
         socket.Close();
         return false;
@@ -114,7 +124,7 @@ bool BasicServer::OnInitDeployConfig()
     if (_server_type != _server_config.server_type() ||
         _server_id != _server_config.server_id())
     {
-        LSF_LOG_ERR("input=%u %u, config=%u %u", _server_type, _server_id, 
+        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id, 
                 _server_config.server_type(), _server_config.server_id());
         return false;
     }
@@ -129,7 +139,7 @@ bool BasicServer::OnSetCurrentPath(char const * command)
     std::string path = StringExt::GetDirName(System::GetAbsPath(command));
     if (!System::ChDir(path))
     {
-        LSF_LOG_ERR("%s", System::ErrCharStr());
+        LSF_LOG_ERR("set current path failed, %s", System::ErrCharStr());
         return false;
     }
 
@@ -144,7 +154,7 @@ bool BasicServer::OnInitLocalLog()
 
     if (!SingleLog::Instance()->BindOutput(new FileLogDriver(local_log_path, FileLogDriver::SHIFT_DAY)))
     {
-        LSF_LOG_ERR("%s", SingleLog::Instance()->ErrCharStr());
+        LSF_LOG_ERR("init local log failed, %s", SingleLog::Instance()->ErrCharStr());
         return false;
     }
 

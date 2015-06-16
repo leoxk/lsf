@@ -21,9 +21,23 @@ namespace detail {
 static const std::string DEF_DELIMIT = "|";
 
 ////////////////////////////////////////////////////////////
+// DummyTransLayerProtocol
+////////////////////////////////////////////////////////////
+class DummyTransLayerProtocol
+{
+public:
+    typedef DummyNetLayerProtocol net_layer_proto;
+    static DummyTransLayerProtocol V4() { return DummyTransLayerProtocol(); }
+    static DummyTransLayerProtocol V6() { return DummyTransLayerProtocol(); }
+    int domain()   const { return 0; }
+    int type()     const { return 0; }
+    int protocol() const { return 0; }
+};
+
+////////////////////////////////////////////////////////////
 // BasicSockAddr
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol>
+template<typename TransLayerProtocol = DummyTransLayerProtocol>
 class BasicSockAddr
 {
 public:
@@ -37,6 +51,7 @@ public:
     typedef typename proto_type::net_layer_proto    net_layer_proto;
     typedef BasicAddress<net_layer_proto>           address_type;
 
+    template<typename OtherTransLayerProtocol> friend class BasicSockAddr;
 
 public:
     ////////////////////////////////////////////////////////////
@@ -66,13 +81,26 @@ public:
     }
 
     BasicSockAddr(sockaddr const * paddr) {
-        memcpy(&_sockaddr, paddr, sizeof(_sockaddr));
+        ::memcpy(&_sockaddr, paddr, sizeof(_sockaddr));
     }
 
     BasicSockAddr(std::string const & str) : BasicSockAddr(
                 address_type(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
                 basic::TypeCast<uint16_t>(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 1)))
     { }
+
+    template<typename OtherTransLayerProtocol>
+    BasicSockAddr(BasicSockAddr<OtherTransLayerProtocol> const & rhs) { 
+        ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
+    }
+
+    template<typename OtherTransLayerProtocol>
+    BasicSockAddr<TransLayerProtocol> & operator=(BasicSockAddr<OtherTransLayerProtocol> const & rhs)
+    {
+        if (this == &rhs) return *this;
+        ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
+        return *this;
+    }
 
     ////////////////////////////////////////////////////////////
     // member funcs

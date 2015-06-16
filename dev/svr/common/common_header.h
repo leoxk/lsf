@@ -18,6 +18,13 @@
 #include "lsf/util/system.hpp"
 #include "lsf/util/log.hpp"
 #include "lsf/util/protobuf_log.hpp"
+#include "lsf/basic/buffer.hpp"
+
+namespace common {
+
+static const uint8_t MAGIC_STRING[] = { 0xf8, 0x8f };
+
+} // end of namespace common
 
 
 // vim:ts=4:sw=4:et:ft=cpp:

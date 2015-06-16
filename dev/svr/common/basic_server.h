@@ -12,12 +12,14 @@
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
-class BasicService;
+class BasicAcceptService;
+class BasicConnectService;
 
 class BasicServer : public lsf::basic::NonCopyable
 {
 public:
-    friend class BasicService;
+    friend class BasicAcceptService;
+    friend class BasicConnectService;
 
 public:
     BasicServer(conf::ENServerType server_type) : _server_type(server_type), _server_id(0) { }
@@ -25,7 +27,9 @@ public:
     void Run(int argc, char** argv);
 
 protected:
-    conf::Service const * GetServiceConfig(conf::ENServiceType service_type);
+    conf::ConnectService const * GetConnectServiceConfig(conf::ENServiceType service_type);
+
+    conf::AcceptService  const * GetAcceptServiceConfig(conf::ENServiceType service_type);
 
 protected:
     // init logic
