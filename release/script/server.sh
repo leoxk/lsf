@@ -24,7 +24,7 @@ export var_max_try=30
 
 # mod settings
 declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg" 
-                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60001 0")
+                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60000 0")
 
 ############################################################
 # Main Logic
@@ -35,6 +35,13 @@ function usage
   echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
   #echo "       $(path::basename $0) [backup|rollback]"
   echo "       $(path::basename $0) [clearshm]"
+}
+
+function check_input
+{
+  util::is_empty $1 && return 0
+  [[ ! "${!var_mod[@]}" =~ $1 ]] && [ $1 != "all" ] && return 0
+  return 1
 }
 
 function main 
@@ -59,7 +66,7 @@ function main
 
 function do_start
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -67,13 +74,14 @@ function do_start
         server::start ${_mod}
       done ;;
 
-    *) server::start ${var_mod[$1]};;
+    *)
+      server::start ${var_mod[$1]};;
   esac
 }
 
 function do_stop
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -87,7 +95,7 @@ function do_stop
 
 function do_restart 
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -101,7 +109,7 @@ function do_restart
 
 function do_status 
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -115,7 +123,7 @@ function do_status
 
 function do_checklive 
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -129,7 +137,7 @@ function do_checklive
 
 function do_reload 
 {
-  util::is_empty $1 && usage && return 1
+  check_input ${@} && usage && return 1
 
   case $1 in
     all) 
@@ -195,7 +203,7 @@ function server::start
 
 function server::stop 
 {
-  server::is_alive "${@}" && pkill -USR2 -xf "${*}"
+  server::is_alive "${@}" && pkill -USR1 -xf "${*}"
 
   for ((_cnt = 1; _cnt < ${var_max_try}; _cnt++)); do
     sleep 0.1

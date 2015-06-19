@@ -24,7 +24,6 @@ SVR_MODULE = \
 TEST_MODULE = \
 			  dev/lsf_test/algorithm	\
 			  dev/lsf_test/asio			\
-			  dev/lsf_test/basic		\
 			  dev/lsf_test/container	\
 			  dev/lsf_test/encrypt 		\
 			  dev/lsf_test/util 		\
@@ -48,7 +47,6 @@ clean :
 test : 				\
 	test_compile 	\
 	test_asio 		\
-	test_basic 		\
 	test_container 	\
 	test_encrypt 	\
 	test_util 		\
@@ -68,12 +66,6 @@ test_asio :
 	@./test/bin/test_tcp
 	@./test/bin/test_udp
 	@./test/bin/test_asio
-
-test_basic :
-	@./test/bin/test_basic_array
-	@./test/bin/test_buffer
-	@./test/bin/test_string_ext
-	@./test/bin/test_type_cast
 
 test_meta :
 	@./test/bin/test_macro
@@ -102,9 +94,10 @@ test_util :
 	@./test/bin/test_date
 	@./test/bin/test_log
 	@./test/bin/test_random
-	@./test/bin/test_shared_ptr
 	@./test/bin/test_system
 	@./test/bin/test_backtrace
+	@./test/bin/test_string_ext
+	@./test/bin/test_type_cast
 
 .PHONY : all clean test test_clean
 

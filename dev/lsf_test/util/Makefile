@@ -22,9 +22,10 @@ BIN = \
 	  $(TEST_BIN_DIR)/test_log				\
 	  $(TEST_BIN_DIR)/test_random 	 		\
 	  $(TEST_BIN_DIR)/test_system 	 		\
-	  $(TEST_BIN_DIR)/test_shared_ptr 		\
 	  $(TEST_BIN_DIR)/test_file_lock 		\
 	  $(TEST_BIN_DIR)/test_backtrace 		\
+	  $(TEST_BIN_DIR)/test_string_ext 		\
+	  $(TEST_BIN_DIR)/test_type_cast 		\
 
 # main targets
 all: $(BIN)
