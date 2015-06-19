@@ -24,21 +24,17 @@ export RM       	= rm -rf
 export CP       	= cp -rf
 export AR       	= ar rcs
 export LD       	= ld
-export CFLAGS   	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing 
-export CXXFLAGS 	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing
-export DEBUGFLAGS 	= -rdynamic
-
-# TODO
-CXXFLAGS += $(DEBUGFLAGS)
+export CFLAGS   	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
+export CXXFLAGS 	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
 
 # define dirs
 DEV_DIR 	 := $(PROJECT_DIR)/dev
 RELEASE_DIR  := $(PROJECT_DIR)/release
 TEST_DIR 	 := $(PROJECT_DIR)/test
-
 LIB_DIR 	 := $(DEV_DIR)/svr/lib
 BIN_DIR 	 := $(RELEASE_DIR)/bin
 TEST_BIN_DIR := $(TEST_DIR)/bin
+$(shell mkdir -p $(BIN_DIR) $(TEST_BIN_DIR))
 
 # define options
 LIB := $(LIB_DIR)/libcommon.a \
