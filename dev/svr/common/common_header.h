@@ -18,6 +18,5 @@
 #include "lsf/util/system.hpp"
 #include "lsf/util/log.hpp"
 #include "lsf/util/protobuf_log.hpp"
-#include "lsf/basic/buffer.hpp"
 
 // vim:ts=4:sw=4:et:ft=cpp:

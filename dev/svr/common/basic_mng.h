@@ -57,7 +57,7 @@ public:
             ::gettimeofday(&tv_begin, NULL);
 
             // recover every elem
-            for (int i = 0; i < elem_size && i < _pool.max_size(); ++i)
+            for (size_t i = 0; i < elem_size && i < _pool.max_size(); ++i)
             {
                 // create elem
                 uint32_t id = _pool.Malloc();

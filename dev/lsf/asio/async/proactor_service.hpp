@@ -12,7 +12,6 @@
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/macro.hpp"
-#include "lsf/basic/buffer.hpp"
 #include "lsf/asio/detail/basic_socket.hpp"
 #include "lsf/asio/detail/basic_listen_socket.hpp"
 #include "lsf/asio/async/completion_queue.hpp"

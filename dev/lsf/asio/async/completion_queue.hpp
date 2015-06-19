@@ -10,7 +10,6 @@
 #include <map>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
-#include "lsf/basic/buffer.hpp"
 
 namespace lsf {
 namespace asio {

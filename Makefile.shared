@@ -16,8 +16,10 @@
 # User Settings
 ############################################################
 # tools
-export CC       	= /opt/rh/devtoolset-2/root/usr/bin/gcc
-export CXX      	= /opt/rh/devtoolset-2/root/usr/bin/g++
+#export CC       	= /opt/rh/devtoolset-2/root/usr/bin/gcc
+#export CXX      	= /opt/rh/devtoolset-2/root/usr/bin/g++
+export CC       	= gcc
+export CXX      	= g++
 export RM       	= rm -rf
 export CP       	= cp -rf
 export AR       	= ar rcs
