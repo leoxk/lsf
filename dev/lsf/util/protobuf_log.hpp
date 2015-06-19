@@ -10,7 +10,7 @@
 #include "google/protobuf/stubs/common.h"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/singleton.hpp"
-#include "lsf/basic/type_cast.hpp"
+#include "lsf/util/type_cast.hpp"
 
 namespace lsf {
 namespace util {
@@ -30,8 +30,8 @@ public:
     void LogHandle(google::protobuf::LogLevel level, char const * filename, int line, std::string const & message)
     {
         ErrString() = "[[" + 
-                       lsf::basic::TypeCast<std::string>(level) + "|" +
-                       filename + ":" + lsf::basic::TypeCast<std::string>(line) + "|" +
+                       lsf::util::TypeCast<std::string>(level) + "|" +
+                       filename + ":" + lsf::util::TypeCast<std::string>(line) + "|" +
                        message +
                        "]]";
     }

@@ -10,8 +10,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "lsf/basic/type_cast.hpp"
-#include "lsf/basic/string_ext.hpp"
+#include "lsf/util/type_cast.hpp"
+#include "lsf/util/string_ext.hpp"
 #include "lsf/asio/detail/basic_address.hpp"
 
 namespace lsf {
@@ -21,14 +21,14 @@ namespace detail {
 static const std::string DEF_DELIMIT = "|";
 
 ////////////////////////////////////////////////////////////
-// DummyTransLayerProtocol
+// DummyTransLayerProtoType
 ////////////////////////////////////////////////////////////
-class DummyTransLayerProtocol
+class DummyTransLayerProtoType
 {
 public:
-    typedef DummyNetLayerProtocol net_layer_proto;
-    static DummyTransLayerProtocol V4() { return DummyTransLayerProtocol(); }
-    static DummyTransLayerProtocol V6() { return DummyTransLayerProtocol(); }
+    typedef DummyNetLayerProtoType net_layer_proto;
+    static DummyTransLayerProtoType V4() { return DummyTransLayerProtoType(); }
+    static DummyTransLayerProtoType V6() { return DummyTransLayerProtoType(); }
     int domain()   const { return 0; }
     int type()     const { return 0; }
     int protocol() const { return 0; }
@@ -37,7 +37,7 @@ public:
 ////////////////////////////////////////////////////////////
 // BasicSockAddr
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol = DummyTransLayerProtocol>
+template<typename TransLayerProtoType = DummyTransLayerProtoType>
 class BasicSockAddr
 {
 public:
@@ -47,11 +47,11 @@ public:
         sockaddr_in6    v6;
     }   sockaddr_type;
 
-    typedef TransLayerProtocol                      proto_type;
+    typedef TransLayerProtoType                      proto_type;
     typedef typename proto_type::net_layer_proto    net_layer_proto;
     typedef BasicAddress<net_layer_proto>           address_type;
 
-    template<typename OtherTransLayerProtocol> friend class BasicSockAddr;
+    template<typename OtherTransLayerProtoType> friend class BasicSockAddr;
 
 public:
     ////////////////////////////////////////////////////////////
@@ -85,17 +85,17 @@ public:
     }
 
     BasicSockAddr(std::string const & str) : BasicSockAddr(
-                address_type(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
-                basic::TypeCast<uint16_t>(basic::StringExt::SplitAndGet(str, DEF_DELIMIT, 1)))
+                address_type(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
+                util::TypeCast<uint16_t>(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 1)))
     { }
 
-    template<typename OtherTransLayerProtocol>
-    BasicSockAddr(BasicSockAddr<OtherTransLayerProtocol> const & rhs) { 
+    template<typename OtherTransLayerProtoType>
+    BasicSockAddr(BasicSockAddr<OtherTransLayerProtoType> const & rhs) { 
         ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
     }
 
-    template<typename OtherTransLayerProtocol>
-    BasicSockAddr<TransLayerProtocol> & operator=(BasicSockAddr<OtherTransLayerProtocol> const & rhs)
+    template<typename OtherTransLayerProtoType>
+    BasicSockAddr<TransLayerProtoType> & operator=(BasicSockAddr<OtherTransLayerProtoType> const & rhs)
     {
         if (this == &rhs) return *this;
         ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
@@ -105,7 +105,7 @@ public:
     ////////////////////////////////////////////////////////////
     // member funcs
     std::string ToString() const {
-        return GetAddress().ToString() + DEF_DELIMIT + basic::TypeCast< std::string>(GetPort());
+        return GetAddress().ToString() + DEF_DELIMIT + util::TypeCast< std::string>(GetPort());
     }
 
     uint16_t GetPort() const { 

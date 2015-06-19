@@ -31,7 +31,8 @@ class ProactorSerivce :
     public basic::Error
 {
 public:
-    typedef std::function<bool()>   routine_func_type;
+    typedef std::function<void()>   tick_func_type;
+    typedef std::function<void()>   exit_func_type;
 
     static const size_t MAX_WAIT_MILLI_SECONDS = 10;
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
@@ -44,13 +45,6 @@ public:
     template<typename SocketType, typename HandlerType>
     bool AsyncAccept(SocketType & socket, HandlerType const & handler)
     {
-        // set non block
-        if (!socket.SetNonBlock())
-        {
-            ErrString() = LSF_DEBUG_INFO + socket.ErrString(); 
-            return false;
-        }
-
         // register event
         if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_READ))
         {
@@ -74,13 +68,6 @@ public:
     template<typename SocketType, typename SockAddrType, typename HandlerType>
     bool AsyncConnect(SocketType & socket, SockAddrType const & sockaddr, HandlerType const & handler)
     {
-        // set non block
-        if (!socket.SetNonBlock())
-        {
-            ErrString() = LSF_DEBUG_INFO + socket.ErrString();
-            return false;
-        }
-
         // try connect
         if (!socket.Connect(sockaddr) && errno != EINPROGRESS)
         {
@@ -128,13 +115,6 @@ public:
     template<typename SocketType, typename HandlerType>
     bool AsyncRead(SocketType & socket, HandlerType const & handler)
     {
-        // set non block
-        if (!socket.SetNonBlock())
-        {
-            ErrString() = LSF_DEBUG_INFO + socket.ErrString(); 
-            return false;
-        }
-
         // register event
         if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_READ))
         {
@@ -164,13 +144,6 @@ public:
     template<typename SocketType, typename HandlerType>
     bool AsyncWrite(SocketType & socket, void const * buffer, size_t buflen, HandlerType const & handler)
     {
-        // set non block
-        if (!socket.SetNonBlock())
-        {
-            ErrString() = LSF_DEBUG_INFO + socket.ErrString(); 
-            return false;
-        }
-
         // register event
         if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_WRITE))
         {
@@ -323,28 +296,27 @@ public:
             }
 
             // call routine 
-            if (_routine_func && _routine_func())
-            {
-                _is_exit = true; 
-            }
+            if (_tick_func) _tick_func();
 
             // check exit
             if (_is_exit) break;
         }
 
+        // call exit func
+        if (_exit_func) _exit_func();
     }
 
     ////////////////////////////////////////////////////////////
     // Accept Event
     void OnAcceptEvent(int fd)
     {
-        detail::BasicListenSocket<detail::DummyTransLayerProtocol> listen_socket(fd);
+        detail::BasicListenSocket<detail::DummyTransLayerProtoType> listen_socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
 
         // accept
-        detail::BasicSocket<detail::DummyTransLayerProtocol> accept_socket(-1);
+        detail::BasicSocket<detail::DummyTransLayerProtoType> accept_socket(-1);
         if (!listen_socket.Accept(accept_socket))
         {
             ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
@@ -369,7 +341,7 @@ public:
     // Read Event
     void OnReadEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtoType> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
@@ -381,7 +353,7 @@ public:
         while (true)
         {
             static char buffer[MAX_BUFFER_LEN];
-            ssize_t ret = socket.Recv(buffer, sizeof(buffer));
+            ssize_t ret = socket.RecvRaw(buffer, sizeof(buffer));
 
             // handle error
             if (ret < 0)
@@ -452,7 +424,7 @@ public:
     // Write Event
     void OnWriteEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtoType> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
@@ -471,7 +443,7 @@ public:
         bool close_connection = false;
         while (total < pfunc->buffer.length())
         {
-            int ret = socket.Send(pfunc->buffer.data() + total, pfunc->buffer.length() - total);
+            int ret = socket.SendRaw(pfunc->buffer.data() + total, pfunc->buffer.length() - total);
 
             // handle error
             if (ret < 0)
@@ -515,7 +487,7 @@ public:
     // Connect Event
     void OnConnectEvent(int fd)
     {
-        detail::BasicSocket<detail::DummyTransLayerProtocol> socket(fd);
+        detail::BasicSocket<detail::DummyTransLayerProtoType> socket(fd);
         static AsyncInfo info;
         info.Clear();
         info.fd = fd;
@@ -593,10 +565,10 @@ public:
     ////////////////////////////////////////////////////////////
     // Other Func
     template<typename HandlerType>
-    void SetRoutineFunc(HandlerType const & handler)
-    {
-        _routine_func = routine_func_type(handler);
-    }
+    void SetTickFunc(HandlerType const & handler) { _tick_func = tick_func_type(handler); }
+
+    template<typename HandlerType>
+    void SetExitFunc(HandlerType const & handler) { _exit_func = exit_func_type(handler); }
 
     void SetExit() { _is_exit = true; }
 
@@ -612,7 +584,8 @@ private:
     BasicEventDriver *  _pdriver;
     bool                _is_exit;
     CompletionQueue     _queue;
-    routine_func_type   _routine_func;
+    tick_func_type      _tick_func;
+    exit_func_type      _exit_func;
     timespec            _ts;
 };
 

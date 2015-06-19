@@ -11,41 +11,23 @@
 #include "lsf/util/backtrace.hpp"
 #include "lsf/util/log.hpp"
 #include "lsf/asio/tcp.hpp"
+#include "lsf/asio/net.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
 namespace common {
 
 ////////////////////////////////////////////////////////////
 // pack and unpack
-bool PackMsg(std::string & content, google::protobuf::MessageLite const & message);
+bool GetSingleMessageFromStream(std::string const & buffer, size_t & pos, std::string & message);
+bool PutSingleMessageIntoStream(std::string & message);
 
-bool UnPackMsg(std::string const & content, google::protobuf::MessageLite & message);
+bool PackProtoMsg(std::string & message, google::protobuf::MessageLite const & proto_msg);
+bool UnPackProtoMsg(std::string const & message, google::protobuf::MessageLite & proto_msg);
 
 ////////////////////////////////////////////////////////////
 // send and recv
-bool SendAll(lsf::asio::tcp::Socket socket, std::string const & content);
-
-bool RecvAll(lsf::asio::tcp::Socket socket, std::string & content);
-
-////////////////////////////////////////////////////////////
-// template func
-template<typename SocketType, typename MessageType>
-bool SendAndRecv(SocketType & socket, MessageType & message)
-{
-    // send request
-    std::string content;
-    if (!PackMsg(content, message)) return false;
-    if (!SendAll(socket, content)) return false;
-
-    // get response
-    if (!RecvAll(socket, content)) return false;
-
-
-    // parse config
-    if (!UnPackMsg(content, message)) return false;
-
-    return true;
-}
+bool SendMessage(lsf::asio::Socket socket, google::protobuf::MessageLite const & message);
+bool SendAndRecv(lsf::asio::Socket socket, google::protobuf::MessageLite & message);
 
 } // end of namespace common
 

@@ -6,11 +6,11 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/encrypt/md5.hpp"
-#include "lsf/basic/buffer.hpp"
+#include "lsf/util/string_ext.hpp"
 
 using namespace std;
 using namespace lsf::encrypt;
-using namespace lsf::basic;
+using namespace lsf::util;
 
 const char content[] = "leoxiang";
 
@@ -21,7 +21,7 @@ LSF_TEST_CASE(test)
     Md5HashBuffer(enc_buf, content, strlen(content));
 
     LSF_ASSERT(strlen(content) == 8);
-    LSF_ASSERT(BinToHexString(enc_buf, sizeof(enc_buf)) == "637efe4601a183fb76b3b013101f7758");
+    LSF_ASSERT(StringExt::BinToHexString(enc_buf, sizeof(enc_buf)) == "637efe4601a183fb76b3b013101f7758");
 }
 
 int main(int argc, char **argv)

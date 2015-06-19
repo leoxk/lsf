@@ -19,17 +19,17 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 // BasicListenSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol = DummyTransLayerProtocol>
+template<typename TransLayerProtoType = DummyTransLayerProtoType>
 class BasicListenSocket : public basic::Error
 {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
-    typedef BasicSocket<TransLayerProtocol>       socket_type;
-    typedef BasicSockAddr<TransLayerProtocol>     sockaddr_type;
-    typedef TransLayerProtocol                    proto_type;
+    typedef BasicSocket<TransLayerProtoType>       socket_type;
+    typedef BasicSockAddr<TransLayerProtoType>     sockaddr_type;
+    typedef TransLayerProtoType                    proto_type;
 
-    template<typename OtherTransLayerProtocol> friend class BasicListenSocket;
+    template<typename OtherTransLayerProtoType> friend class BasicListenSocket;
 
 public:
     static BasicListenSocket CreateListenSocket(proto_type proto = proto_type::V4())
@@ -40,11 +40,11 @@ public:
 
     BasicListenSocket(int sockfd) : _sockfd(sockfd) { }
 
-    template<typename OtherTransLayerProtocol>
-    BasicListenSocket(BasicListenSocket<OtherTransLayerProtocol> const & rhs) : _sockfd(rhs._sockfd) { }
+    template<typename OtherTransLayerProtoType>
+    BasicListenSocket(BasicListenSocket<OtherTransLayerProtoType> const & rhs) : _sockfd(rhs._sockfd) { }
 
-    template<typename OtherTransLayerProtocol>
-    BasicListenSocket<TransLayerProtocol> & operator=(BasicListenSocket<OtherTransLayerProtocol> const & rhs)
+    template<typename OtherTransLayerProtoType>
+    BasicListenSocket<TransLayerProtoType> & operator=(BasicListenSocket<OtherTransLayerProtoType> const & rhs)
     {
         if (this == &rhs) return *this;
         _sockfd = rhs._sockfd;

@@ -9,7 +9,7 @@
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_red_black_tree.hpp"
 #include "lsf/container/shared_mem.hpp"
-#include "lsf/basic/type_cast.hpp"
+#include "lsf/util/type_cast.hpp"
 
 namespace lsf {
 namespace container {
@@ -126,7 +126,7 @@ public:
     {
         std::string out;
 
-        out = "[" + lsf::basic::TypeCast<std::string>(pos) + "]";
+        out = "[" + lsf::util::TypeCast<std::string>(pos) + "]";
         if (base_type::_ptr_state->GetColor(pos) == state_type::RED) {
             out += "[*]";
         }

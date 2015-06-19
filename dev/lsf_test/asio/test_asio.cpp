@@ -7,7 +7,7 @@
 #include <functional>  
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/asio/tcp.hpp"
-#include "lsf/asio/io_service.hpp"
+#include "lsf/asio/net.hpp"
 #include "lsf/util/random.hpp"
 
 using namespace std;

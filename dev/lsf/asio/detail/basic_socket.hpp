@@ -19,23 +19,23 @@ namespace asio {
 namespace detail {
 
 // forward declare
-template<typename TransLayerProtocol>
+template<typename TransLayerProtoType>
 class BasicListenSocket;
 
 ////////////////////////////////////////////////////////////
 // BasicSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtocol = DummyTransLayerProtocol>
+template<typename TransLayerProtoType = DummyTransLayerProtoType>
 class BasicSocket : public basic::Error
 {
 public:
-    typedef BasicSockAddr<TransLayerProtocol>  sockaddr_type;
-    typedef TransLayerProtocol                 proto_type;
+    typedef BasicSockAddr<TransLayerProtoType>  sockaddr_type;
+    typedef TransLayerProtoType                 proto_type;
 
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
 
-    template<typename OtherTransLayerProtocol> friend class BasicListenSocket;
-    template<typename OtherTransLayerProtocol> friend class BasicSocket;
+    template<typename OtherTransLayerProtoType> friend class BasicListenSocket;
+    template<typename OtherTransLayerProtoType> friend class BasicSocket;
 
 public:
     static BasicSocket CreateSocket(proto_type proto = proto_type::V4()) 
@@ -46,11 +46,11 @@ public:
 
     BasicSocket(int sockfd) : _sockfd(sockfd) { }
 
-    template<typename OtherTransLayerProtocol>
-    BasicSocket(BasicSocket<OtherTransLayerProtocol> const & rhs) : _sockfd(rhs._sockfd) { }
+    template<typename OtherTransLayerProtoType>
+    BasicSocket(BasicSocket<OtherTransLayerProtoType> const & rhs) : _sockfd(rhs._sockfd) { }
 
-    template<typename OtherTransLayerProtocol>
-    BasicSocket<TransLayerProtocol> & operator=(BasicSocket<OtherTransLayerProtocol> const & rhs)
+    template<typename OtherTransLayerProtoType>
+    BasicSocket<TransLayerProtoType> & operator=(BasicSocket<OtherTransLayerProtoType> const & rhs)
     {
         if (this == &rhs) return *this;
         _sockfd = rhs._sockfd;
@@ -70,11 +70,11 @@ public:
         return ErrWrap(::close(_sockfd)) == 0;
     }
 
-    ssize_t Send(void const * buf, size_t len) {
+    ssize_t SendRaw(void const * buf, size_t len) {
         return ErrWrap(::send(_sockfd, buf, len, MSG_NOSIGNAL));
     }
 
-    ssize_t Recv(void * buf, size_t len) {
+    ssize_t RecvRaw(void * buf, size_t len) {
         return ErrWrap(::recv(_sockfd, buf, len, 0));
     }
 
@@ -86,7 +86,7 @@ public:
         {
             // recv
             static char buffer[MAX_BUFFER_LEN];
-            int ret = Recv(buffer, sizeof(buffer));
+            int ret = RecvRaw(buffer, sizeof(buffer));
 
             // handle error
             if (ret < 0)
@@ -120,7 +120,7 @@ public:
         size_t total = 0;
         while (total < len)
         {
-            int ret = Send((char const *)buf + total, len - total);
+            int ret = SendRaw((char const *)buf + total, len - total);
 
             // handle error
             if (ret < 0)
@@ -255,6 +255,12 @@ public:
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
     bool operator!() const { return _sockfd >= 0; }
+
+    template<typename OtherTransLayerProtoType>
+    bool operator==(BasicSocket<OtherTransLayerProtoType> const & rhs) const { return _sockfd == rhs._sockfd; }
+
+    template<typename OtherTransLayerProtoType>
+    bool operator!=(BasicSocket<OtherTransLayerProtoType> const & rhs) const { return _sockfd != rhs._sockfd; }
 
 private:
     int             _sockfd;

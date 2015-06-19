@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <string>
-#include "lsf/basic/type_cast.hpp"
+#include "lsf/util/type_cast.hpp"
 
 struct TestNode {
     TestNode(uint32_t _key = 0, uint32_t _data = 0) : key(_key), data(_data) { }
@@ -25,7 +25,7 @@ struct TestNode {
     bool empty() { return key == 0 && data == 0; }
 
     std::string ToString() const {
-        std::string out = "[" + lsf::basic::TypeCast< std::string>(key) + "]";
+        std::string out = "[" + lsf::util::TypeCast< std::string>(key) + "]";
         return out;
     }
 

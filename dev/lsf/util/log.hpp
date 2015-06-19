@@ -76,9 +76,9 @@ private:
         if (_ofs.is_open()) _ofs.close();
 
         // mkdir if necessary
-        if (!System::IsExist(basic::StringExt::GetDirName(_prefix)))
+        if (!System::IsExist(util::StringExt::GetDirName(_prefix)))
         {
-            if (!System::MkDir(basic::StringExt::GetDirName(_prefix)))
+            if (!System::MkDir(util::StringExt::GetDirName(_prefix)))
             {
                 ErrString() = LSF_DEBUG_INFO + System::ErrString();
                 return false;
@@ -123,14 +123,14 @@ private:
         if (SHIFT_DAY == _shift)
         {
             if (Date().GetDay() == _last_shift)  return false;
-            dest_path = basic::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/%m/") + 
-                basic::StringExt::GetBaseName(_log_path);
+            dest_path = util::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/%m/") + 
+                util::StringExt::GetBaseName(_log_path);
         }
         else if (SHIFT_MONTH == _shift)
         {
             if (Date().GetMonth() == _last_shift) return false;
-            dest_path = basic::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/") + 
-                basic::StringExt::GetBaseName(_log_path);
+            dest_path = util::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/") + 
+                util::StringExt::GetBaseName(_log_path);
         }
         else 
         {
@@ -138,9 +138,9 @@ private:
         }
 
         // mkdir and rename
-        if (!System::IsExist(basic::StringExt::GetDirName(dest_path)))
+        if (!System::IsExist(util::StringExt::GetDirName(dest_path)))
         {
-            if (!System::MkDir(basic::StringExt::GetDirName(dest_path)))
+            if (!System::MkDir(util::StringExt::GetDirName(dest_path)))
             {
                 ErrString() = LSF_DEBUG_INFO + System::ErrString();
                 return false;
@@ -277,19 +277,19 @@ class SingleLog :
 { };
 
 #define LSF_LOG_INFO(fmt, args...)  lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::Log::TYPE_INFO,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_INFO,  "%s|%d|%s " fmt, __FILE__, __LINE__, __FUNCTION__, ##args)
 
 #define LSF_LOG_DEBUG(fmt, args...) lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::Log::TYPE_DEBUG, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, __FUNCTION__, ##args)
 
 #define LSF_LOG_WARN(fmt, args...)  lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::Log::TYPE_WARN,  "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_WARN,  "%s|%d|%s " fmt, __FILE__, __LINE__, __FUNCTION__, ##args)
 
 #define LSF_LOG_ERR(fmt, args...)   lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::Log::TYPE_ERR,   "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_ERR,   "%s|%d|%s " fmt, __FILE__, __LINE__, __FUNCTION__, ##args)
 
 #define LSF_LOG_FATAL(fmt, args...) lsf::util::SingleLog::Instance()->WriteLog(\
-        ::lsf::util::Log::TYPE_FATAL, "%s|%s|%d " fmt, __FILE__, __FUNCTION__, __LINE__, ##args)
+        ::lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, __FUNCTION__, ##args)
 
 
 } // end of namespace util

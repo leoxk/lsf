@@ -5,7 +5,7 @@
 // Revision:    2012-05-19 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/basic/string_ext.hpp"
+#include "lsf/util/string_ext.hpp"
 #include "lsf/util/system.hpp"
 
 using namespace std;

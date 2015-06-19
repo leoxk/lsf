@@ -18,7 +18,7 @@
 #include <string>
 #include <utility>
 #include "lsf/basic/error.hpp"
-#include "lsf/basic/string_ext.hpp"
+#include "lsf/util/string_ext.hpp"
 
 namespace lsf {
 namespace util {
@@ -61,7 +61,7 @@ public:
     static bool MkDir(std::string const & path) {
         if (IsDir(path)) return true;
 
-        std::string dirname = basic::StringExt::GetDirName(path);
+        std::string dirname = util::StringExt::GetDirName(path);
 
         if (IsExist(dirname) && !IsDir(dirname)) 
             return false;
@@ -98,13 +98,11 @@ public:
     static bool SetSignal(int sig_num, handler_type sig_handler) {
         struct sigaction sa;
         std::memset(&sa, 0, sizeof(sa));
-
         sa.sa_handler = sig_handler;
         ::sigemptyset(&sa.sa_mask);
         // restart interrupted system call
         sa.sa_flags = SA_RESTART;
         if (ErrWrap(::sigaction(sig_num, &sa, NULL)) < 0) return false;
-
         return true;
     }
 

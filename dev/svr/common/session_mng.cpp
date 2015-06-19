@@ -7,7 +7,7 @@
 #include "svr/common/session_mng.h"
 #include "svr/common/common_header.h"
 
-using namespace lsf::basic;
+using namespace lsf::util;
 
 ////////////////////////////////////////////////////////////
 // Session

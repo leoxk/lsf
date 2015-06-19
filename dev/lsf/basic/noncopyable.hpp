@@ -11,13 +11,13 @@ namespace basic {
 
 class NonCopyable
 {
-protected:
-    NonCopyable()  { }
-    ~NonCopyable() { }
+public:
+    NonCopyable() = default;
+    ~NonCopyable() = default;
 
 private:
-    NonCopyable(NonCopyable const &);                // copy constructor is hidden
-    NonCopyable & operator=(NonCopyable const &);    // copy operator is hidden
+    NonCopyable(NonCopyable const &) = delete;                  // copy constructor is hidden
+    NonCopyable & operator=(NonCopyable const &) = delete;      // copy operator is hidden
 };
 
 } // end of namespace basic

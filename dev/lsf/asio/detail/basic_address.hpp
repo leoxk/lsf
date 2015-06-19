@@ -19,35 +19,35 @@ namespace asio {
 namespace detail {
 
 ////////////////////////////////////////////////////////////
-// DummyNetLayerProtocol
+// DummyNetLayerProtoType
 ////////////////////////////////////////////////////////////
-class DummyNetLayerProtocol
+class DummyNetLayerProtoType
 {
 public:
-    static DummyNetLayerProtocol V4() { return DummyNetLayerProtocol(); }
-    static DummyNetLayerProtocol V6() { return DummyNetLayerProtocol(); }
+    static DummyNetLayerProtoType V4() { return DummyNetLayerProtoType(); }
+    static DummyNetLayerProtoType V6() { return DummyNetLayerProtoType(); }
     int domain()   const { return 0; }
-    bool operator==(DummyNetLayerProtocol const & rhs) const { return true; }
-    bool operator!=(DummyNetLayerProtocol const & rhs) const { return false; }
+    bool operator==(DummyNetLayerProtoType const & rhs) const { return true; }
+    bool operator!=(DummyNetLayerProtoType const & rhs) const { return false; }
 };
 
 ////////////////////////////////////////////////////////////
 // BasicAddress
 ////////////////////////////////////////////////////////////
 // forward declare
-template<typename TransLayerProtocol> class BasicSockAddr;
+template<typename TransLayerProtoType> class BasicSockAddr;
 
-template<typename NetLayerProtocol>
+template<typename NetLayerProtoType>
 class BasicAddress
 {
 public:
-    typedef NetLayerProtocol    proto_type;
+    typedef NetLayerProtoType    proto_type;
     typedef union {
         in_addr     v4;
         in6_addr    v6;
     }                           addr_type;
 
-    template<typename TransLayerProtocol> friend class BasicSockAddr;
+    template<typename TransLayerProtoType> friend class BasicSockAddr;
 
 public:
     ////////////////////////////////////////////////////////////

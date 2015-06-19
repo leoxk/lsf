@@ -12,10 +12,10 @@
 #include <sstream>
 #include <cstring>
 #include "lsf/basic/macro.hpp"
-#include "lsf/basic/type_cast.hpp"
+#include "lsf/util/type_cast.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/error.hpp"
-#include "lsf/basic/string_ext.hpp"
+#include "lsf/util/string_ext.hpp"
 
 namespace lsf {
 namespace util {
@@ -75,7 +75,7 @@ public:
 
     template<typename OutType>
     OutType Get(std::string const & module, std::string const & key) {
-        return basic::TypeCast<OutType>(Get(module, key));
+        return util::TypeCast<OutType>(Get(module, key));
     }
 
     template<typename OutType>
@@ -129,8 +129,8 @@ inline std::istream & operator>>(std::istream & is, Config & cf)
             line.erase(pos1);
 
         // remove heading and tailing white spaces
-        basic::StringExt::RemoveHeadWhitespace(line);
-        basic::StringExt::RemoveTailWhitespace(line);
+        util::StringExt::RemoveHeadWhitespace(line);
+        util::StringExt::RemoveTailWhitespace(line);
 
         // ignore empty line
         if (line.empty())

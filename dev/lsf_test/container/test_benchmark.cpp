@@ -7,7 +7,7 @@
 #include <set>
 #include <fstream>
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/basic/type_cast.hpp"
+#include "lsf/util/type_cast.hpp"
 #include "lsf/util/random.hpp"
 #include "lsf/container/set.hpp"
 #include "lsf/container/heap_mem.hpp"
@@ -15,6 +15,7 @@
 
 using namespace std;
 using namespace lsf::basic;
+using namespace lsf::util;
 using namespace lsf::container;
 
 static string conf_path;

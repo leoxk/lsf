@@ -10,6 +10,7 @@
 #include "svr/common/basic_server.h"
 #include "svr/common/common_func.h"
 #include "svr/common/common_header.h"
+#include "svr/common/connect_config_service.h"
 
 using namespace lsf::basic;
 using namespace lsf::asio;
@@ -62,6 +63,13 @@ void BasicServer::Run(int argc, char** argv)
     // demonize
     if (!OnDeamonize()) return;
 
+    // init signal
+    if (!OnInitSignal()) return;
+
+    // set callback func
+    IOService::Instance()->SetTickFunc(std::bind(&BasicServer::OnTick, this)); 
+    IOService::Instance()->SetExitFunc(std::bind(&BasicServer::OnExit, this)); 
+
     // main logic
     if (!OnRun()) return;
 
@@ -79,7 +87,7 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
     }
     
     // parse content
-    _confsvrd_addrss = tcp::SockAddr(ip::Address(argv[1]), TypeCast<uint32_t>(argv[2]));
+    _confsvrd_addrss = std::string(argv[1]) + "|" + argv[2];
     _server_id = TypeCast<uint32_t>(argv[3]);
     _server_name = StringExt::GetBaseName(argv[0]);
 
@@ -88,37 +96,9 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
 
 bool BasicServer::OnInitDeployConfig()
 {
-    // init a connection
-    tcp::Socket socket = tcp::Socket::CreateSocket();
-    if (!socket.Connect(_confsvrd_addrss))
-    {
-        LSF_LOG_ERR("connect failed, addr=%s, %s", _confsvrd_addrss.ToCharStr(), socket.ErrCharStr());
-        socket.Close();
-        return false;
-    }
-
-    // construct message
-    msg::SS message;
-    std::string content;
-    message.set_type(msg::SS_GET_CONFIG_REQ);
-    message.mutable_get_config_req()->set_server_type(_server_type);
-    message.mutable_get_config_req()->set_server_id(_server_id);
-
-    // send and recv
-    if (!common::SendAndRecv(socket, message))
-    {
-        socket.Close();
-        return false;
-    }
-
-    // check ret
-    if (!message.get_config_rsp().result())
-    {
-        LSF_LOG_ERR("get config failed");
-        socket.Close();
-        return false;
-    }
-    _server_config.CopyFrom(message.get_config_rsp().config());
+    // init connect config service
+    ConnectConfigService::Instance()->SetConfigServerAddress(_confsvrd_addrss);
+    ConnectConfigService::Instance()->Run(this);
 
     // check server type and id
     if (_server_type != _server_config.server_type() ||
@@ -129,8 +109,9 @@ bool BasicServer::OnInitDeployConfig()
         return false;
     }
 
+
     LSF_LOG_INFO("get config from confsvrd successs");
-    socket.Close();
+
     return true;
 }
 
@@ -166,6 +147,52 @@ bool BasicServer::OnDeamonize()
 {
     System::Daemonize();
     return true;
+}
+
+////////////////////////////////////////////////////////////
+// signal helper
+namespace detail {
+
+static BasicServer * pserver = NULL;
+
+void SignalHandler(int sig) { pserver->OnSignalHandle(sig); }
+
+} // end of namespace detail
+
+bool BasicServer::OnInitSignal()
+{
+    // set pserver
+    ::detail::pserver = this;
+
+    System::SetSignal(SIGINT,  ::detail::SignalHandler);
+    System::SetSignal(SIGHUP,  ::detail::SignalHandler);
+    System::SetSignal(SIGQUIT, ::detail::SignalHandler);
+    System::SetSignal(SIGPIPE, ::detail::SignalHandler);
+    System::SetSignal(SIGTTOU, ::detail::SignalHandler);
+    System::SetSignal(SIGTTIN, ::detail::SignalHandler);
+    System::SetSignal(SIGTERM, ::detail::SignalHandler);
+    System::SetSignal(SIGSEGV, ::detail::SignalHandler);
+    System::SetSignal(SIGUSR1, ::detail::SignalHandler);
+    System::SetSignal(SIGUSR2, ::detail::SignalHandler);
+
+    return true;
+}
+
+void BasicServer::OnSignalHandle(int sig)
+{
+    if (sig == SIGSEGV)
+    {
+        OnExit();
+        System::SetSignal(SIGSEGV, SIG_DFL);
+    }
+    if (sig == SIGUSR1)
+    {
+        IOService::Instance()->SetExit();
+    }
+    if (sig == SIGUSR2)
+    {
+
+    }
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:
