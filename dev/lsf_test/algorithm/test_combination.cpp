@@ -20,6 +20,8 @@ LSF_TEST_CASE(test_combination)
     vec.push_back(3);
     vec.push_back(4);
     vec.push_back(5);
+    
+    //std::adjacent_find
 
     vector<string> result_vec;
     lsf::algorithm::for_combination(vec.begin(), vec.end(), 3, [&result_vec] (std::vector<vector<int>::iterator> iter_vec) 
