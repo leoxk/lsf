@@ -70,7 +70,7 @@ LSF_TEST_CASE(test_sock_op_v4) {
     LSF_ASSERT(accept_socket.LocalSockAddr() == socket.RemoteSockAddr());
     LSF_ASSERT(accept_socket.RemoteSockAddr() == socket.LocalSockAddr());
     LSF_ASSERT(accept_socket.GetSockFd() != socket.GetSockFd());
-    LSF_ASSERT(socket.Close());
+    socket.Close();
 
     // test connect wrong addr
     LSF_ASSERT(!socket.Connect(tcp::SockAddr(Address(AF_INET, "127.0.0.1"), wrong_port)));

@@ -25,7 +25,7 @@ public:
     virtual bool WaitEvent(int timeout) = 0;
     virtual bool GetReadyEvent(int* pfd, int* pflag) = 0;
 };
-
+ 
 }  // end of namespace async
 }  // end of namespace asio
 }  // end of namespace lsf
