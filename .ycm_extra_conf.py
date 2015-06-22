@@ -24,8 +24,8 @@ import ycm_core
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 flags = [
+'-Wno-unused-parameter',
 '-Wall',
-'-Wextra',
 '-Werror',
 '-fexceptions',
 '-DNDEBUG',
@@ -43,8 +43,8 @@ flags = [
 '-x',
 'c++',
 '-isystem', '/usr/include',
-'-isystem', '/usr/include/c++/4.8.2',
-'-isystem', '/usr/include/c++/4.8.2/x86_64-redhat-linux',
+'-isystem', '/opt/rh/devtoolset-2/root/usr/include/c++/4.8.2',
+'-isystem', '/opt/rh/devtoolset-2/root/usr/include/c++/4.8.2/x86_64-redhat-linux/',
 '-isystem', '/usr/local/include',
 '-I', 'dev',
 ]

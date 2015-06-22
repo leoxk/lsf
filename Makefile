@@ -8,7 +8,7 @@
 #                Makefile.rule  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude Makefile.rule after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2012-08-15 by leoxiang
 #===============================================================================#
 
@@ -29,14 +29,14 @@ TEST_MODULE = \
 			  dev/lsf_test/util 		\
 
 ############################################################
-# for svr 
+# for svr
 ############################################################
-all : 
+all :
 	for dir in $(SVR_MODULE); do \
 		make -C $$dir; \
 	done
 
-clean : 
+clean :
 	for dir in $(SVR_MODULE); do \
 		make clean -C $$dir; \
 	done
@@ -88,7 +88,7 @@ test_container :
 test_encrypt :
 	@./test/bin/test_base64
 	@./test/bin/test_md5
-	
+
 test_util :
 	@./test/bin/test_config ./test/conf/test_config.conf
 	@./test/bin/test_date
@@ -99,7 +99,7 @@ test_util :
 	@./test/bin/test_string_ext
 	@./test/bin/test_type_cast
 
-.PHONY : all clean test test_clean
+.PHONY : all clean test test_clean check
 
 
 # vim:ts=4:sw=4:ft=make:

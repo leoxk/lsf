@@ -23,13 +23,13 @@ export var_backup_files=(bin conf script)
 export var_max_try=30
 
 # mod settings
-declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg" 
+declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
                     ["proxy"]="./bin/proxysvrd 127.0.0.1 60000 0")
 
 ############################################################
 # Main Logic
 ############################################################
-function usage 
+function usage
 {
   echo "Usage: $(path::basename $0) [start|stop|restart] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
   echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
@@ -44,12 +44,12 @@ function check_input
   return 1
 }
 
-function main 
+function main
 {
   cd ${var_project_path}
   ulimit -s 81920
 
-  case $1 in 
+  case $1 in
     start)      shift; do_start         ${@};;
     stop)       shift; do_stop          ${@};;
     restart)    shift; do_restart       ${@};;
@@ -69,7 +69,7 @@ function do_start
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::start ${_mod}
       done ;;
@@ -84,7 +84,7 @@ function do_stop
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::stop ${_mod}
       done ;;
@@ -93,12 +93,12 @@ function do_stop
   esac
 }
 
-function do_restart 
+function do_restart
 {
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::restart ${_mod}
       done ;;
@@ -107,12 +107,12 @@ function do_restart
   esac
 }
 
-function do_status 
+function do_status
 {
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::status ${_mod}
       done ;;
@@ -121,12 +121,12 @@ function do_status
   esac
 }
 
-function do_checklive 
+function do_checklive
 {
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::checklive ${_mod}
       done ;;
@@ -135,12 +135,12 @@ function do_checklive
   esac
 }
 
-function do_reload 
+function do_reload
 {
   check_input ${@} && usage && return 1
 
   case $1 in
-    all) 
+    all)
       for _mod in "${var_mod[@]}"; do
         server::reload ${_mod}
       done ;;
@@ -149,7 +149,7 @@ function do_reload
   esac
 }
 
-function do_clearshm 
+function do_clearshm
 {
   read -p "clear shm will lose all user data, please confirm [yes/no]: " var_confirm
   [ ${var_confirm} != "yes" ] && return
@@ -166,12 +166,12 @@ function do_clearshm
 ############################################################
 #################################
 # process-related funcs
-function server::is_alive 
+function server::is_alive
 {
   io::no_output pgrep -xf "${*}" && return 0 || return 1
 }
 
-function server::status 
+function server::status
 {
   if server::is_alive "${@}"; then
     echo $(io::green "[$@] is alive")
@@ -180,7 +180,7 @@ function server::status
   fi
 }
 
-function server::start 
+function server::start
 {
   ulimit -c unlimited
   sudo sysctl -w kernel.shmmax=4000000000 >/dev/null
@@ -201,7 +201,7 @@ function server::start
   fi
 }
 
-function server::stop 
+function server::stop
 {
   server::is_alive "${@}" && pkill -USR1 -xf "${*}"
 
@@ -210,7 +210,7 @@ function server::stop
     ! server::is_alive "${@}" && break
   done
 
-  if [ ! $_cnt -eq ${var_max_try} ]; then 
+  if [ ! $_cnt -eq ${var_max_try} ]; then
     io::log_info ${var_log_file} $(io::green "[$@] stop succeed")
     return 0
   else
@@ -225,7 +225,7 @@ function server::restart
   ! server::start ${@} && return 1
 }
 
-function server::checklive 
+function server::checklive
 {
   if ! server::is_alive "${@}"; then
     #server::alarm "$(path::basename $1) running num is ${_process_cur_num}, restart it"
@@ -234,7 +234,7 @@ function server::checklive
   return 0
 }
 
-function server::reload 
+function server::reload
 {
   util::is_empty $1 && echo "Usage: ${FUNCNAME} [process_cmd]" && return 1
 
@@ -263,7 +263,7 @@ function server::backup
   io::log_info ${var_log_file} "succeed backup files to ${_dest_dir}"
 }
 
-function server::rollback 
+function server::rollback
 {
   # output instruct msg
   echo "select which version you want to rollback"
