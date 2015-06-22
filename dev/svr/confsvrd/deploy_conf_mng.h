@@ -7,12 +7,11 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
-class DeployConfigManager : public lsf::basic::Singleton<DeployConfigManager>
-{
+class DeployConfigManager : public lsf::basic::Singleton<DeployConfigManager> {
 public:
-    bool Init(char const * path);
+    bool Init(char const* path);
 
-    conf::Server const * GetServerConfig(conf::ENServerType server_type, uint32_t server_id);
+    conf::Server const* GetServerConfig(conf::ENServerType server_type, uint32_t server_id);
 
 private:
     conf::Deploy _deploy_config;

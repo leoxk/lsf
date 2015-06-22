@@ -16,7 +16,7 @@ PROJECT_DIR := ../../..
 -include $(PROJECT_DIR)/Makefile.shared
 
 # define targets
-BIN = $(TEST_BIN_DIR)/test_ip 		\
+BIN = $(TEST_BIN_DIR)/test_net 		\
 	  $(TEST_BIN_DIR)/test_udp 		\
 	  $(TEST_BIN_DIR)/test_tcp 		\
 	  $(TEST_BIN_DIR)/test_asio 		\

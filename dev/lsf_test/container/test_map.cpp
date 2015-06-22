@@ -15,9 +15,8 @@ using namespace lsf::container;
 
 #define CACHE_SIZE 5
 
-LSF_TEST_CASE(easy_test)
-{
-    Map<int, string, HeapMem>    maps;
+LSF_TEST_CASE(easy_test) {
+    Map<int, string, HeapMem> maps;
     maps.BindAndInitStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
     LSF_ASSERT(maps.IsBindStorage());
     LSF_ASSERT(maps.empty());
@@ -31,7 +30,7 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(maps.Insert(4, "leo4"));
     LSF_ASSERT(maps.Insert(5, "leo5"));
     LSF_ASSERT(maps.full());
-    
+
     // test assign
     maps[1] = "leo1";
     maps[2] = "leo2";
@@ -59,9 +58,8 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(maps.empty());
 }
 
-LSF_TEST_CASE(test_iter_erase)
-{
-    Map<int, string, HeapMem>    maps;
+LSF_TEST_CASE(test_iter_erase) {
+    Map<int, string, HeapMem> maps;
     maps.BindAndInitStorage(HeapMem(maps.CalcByteSize(CACHE_SIZE)));
     LSF_ASSERT(maps.IsBindStorage());
     LSF_ASSERT(maps.empty());
@@ -73,20 +71,16 @@ LSF_TEST_CASE(test_iter_erase)
     LSF_ASSERT(maps.Insert(4, "leo4"));
     LSF_ASSERT(maps.Insert(5, "leo5"));
     LSF_ASSERT(maps.full());
-    
+
     // erase
     Map<int, string>::iterator iter = maps.begin();
-    while (iter != maps.end())
-    {
+    while (iter != maps.end()) {
         Map<int, string>::iterator cur_iter = iter++;
         LSF_ASSERT(maps.Erase(cur_iter->key));
     }
     LSF_ASSERT(maps.empty());
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

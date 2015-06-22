@@ -13,11 +13,10 @@ using namespace std;
 using namespace lsf::basic;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define QUEUE_SIZE 1024
 
-LSF_TEST_CASE(test_pool)
-{
+LSF_TEST_CASE(test_pool) {
     Pool<TestNode, SharedMem> pool;
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -31,21 +30,21 @@ LSF_TEST_CASE(test_pool)
     pos_arr[1] = pool.Malloc(TestNode(1, 1));
     pos_arr[2] = pool.Malloc(TestNode(2, 2));
     pos_arr[3] = pool.Malloc(TestNode(3, 3));
-    pos_arr[4] = pool.Malloc(TestNode(4, 4)); // 1 2 3 4 5
+    pos_arr[4] = pool.Malloc(TestNode(4, 4));  // 1 2 3 4 5
 
     // test get
-    pos_arr[5] = pool.Malloc(); 
-    pos_arr[6] = pool.Malloc(); 
-    pos_arr[7] = pool.Malloc(); 
-    pos_arr[8] = pool.Malloc(); 
-    pos_arr[9] = pool.Malloc(); 
+    pos_arr[5] = pool.Malloc();
+    pos_arr[6] = pool.Malloc();
+    pos_arr[7] = pool.Malloc();
+    pos_arr[8] = pool.Malloc();
+    pos_arr[9] = pool.Malloc();
     pool.Get(pos_arr[5]) = TestNode(5, 5);
     pool.Get(pos_arr[6]) = TestNode(6, 6);
     pool.Get(pos_arr[7]) = TestNode(7, 7);
     pool.Get(pos_arr[8]) = TestNode(8, 8);
-    pool.Get(pos_arr[9]) = TestNode(9, 9); // 0 1 2 3 4 5 6 7 8 9
-    LSF_ASSERT(NULL != pool.GetPtr(pool.max_size()));
-    LSF_ASSERT(NULL == pool.GetPtr(pool.max_size() + 1));
+    pool.Get(pos_arr[9]) = TestNode(9, 9);  // 0 1 2 3 4 5 6 7 8 9
+    LSF_ASSERT(nullptr != pool.GetPtr(pool.max_size()));
+    LSF_ASSERT(nullptr == pool.GetPtr(pool.max_size() + 1));
     LSF_ASSERT(TestNode(9, 9) == pool.Get(pool.max_size()));
 
     // test iterator
@@ -71,8 +70,7 @@ LSF_TEST_CASE(test_pool)
     LSF_ASSERT(pool.Free(pos_arr[5]));
 }
 
-LSF_TEST_CASE(test_used)
-{
+LSF_TEST_CASE(test_used) {
     Pool<TestNode, SharedMem> pool;
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Pool<TestNode, SharedMem>::CalcByteSize(10)));
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -85,14 +83,14 @@ LSF_TEST_CASE(test_used)
     pos_arr[1] = pool.Malloc(TestNode(1, 1));
     pos_arr[2] = pool.Malloc(TestNode(2, 2));
     pos_arr[3] = pool.Malloc(TestNode(3, 3));
-    pos_arr[4] = pool.Malloc(TestNode(4, 4)); // 1 2 3 4 5
+    pos_arr[4] = pool.Malloc(TestNode(4, 4));  // 1 2 3 4 5
 
     // test used
-    LSF_ASSERT(pool.GetPtr(pos_arr[0]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[1]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[2]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[3]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[4]) != NULL);
+    LSF_ASSERT(pool.GetPtr(pos_arr[0]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[1]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[2]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[3]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[4]) != nullptr);
 
     // iterator
     LSF_ASSERT(*(pool.begin() + 0) == TestNode(0, 0));
@@ -103,21 +101,17 @@ LSF_TEST_CASE(test_used)
     LSF_ASSERT(pool.begin() + pool.size() == pool.end());
 
     // test free
-    LSF_ASSERT(pool.GetPtr(pos_arr[0]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[2]) != NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[4]) != NULL);
+    LSF_ASSERT(pool.GetPtr(pos_arr[0]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[2]) != nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[4]) != nullptr);
     LSF_ASSERT(pool.Free(pos_arr[0]));
     LSF_ASSERT(pool.Free(pos_arr[2]));
     LSF_ASSERT(pool.Free(pos_arr[4]));
-    LSF_ASSERT(pool.GetPtr(pos_arr[0]) == NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[2]) == NULL);
-    LSF_ASSERT(pool.GetPtr(pos_arr[4]) == NULL);
+    LSF_ASSERT(pool.GetPtr(pos_arr[0]) == nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[2]) == nullptr);
+    LSF_ASSERT(pool.GetPtr(pos_arr[4]) == nullptr);
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
-
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -1,6 +1,6 @@
 // File:        basic_socket.hpp
 // Description: ---
-// Notes:       
+// Notes:
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2012-06-07 by leoxiang
 
@@ -11,126 +11,163 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/select.h>
+#include <sys/time.h>
 #include "lsf/basic/error.hpp"
 #include "lsf/asio/detail/basic_sockaddr.hpp"
+#include "lsf/basic/time.hpp"
 
 namespace lsf {
 namespace asio {
 namespace detail {
 
 // forward declare
-template<typename TransLayerProtoType>
+template <typename ProtoType>
 class BasicListenSocket;
 
 ////////////////////////////////////////////////////////////
 // BasicSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtoType = DummyTransLayerProtoType>
-class BasicSocket : public basic::Error
-{
+template <typename ProtoType = DummyProtoType>
+class BasicSocket : public basic::Error {
 public:
-    typedef BasicSockAddr<TransLayerProtoType>  sockaddr_type;
-    typedef TransLayerProtoType                 proto_type;
+    typedef BasicSockAddr<ProtoType> sockaddr_type;
+    typedef ProtoType proto_type;
 
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
+    static const size_t DEF_TIMEOUT = 1000;
 
-    template<typename OtherTransLayerProtoType> friend class BasicListenSocket;
-    template<typename OtherTransLayerProtoType> friend class BasicSocket;
+    template <typename OtherProtoType>
+    friend class BasicListenSocket;
+    template <typename OtherProtoType>
+    friend class BasicSocket;
 
 public:
-    static BasicSocket CreateSocket(proto_type proto = proto_type::V4()) 
-    {
+    static BasicSocket CreateSocket(proto_type proto = proto_type::V4()) {
         int sockfd = ::socket(proto.domain(), proto.type(), proto.protocol());
         return BasicSocket(sockfd);
     }
 
-    BasicSocket(int sockfd) : _sockfd(sockfd) { }
+    ////////////////////////////////////////////////////////////
+    // constructor
+    BasicSocket(int sockfd) : _sockfd(sockfd) {}
 
-    template<typename OtherTransLayerProtoType>
-    BasicSocket(BasicSocket<OtherTransLayerProtoType> const & rhs) : _sockfd(rhs._sockfd) { }
+    template <typename OtherProtoType>
+    BasicSocket(BasicSocket<OtherProtoType> const &rhs)
+        : _sockfd(rhs._sockfd) {}
 
-    template<typename OtherTransLayerProtoType>
-    BasicSocket<TransLayerProtoType> & operator=(BasicSocket<OtherTransLayerProtoType> const & rhs)
-    {
+    template <typename OtherProtoType>
+    BasicSocket<ProtoType> &operator=(BasicSocket<OtherProtoType> const &rhs) {
         if (this == &rhs) return *this;
         _sockfd = rhs._sockfd;
         return *this;
     }
 
     ////////////////////////////////////////////////////////////
-    bool Bind(sockaddr_type const & local) {
-        return ErrWrap(::bind(_sockfd, local.data(), local.DataSize())) == 0;
+    // common func
+    // ssize_t SendRaw(void const *buf, size_t len) { return ErrWrap(::send(_sockfd, buf, len, MSG_NOSIGNAL)); }
+    //
+    // ssize_t RecvRaw(void *buf, size_t len) { return ErrWrap(::recv(_sockfd, buf, len, 0)); }
+
+    bool Bind(sockaddr_type const &local) { return ErrWrap(::bind(_sockfd, local.data(), local.size())) == 0; }
+
+    bool Close() { return ErrWrap(::close(_sockfd)) == 0; }
+
+    // bool ConnectRaw(sockaddr_type const &remote) {
+    //     return ErrWrap(::connect(_sockfd, remote.data(), remote.size())) == 0;
+    // }
+
+    ////////////////////////////////////////////////////////////
+    // sync connect
+    bool Connect(sockaddr_type const &remote, uint64_t milli_expire = DEF_TIMEOUT) {
+
+        int ret = ::connect(_sockfd, remote.data(), remote.size());
+
+        // success
+        if (ret >= 0) return true;
+
+        // not because non-block return fail
+        if (errno != EINPROGRESS) {
+            ErrWrap(ret);
+            return false;
+        }
+
+        // wait write event
+        if (!_WaitActionTimeout(_sockfd, false, true, milli_expire)) return false;
+
+        return true;
+
     }
 
-    bool Connect(sockaddr_type const & remote) {
-        return ErrWrap(::connect(_sockfd, remote.data(), remote.DataSize())) == 0;
-    }
-
-    bool  Close() {
-        return ErrWrap(::close(_sockfd)) == 0;
-    }
-
-    ssize_t SendRaw(void const * buf, size_t len) {
-        return ErrWrap(::send(_sockfd, buf, len, MSG_NOSIGNAL));
-    }
-
-    ssize_t RecvRaw(void * buf, size_t len) {
-        return ErrWrap(::recv(_sockfd, buf, len, 0));
-    }
-
-    bool RecvAll(std::string & content)
-    {
+    ////////////////////////////////////////////////////////////
+    // sync recv
+    bool Recv(std::string &content, uint64_t milli_expire = DEF_TIMEOUT) {
         content.clear();
 
-        while (true)
-        {
+        // wait read event
+        if (!_WaitActionTimeout(_sockfd, true, false, milli_expire)) return false;
+
+        while (true) {
             // recv
             static char buffer[MAX_BUFFER_LEN];
-            int ret = RecvRaw(buffer, sizeof(buffer));
+            int ret = ::recv(_sockfd, buffer, sizeof(buffer), 0);
 
             // handle error
-            if (ret < 0)
-            {
-                if (errno == EINTR) // signal interrupt
-                {
+            if (ret < 0) {
+                if (errno == EINTR) {
                     continue;
-                }
-                else if (errno == EAGAIN || errno == EWOULDBLOCK)   // no data
-                {
+                } else if (errno == EAGAIN || errno == EWOULDBLOCK) {
                     break;
-                }
-                else // error
-                {
+                } else {
                     break;
                 }
             }
 
             // handle socket close
-            if (ret == 0) break;
+            if (ret == 0) {
+                _is_peer_close = true;
+                break;
+            }
 
             // handle recv data
             content.append(buffer, ret);
         }
-        
+
         return !content.empty();
     }
 
-    bool SendAll(void const * buf, size_t len)
-    {
+    ////////////////////////////////////////////////////////////
+    // sync send
+    bool Send(std::string const &content, uint64_t milli_expire = DEF_TIMEOUT) {
+        return Send(content.data(), content.size(), milli_expire);
+    }
+
+    bool Send(void const *buf, size_t len, uint64_t milli_expire = DEF_TIMEOUT) {
+
+        // record start time
+        struct timeval start_tv;
+        ::gettimeofday(&start_tv, NULL);
+
         size_t total = 0;
-        while (total < len)
-        {
-            int ret = SendRaw((char const *)buf + total, len - total);
+        while (total < len) {
+            // clac remain wait time
+            struct timeval tv;
+            ::gettimeofday(&tv, NULL);
+            uint64_t milli_diff = lsf::basic::Time::TimeValDiff(tv, start_tv);
+
+            // wait timeout
+            if (milli_diff >= milli_expire) return false;
+
+            // wait write event
+            if (!_WaitActionTimeout(_sockfd, false, true, milli_expire > milli_diff)) return false;
+
+            int ret = ::send(_sockfd, (char const *)buf + total, len - total, 0);
 
             // handle error
-            if (ret < 0)
-            {
-                if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) // signal interrupt or not ready
-                {
+            if (ret < 0) {
+                if (errno == EINTR) {
                     continue;
-                }
-                else // error
-                {
+                } else {
                     break;
                 }
             }
@@ -142,53 +179,43 @@ public:
         return total == len;
     }
 
-    bool SendAll(std::string const & content)
-    {
-        return SendAll(content.data(), content.size());
-    }
-
     ////////////////////////////////////////////////////////////
     // async funcs
-    template<typename ServiceType, typename SockAddrType, typename HandlerType>
-    bool AsyncConnect(ServiceType & io_service, SockAddrType const & sockaddr, HandlerType const & handler)
-    {
+    template <typename ServiceType, typename SockAddrType, typename HandlerType>
+    bool AsyncConnect(ServiceType &io_service, SockAddrType const &sockaddr, HandlerType const &handler) {
         return io_service.AsyncConnect(*this, sockaddr, handler);
     }
 
-    template<typename ServiceType, typename HandlerType>
-    bool AsyncWrite(ServiceType & io_service, void const * buffer, size_t buflen, HandlerType const & handler)
-    {
+    template <typename ServiceType, typename HandlerType>
+    bool AsyncWrite(ServiceType &io_service, void const *buffer, size_t buflen, HandlerType const &handler) {
         return io_service.AsyncWrite(*this, buffer, buflen, handler);
     }
 
-    template<typename ServiceType, typename HandlerType1, typename HandlerType2>
-    bool AsyncRead(ServiceType & io_service, HandlerType1 const & read_handler, HandlerType2 const & rdhup_handler)
-    {
+    template <typename ServiceType, typename HandlerType1, typename HandlerType2>
+    bool AsyncRead(ServiceType &io_service, HandlerType1 const &read_handler, HandlerType2 const &rdhup_handler) {
         return io_service.AsyncRead(*this, read_handler, rdhup_handler);
     }
 
-    template<typename ServiceType, typename HandlerType>
-    bool AsyncRead(ServiceType & io_service, HandlerType const & handler)
-    {
+    template <typename ServiceType, typename HandlerType>
+    bool AsyncRead(ServiceType &io_service, HandlerType const &handler) {
         return io_service.AsyncRead(*this, handler);
     }
 
-    template<typename ServiceType>
-    void CloseAsync(ServiceType & io_service)
-    {
+    template <typename ServiceType>
+    void CloseAsync(ServiceType &io_service) {
         io_service.CloseAsync(_sockfd);
     }
 
-    sockaddr_type LocalSockAddr() { 
+    sockaddr_type LocalSockAddr() {
         sockaddr addr;
-        socklen_t   addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(addr);
         ErrWrap(::getsockname(_sockfd, &addr, &addrlen));
         return sockaddr_type(&addr);
     }
 
     sockaddr_type RemoteSockAddr() {
         sockaddr addr;
-        socklen_t   addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(addr);
         if (ErrWrap(::getpeername(_sockfd, &addr, &addrlen)) == 0)
             return sockaddr_type(&addr);
         else if (IsV4())
@@ -199,13 +226,9 @@ public:
 
     ////////////////////////////////////////////////////////////
     // SetSockOpt funcs
-    bool SetNonBlock() {
-        return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0;
-    }
+    bool SetNonBlock() { return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0; }
 
-    bool SetBlock() {
-        return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) & (~O_NONBLOCK))) == 0;
-    }
+    bool SetBlock() { return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) & (~O_NONBLOCK))) == 0; }
 
     bool SetSendBuf(size_t buflen) {
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_SNDBUF, &buflen, sizeof(buflen))) == 0;
@@ -220,11 +243,11 @@ public:
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) == 0;
     }
 
-    bool SetSendTimeout(timeval const & tv) {
+    bool SetSendTimeout(timeval const &tv) {
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv))) == 0;
     }
 
-    bool SetRecvTimeout(timeval const & tv) {
+    bool SetRecvTimeout(timeval const &tv) {
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv))) == 0;
     }
 
@@ -249,25 +272,60 @@ public:
         return optval;
     }
 
-    int  GetSockFd() const { return _sockfd; }
+    int GetSockFd() const { return _sockfd; }
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
     bool operator!() const { return _sockfd >= 0; }
 
-    template<typename OtherTransLayerProtoType>
-    bool operator==(BasicSocket<OtherTransLayerProtoType> const & rhs) const { return _sockfd == rhs._sockfd; }
+    template <typename OtherProtoType>
+    bool operator==(BasicSocket<OtherProtoType> const &rhs) const {
+        return _sockfd == rhs._sockfd;
+    }
 
-    template<typename OtherTransLayerProtoType>
-    bool operator!=(BasicSocket<OtherTransLayerProtoType> const & rhs) const { return _sockfd != rhs._sockfd; }
+    template <typename OtherProtoType>
+    bool operator!=(BasicSocket<OtherProtoType> const &rhs) const {
+        return _sockfd != rhs._sockfd;
+    }
 
 private:
-    int             _sockfd;
+    bool _WaitActionTimeout(int fd, bool wait_read, bool wait_write, uint64_t milli_expire)
+    {
+        struct timeval tv;
+        tv.tv_sec = milli_expire / 1000;
+        tv.tv_usec = milli_expire * 1000;
+        fd_set rd_set, wt_set;
+        FD_ZERO(&rd_set);
+        FD_ZERO(&wt_set);
+        FD_SET(fd, &rd_set);
+        FD_SET(fd, &wt_set);
+
+        // process select, avoid signal
+        int ret;
+        while (true)
+        {
+            ret = ErrWrap(::select(fd+1, wait_read ? &rd_set : nullptr, wait_write ? &wt_set : nullptr, nullptr, &tv));
+            if (ret < 0 && errno == EINTR) continue;
+            break;
+        }
+
+        // select failed
+        if (ret < 0) return false;
+
+        // no wait action
+        if (ret == 0) return false;
+
+        return true;
+    }
+
+private:
+    int     _sockfd = -1;
+    bool    _is_peer_close = false;
 };
 
-} // end of namespace detail
-} // end of namespace asio
-} // end of namespace lsf
+}  // end of namespace detail
+}  // end of namespace asio
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

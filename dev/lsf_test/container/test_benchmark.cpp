@@ -22,8 +22,7 @@ static string conf_path;
 
 #define TREE_SIZE 800000
 
-LSF_TEST_CASE(test_stl_rbtree)
-{
+LSF_TEST_CASE(test_stl_rbtree) {
     set<uint32_t> sets;
 
     // insert
@@ -34,7 +33,7 @@ LSF_TEST_CASE(test_stl_rbtree)
         LSF_ASSERT_ERR_ONLY(sets.insert(TypeCast<uint32_t>(line)).second);
     }
     LSF_ASSERT(sets.size() == TREE_SIZE);
-    
+
     // erase
     ifs.close();
     ifs.open(conf_path.c_str());
@@ -46,8 +45,7 @@ LSF_TEST_CASE(test_stl_rbtree)
     LSF_ASSERT(sets.size() == 0);
 }
 
-LSF_TEST_CASE(test_lsf_rbtree)
-{
+LSF_TEST_CASE(test_lsf_rbtree) {
     Set<uint32_t, HeapMem> sets;
     LSF_ASSERT(sets.BindAndInitStorage(HeapMem(sets.CalcByteSize(TREE_SIZE))));
 
@@ -59,7 +57,7 @@ LSF_TEST_CASE(test_lsf_rbtree)
         LSF_ASSERT_ERR_ONLY(sets.Insert(TypeCast<uint32_t>(line)));
     }
     LSF_ASSERT(sets.size() == TREE_SIZE);
-    
+
     // erase
     ifs.close();
     ifs.open(conf_path.c_str());
@@ -71,17 +69,15 @@ LSF_TEST_CASE(test_lsf_rbtree)
     LSF_ASSERT(sets.size() == 0);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc != 2) {
         cout << "Usage: " << argv[0] << " [conf_path]" << endl;
         exit(0);
-    }
-    else {
+    } else {
         conf_path = argv[1];
     }
 
-	LSF_TEST_ALL(argc, argv);
+    LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

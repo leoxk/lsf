@@ -7,12 +7,9 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_server.h"
 
-class ProxyServer : 
-    public BasicServer,
-    public lsf::basic::Singleton<ProxyServer>
-{
+class ProxyServer : public BasicServer, public lsf::basic::Singleton<ProxyServer> {
 public:
-    ProxyServer() : BasicServer(conf::SERVER_TYPE_PROXY_SERVER) { }
+    ProxyServer() : BasicServer(conf::SERVER_TYPE_PROXY_SERVER) {}
 
 public:
     virtual bool OnInitProxy() { return true; }

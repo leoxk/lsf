@@ -11,33 +11,31 @@
 #include <cstring>
 
 /* This is the central step in the MD5 algorithm. */
-#define MD5_F1(x, y, z) (z ^ (x & (y ^ z)))
+#define MD5_F1(x, y, z) (z ^ (x &(y ^ z)))
 #define MD5_F2(x, y, z) MD5_F1(z, x, y)
 #define MD5_F3(x, y, z) (x ^ y ^ z)
 #define MD5_F4(x, y, z) (y ^ (x | ~z))
-#define MD5_STEP(f, w, x, y, z, data, s)\
-    ( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
+#define MD5_STEP(f, w, x, y, z, data, s) (w += f(x, y, z) + data, w = w << s | w >> (32 - s), w += x)
 
 namespace lsf {
 namespace encrypt {
 namespace detail {
 
-struct MD5Context {
+class MD5Context {
+public:
     uint32_t buf[4];
     uint32_t bits[2];
     unsigned char in[64];
 };
 
 /* Note: this code is harmless on little-endian machines.  */
-inline static void byteReverse(unsigned char *buf, unsigned longs)
-{
+inline static void byteReverse(unsigned char *buf, unsigned longs) {
 #ifndef WORDS_BIGENDIAN
     uint32_t t;
     do {
-	t = (uint32_t) ((unsigned) buf[3] << 8 | buf[2]) << 16 |
-	    ((unsigned) buf[1] << 8 | buf[0]);
-	*(uint32_t *) buf = t;
-	buf += 4;
+        t = (uint32_t)((unsigned)buf[3] << 8 | buf[2]) << 16 | ((unsigned)buf[1] << 8 | buf[0]);
+        *(uint32_t *)buf = t;
+        buf += 4;
     } while (--longs);
 #else
 #endif
@@ -47,9 +45,8 @@ inline static void byteReverse(unsigned char *buf, unsigned longs)
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
-inline static void MD5InitA(MD5Context *ctx)
-{
-    ctx->buf[0] = 0x67452301; 
+inline static void MD5InitA(MD5Context *ctx) {
+    ctx->buf[0] = 0x67452301;
     ctx->buf[1] = 0xefcdab89;
     ctx->buf[2] = 0x98badcfe;
     ctx->buf[3] = 0x10325476;
@@ -63,8 +60,7 @@ inline static void MD5InitA(MD5Context *ctx)
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-inline static void MD5TransformA(uint32_t buf[4], uint32_t const in[16])
-{
+inline static void MD5TransformA(uint32_t buf[4], uint32_t const in[16]) {
     register uint32_t a, b, c, d;
 
     a = buf[0];
@@ -150,21 +146,19 @@ inline static void MD5TransformA(uint32_t buf[4], uint32_t const in[16])
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-inline static void MD5UpdateA(MD5Context *ctx, unsigned char const *buf, unsigned len)
-{
+inline static void MD5UpdateA(MD5Context *ctx, unsigned char const *buf, unsigned len) {
     uint32_t t;
 
     /* Update bitcount */
     t = ctx->bits[0];
-    if ((ctx->bits[0] = t + ((uint32_t) len << 3)) < t)
-    ctx->bits[1]++;		/* Carry from low to high */
+    if ((ctx->bits[0] = t + ((uint32_t)len << 3)) < t) ctx->bits[1]++; /* Carry from low to high */
     ctx->bits[1] += len >> 29;
 
-    t = (t >> 3) & 0x3f;	/* Bytes already in shsInfo->data */
+    t = (t >> 3) & 0x3f; /* Bytes already in shsInfo->data */
 
     /* Handle any leading odd-sized chunks */
     if (t) {
-        unsigned char *p = (unsigned char *) ctx->in + t;
+        unsigned char *p = (unsigned char *)ctx->in + t;
         t = 64 - t;
 
         if (len < t) {
@@ -173,18 +167,18 @@ inline static void MD5UpdateA(MD5Context *ctx, unsigned char const *buf, unsigne
         }
         memmove(p, buf, t);
         byteReverse(ctx->in, 16);
-        MD5TransformA(ctx->buf, (uint32_t *) ctx->in);
+        MD5TransformA(ctx->buf, (uint32_t *)ctx->in);
         buf += t;
         len -= t;
     }
 
     /* Process data in 64-byte chunks */
     while (len >= 64) {
-    memmove(ctx->in, buf, 64);
-    byteReverse(ctx->in, 16);
-    MD5TransformA(ctx->buf, (uint32_t *) ctx->in);
-    buf += 64;
-    len -= 64;
+        memmove(ctx->in, buf, 64);
+        byteReverse(ctx->in, 16);
+        MD5TransformA(ctx->buf, (uint32_t *)ctx->in);
+        buf += 64;
+        len -= 64;
     }
 
     /* Handle any remaining bytes of data. */
@@ -192,11 +186,10 @@ inline static void MD5UpdateA(MD5Context *ctx, unsigned char const *buf, unsigne
 }
 
 /*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-inline static void MD5FinalA(unsigned char digest[16], MD5Context *ctx)
-{
+inline static void MD5FinalA(unsigned char digest[16], MD5Context *ctx) {
     unsigned count;
     unsigned char *p;
 
@@ -216,7 +209,7 @@ inline static void MD5FinalA(unsigned char digest[16], MD5Context *ctx)
         /* Two lots of padding:  Pad the first block to 64 bytes */
         memset(p, 0, count);
         byteReverse(ctx->in, 16);
-        MD5TransformA(ctx->buf, (uint32_t *) ctx->in);
+        MD5TransformA(ctx->buf, (uint32_t *)ctx->in);
 
         /* Now fill the next block with 56 bytes */
         memset(ctx->in, 0, 56);
@@ -227,27 +220,26 @@ inline static void MD5FinalA(unsigned char digest[16], MD5Context *ctx)
     byteReverse(ctx->in, 14);
 
     /* Append length in bits and transform */
-    ((uint32_t *) ctx->in)[14] = ctx->bits[0];
-    ((uint32_t *) ctx->in)[15] = ctx->bits[1];
+    ((uint32_t *)ctx->in)[14] = ctx->bits[0];
+    ((uint32_t *)ctx->in)[15] = ctx->bits[1];
 
-    MD5TransformA(ctx->buf, (uint32_t *) ctx->in);
-    byteReverse((unsigned char *) ctx->buf, 4);
+    MD5TransformA(ctx->buf, (uint32_t *)ctx->in);
+    byteReverse((unsigned char *)ctx->buf, 4);
     memmove(digest, ctx->buf, 16);
-    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
+    memset(ctx, 0, sizeof(*ctx)); /* In case it's sensitive */
 }
 
-} // end of namespace detail
+}  // end of namespace detail
 
 ////////////////////////////////////////////////////////////
 // Md5HashBuffer
-inline static void Md5HashBuffer(void * output, const void * input, int length)
-{
+inline static void Md5HashBuffer(void *output, const void *input, int length) {
     detail::MD5Context *md5Info, md5InfoBuffer;
     md5Info = &md5InfoBuffer;
-    
+
     detail::MD5InitA(md5Info);
     detail::MD5UpdateA(md5Info, (unsigned char const *)input, length);
-    detail::MD5FinalA((unsigned char*)output, md5Info);
+    detail::MD5FinalA((unsigned char *)output, md5Info);
 }
 
 #undef MD5_F1
@@ -256,7 +248,7 @@ inline static void Md5HashBuffer(void * output, const void * input, int length)
 #undef MD5_F4
 #undef MD5_STEP
 
-} // end of namespace encrypt
-} // end of namespace lsf
+}  // end of namespace encrypt
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

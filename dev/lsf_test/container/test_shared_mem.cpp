@@ -10,11 +10,10 @@
 using namespace std;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define SHM_SIZE 10 * 1024
 
-LSF_TEST_CASE(create_and_delete)
-{
+LSF_TEST_CASE(create_and_delete) {
     if (SharedMem::IsShmExist(SHM_KEY)) SharedMem::Delete(SHM_KEY);
 
     LSF_ASSERT(SharedMem::Create(SHM_KEY, SHM_SIZE));
@@ -28,8 +27,7 @@ LSF_TEST_CASE(create_and_delete)
     LSF_ASSERT(SharedMem::QueryShmSize(SHM_KEY) == 0);
 }
 
-LSF_TEST_CASE(attach_and_detach)
-{
+LSF_TEST_CASE(attach_and_detach) {
     LSF_ASSERT(SharedMem::Create(SHM_KEY, SHM_SIZE));
 
     SharedMem shm;
@@ -38,14 +36,14 @@ LSF_TEST_CASE(attach_and_detach)
     // create and attach
     LSF_ASSERT(shm.Attach(SHM_KEY));
     LSF_ASSERT(shm.IsAttached());
-    LSF_ASSERT(shm.GetPtr() != NULL);
+    LSF_ASSERT(shm.GetPtr() != nullptr);
     LSF_ASSERT(shm.GetAttachedNum() == 1);
     LSF_ASSERT(shm.GetSize() == SHM_SIZE);
 
     // detach
     LSF_ASSERT(shm.Detach());
     LSF_ASSERT(!shm.IsAttached());
-    LSF_ASSERT(shm.GetPtr() == NULL);
+    LSF_ASSERT(shm.GetPtr() == nullptr);
     LSF_ASSERT(shm.GetAttachedNum() == 0);
     LSF_ASSERT(shm.GetSize() == 0);
 
@@ -65,22 +63,19 @@ LSF_TEST_CASE(attach_and_detach)
     }
     LSF_ASSERT(shm.GetAttachedNum() == 2);
 
-
     // delete
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::QueryAttachedNum(SHM_KEY) == 0);
 }
 
-LSF_TEST_CASE(lock_and_unlock)
-{
+LSF_TEST_CASE(lock_and_unlock) {
     LSF_ASSERT(SharedMem::Create(SHM_KEY, SHM_SIZE));
     LSF_ASSERT(SharedMem::Lock(SHM_KEY));
     LSF_ASSERT(SharedMem::UnLock(SHM_KEY));
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_readonly_attach)
-{
+LSF_TEST_CASE(test_readonly_attach) {
     SharedMem shm;
     LSF_ASSERT(SharedMem::Create(SHM_KEY, SHM_SIZE));
 
@@ -100,9 +95,6 @@ LSF_TEST_CASE(test_readonly_attach)
     LSF_ASSERT(shm.Detach());
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

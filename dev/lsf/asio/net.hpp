@@ -17,6 +17,7 @@ namespace asio {
 using async::AsyncInfo;
 using async::ProactorSerivce;
 
+typedef detail::BasicAddress Address;
 typedef detail::BasicSockAddr<> SockAddr;
 typedef detail::BasicSocket<> Socket;
 typedef detail::BasicListenSocket<> ListenSocket;
@@ -25,60 +26,46 @@ typedef detail::BasicListenSocket<> ListenSocket;
 // IOService Content
 namespace detail {
 
-class IOServiceContent : public lsf::basic::Singleton<IOServiceContent>
-{
+class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
 public:
-    IOServiceContent() :
-        use_epoll(false),
-        epoll_service(NULL),
-        poll_service(NULL)
-    { }
+    IOServiceContent() : use_epoll(false), epoll_service(nullptr), poll_service(nullptr) {}
 
 public:
-    bool              use_epoll;
-    ProactorSerivce * epoll_service;
-    ProactorSerivce * poll_service;
+    bool use_epoll;
+    ProactorSerivce *epoll_service;
+    ProactorSerivce *poll_service;
 };
 
-} // end of namespace detail
+}  // end of namespace detail
 
 ////////////////////////////////////////////////////////////
 // IOService
-class IOService
-{
+class IOService {
 public:
-    static ProactorSerivce * Instance()
-    {
-        if (detail::IOServiceContent::Instance()->use_epoll)
-        {
-            if (detail::IOServiceContent::Instance()->epoll_service == NULL) 
+    static ProactorSerivce *Instance() {
+        if (detail::IOServiceContent::Instance()->use_epoll) {
+            if (detail::IOServiceContent::Instance()->epoll_service == nullptr)
                 detail::IOServiceContent::Instance()->epoll_service = new ProactorSerivce(new async::EpollEventDriver);
             return detail::IOServiceContent::Instance()->epoll_service;
-        }
-        else
-        {
-            if (detail::IOServiceContent::Instance()->poll_service == NULL) 
+        } else {
+            if (detail::IOServiceContent::Instance()->poll_service == nullptr)
                 detail::IOServiceContent::Instance()->poll_service = new ProactorSerivce(new async::PollEventDriver);
             return detail::IOServiceContent::Instance()->poll_service;
         }
     }
 
-    static ProactorSerivce & Reference()
-    {
-        return *Instance();
-    }
+    static ProactorSerivce &Reference() { return *Instance(); }
 
     static void UseEpoll() { detail::IOServiceContent::Instance()->use_epoll = true; }
-    static void UsePoll()  { detail::IOServiceContent::Instance()->use_epoll = false; }
+    static void UsePoll() { detail::IOServiceContent::Instance()->use_epoll = false; }
 
 protected:
-    IOService() { }                             // construtor is hidden
-    IOService(IOService const &);               // copy constructor is hidden
-    IOService & operator=(IOService const &);   // copy assignment is hidde
-
+    IOService() {}                            // construtor is hidden
+    IOService(IOService const &);             // copy constructor is hidden
+    IOService &operator=(IOService const &);  // copy assignment is hidde
 };
 
-} // end of namespace asio
-} // end of namespace lsf
+}  // end of namespace asio
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:

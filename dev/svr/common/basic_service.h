@@ -16,22 +16,21 @@
 
 ////////////////////////////////////////////////////////////
 // BasicService
-class BasicService : public lsf::basic::NonCopyable
-{
+class BasicService : public lsf::basic::NonCopyable {
 public:
-    BasicService(conf::ENServiceType service_type) : _service_type(service_type){ }
+    BasicService(conf::ENServiceType service_type) : _service_type(service_type) {}
 
     // main routine
-    bool Run(BasicServer * pserver);
+    bool Run(BasicServer* pserver);
 
     // async handler
-    virtual bool OnSocketRead(lsf::asio::AsyncInfo & info);
-    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo & info);
+    virtual bool OnSocketRead(lsf::asio::AsyncInfo& info);
+    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
 
 protected:
     // connection handler
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
-    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string & message);
+    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
     virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
 
     // init logic
@@ -39,17 +38,16 @@ protected:
     virtual bool OnInitSocket() = 0;
 
 protected:
-    conf::ENServiceType     _service_type;
-    BasicServer *           _pserver;
+    conf::ENServiceType _service_type;
+    BasicServer* _pserver;
 };
-                     
+
 ////////////////////////////////////////////////////////////
 // BasicAcceptService
-class BasicAcceptService : public BasicService
-{
+class BasicAcceptService : public BasicService {
 public:
-    BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type){ }
-    bool OnSocketAccept(lsf::asio::AsyncInfo & info);
+    BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type) {}
+    bool OnSocketAccept(lsf::asio::AsyncInfo& info);
 
 protected:
     virtual bool OnInitConfig();
@@ -58,18 +56,17 @@ protected:
 protected:
     conf::AcceptService _service_config;
 };
-                     
+
 ////////////////////////////////////////////////////////////
 // BasicService
-class BasicConnectService : public BasicService
-{
+class BasicConnectService : public BasicService {
 public:
     typedef std::vector<lsf::asio::Socket> conn_vec_type;
 
 public:
-    BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type){ }
-    virtual bool OnSocketConnect(lsf::asio::AsyncInfo & info, size_t index);
-    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo & info);
+    BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
+    virtual bool OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index);
+    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
 
 protected:
     virtual bool OnInitConfig();
@@ -78,8 +75,8 @@ protected:
     virtual bool TryAsyncConnect(size_t index);
 
 protected:
-    conf::ConnectService    _service_config;
-    conn_vec_type           _conn_vec;
+    conf::ConnectService _service_config;
+    conn_vec_type _conn_vec;
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

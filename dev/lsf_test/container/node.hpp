@@ -10,35 +10,35 @@
 #include <string>
 #include "lsf/util/type_cast.hpp"
 
-struct TestNode {
-    TestNode(uint32_t _key = 0, uint32_t _data = 0) : key(_key), data(_data) { }
+class TestNode {
+public:
+    TestNode(uint32_t _key = 0, uint32_t _data = 0) : key(_key), data(_data) {}
 
-    bool operator==(TestNode const & rhs) const {
-        if (this->key == rhs.key && this->data == rhs.data) return true;
-        else return false;
+    bool operator==(TestNode const& rhs) const {
+        if (this->key == rhs.key && this->data == rhs.data)
+            return true;
+        else
+            return false;
     }
 
-    bool operator<(TestNode const & rhs) const {
-        return key < rhs.key;
-    }
+    bool operator<(TestNode const& rhs) const { return key < rhs.key; }
 
     bool empty() { return key == 0 && data == 0; }
 
     std::string ToString() const {
-        std::string out = "[" + lsf::util::TypeCast< std::string>(key) + "]";
+        std::string out = "[" + lsf::util::TypeCast<std::string>(key) + "]";
         return out;
     }
 
-    uint32_t    key;
-    uint32_t    data;
+    uint32_t key;
+    uint32_t data;
 };
 
-struct TestNode1 : public TestNode {
-    uint32_t    other;
+class TestNode1 : public TestNode {
+public:
+    uint32_t other;
 };
 
-std::ostream & operator<<(std::ostream & os, TestNode const & node) {
-    return os << "[" << node.key << "]";
-}
+std::ostream& operator<<(std::ostream& os, TestNode const& node) { return os << "[" << node.key << "]"; }
 
 // vim:ts=4:sw=4:et:ft=cpp:

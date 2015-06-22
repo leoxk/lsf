@@ -7,12 +7,9 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_server.h"
 
-class ConfigServer : 
-    public BasicServer,
-    public lsf::basic::Singleton<ConfigServer>
-{
+class ConfigServer : public BasicServer, public lsf::basic::Singleton<ConfigServer> {
 public:
-    ConfigServer() : BasicServer(conf::SERVER_TYPE_CONFIG_CENTER) { }
+    ConfigServer() : BasicServer(conf::SERVER_TYPE_CONFIG_CENTER) {}
 
 public:
     virtual bool OnParseCommond(int argc, char** argv);

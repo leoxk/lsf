@@ -18,61 +18,57 @@ namespace async {
 ////////////////////////////////////////////////////////////
 // Function Closure
 ////////////////////////////////////////////////////////////
-struct AsyncInfo
-{
+class AsyncInfo {
 public:
-    AsyncInfo() : fd(0), accept_fd(0) { buffer.clear(); }
-    void Clear() { fd = 0; accept_fd = 0; buffer.clear(); }
+    void Clear() {
+        fd = 0;
+        accept_fd = 0;
+        buffer.clear();
+    }
 
 public:
-    int         fd;
-    int         accept_fd;
+    int fd = 0;
+    int accept_fd = 0;
     std::string buffer;
 };
 
-struct CompletionFunc
-{
+class CompletionFunc {
 public:
-    static const int ACTION_ACCEPT     = 1;
-    static const int ACTION_READ       = 2;
+    static const int ACTION_ACCEPT = 1;
+    static const int ACTION_READ = 2;
     static const int ACTION_PEER_CLOSE = 3;
-    static const int ACTION_CONNECT    = 4;
-    static const int ACTION_WRITE      = 5;
-    static const int ACTION_TIMER      = 6;
+    static const int ACTION_CONNECT = 4;
+    static const int ACTION_WRITE = 5;
+    static const int ACTION_TIMER = 6;
 
-    typedef std::function<bool(AsyncInfo &)>  func_type;
+    typedef std::function<bool(AsyncInfo &)> func_type;
 
 public:
-    int         action;
-    func_type   func;
+    int action = 0;
+    func_type func = nullptr;
     std::string buffer;
 };
 
 ////////////////////////////////////////////////////////////
 // Completion Queue
 ////////////////////////////////////////////////////////////
-class CompletionQueue : 
-    public basic::NonCopyable,
-    public basic::Error
-{
+class CompletionQueue : public basic::NonCopyable, public basic::Error {
 public:
-    typedef std::map<int,CompletionFunc> func_map_type;
+    typedef std::map<int, CompletionFunc> func_map_type;
 
     const static size_t DEL_QUEUE_SIZE = 65536;
-    
+
 public:
-    template<typename HandlerType>
-    bool AddCompletionTask(int fd, int action, HandlerType func, void const * buffer = NULL, size_t buflen = 0)
-    {
-        CompletionFunc * pfunc = NULL;
-        switch (action)
-        {
+    template <typename HandlerType>
+    bool AddCompletionTask(int fd, int action, HandlerType func, void const *buffer = nullptr, size_t buflen = 0) {
+        CompletionFunc *pfunc = nullptr;
+        switch (action) {
             case CompletionFunc::ACTION_ACCEPT:
             case CompletionFunc::ACTION_READ:
             case CompletionFunc::ACTION_TIMER:
                 pfunc = &_read_func[fd];
                 break;
-                
+
             case CompletionFunc::ACTION_WRITE:
             case CompletionFunc::ACTION_CONNECT:
                 pfunc = &_write_func[fd];
@@ -85,7 +81,7 @@ public:
             default:
                 break;
         }
-        if (pfunc == NULL) return false;
+        if (pfunc == nullptr) return false;
 
         pfunc->action = action;
         pfunc->func = CompletionFunc::func_type(func);
@@ -93,46 +89,42 @@ public:
         return true;
     }
 
-    void CancelCompletionTask(int fd)
-    {
+    void CancelCompletionTask(int fd) {
         _read_func.erase(fd);
         _write_func.erase(fd);
         _peer_close_func.erase(fd);
     }
 
-    bool GetReadCompletionTask(int fd, CompletionFunc ** pfunc)
-    {
+    bool GetReadCompletionTask(int fd, CompletionFunc **pfunc) {
         func_map_type::iterator iter = _read_func.find(fd);
         if (iter == _read_func.end()) return false;
         *pfunc = &iter->second;
         return true;
     }
 
-    bool GetPeerCloseCompletionTask(int fd, CompletionFunc ** pfunc)
-    {
+    bool GetPeerCloseCompletionTask(int fd, CompletionFunc **pfunc) {
         func_map_type::iterator iter = _peer_close_func.find(fd);
         if (iter == _peer_close_func.end()) return false;
         *pfunc = &iter->second;
         return true;
     }
 
-    bool GetWriteCompletionTask(int fd, CompletionFunc ** pfunc)
-    {
+    bool GetWriteCompletionTask(int fd, CompletionFunc **pfunc) {
         func_map_type::iterator iter = _write_func.find(fd);
         if (iter == _write_func.end()) return false;
         *pfunc = &iter->second;
         return true;
-
     }
 
 private:
-    func_map_type   _read_func;
-    func_map_type   _write_func;
-    func_map_type   _peer_close_func;;
+    func_map_type _read_func;
+    func_map_type _write_func;
+    func_map_type _peer_close_func;
+    ;
 };
 
-} // end of namespace async
-} // end of namespace asio
-} // end of namespace lsf
+}  // end of namespace async
+}  // end of namespace asio
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

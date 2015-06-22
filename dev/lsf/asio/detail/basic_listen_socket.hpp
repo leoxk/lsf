@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include "lsf/basic/error.hpp"
 #include "lsf/asio/detail/basic_sockaddr.hpp"
+#include "lsf/asio/detail/basic_socket.hpp"
 
 namespace lsf {
 namespace asio {
@@ -19,68 +20,62 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 // BasicListenSocket
 ////////////////////////////////////////////////////////////
-template<typename TransLayerProtoType = DummyTransLayerProtoType>
-class BasicListenSocket : public basic::Error
-{
+template <typename ProtoType = DummyProtoType>
+class BasicListenSocket : public basic::Error {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
-    typedef BasicSocket<TransLayerProtoType>       socket_type;
-    typedef BasicSockAddr<TransLayerProtoType>     sockaddr_type;
-    typedef TransLayerProtoType                    proto_type;
+    typedef BasicSocket<ProtoType> socket_type;
+    typedef BasicSockAddr<ProtoType> sockaddr_type;
+    typedef ProtoType proto_type;
 
-    template<typename OtherTransLayerProtoType> friend class BasicListenSocket;
+    template <typename OtherProtoType>
+    friend class BasicListenSocket;
 
 public:
-    static BasicListenSocket CreateListenSocket(proto_type proto = proto_type::V4())
-    {
+    static BasicListenSocket CreateListenSocket(proto_type proto = proto_type::V4()) {
         int sockfd = ::socket(proto.domain(), proto.type(), proto.protocol());
         return BasicListenSocket(sockfd);
     }
 
-    BasicListenSocket(int sockfd) : _sockfd(sockfd) { }
+    ////////////////////////////////////////////////////////////
+    BasicListenSocket(int sockfd) : _sockfd(sockfd) {}
 
-    template<typename OtherTransLayerProtoType>
-    BasicListenSocket(BasicListenSocket<OtherTransLayerProtoType> const & rhs) : _sockfd(rhs._sockfd) { }
+    template <typename OtherProtoType>
+    BasicListenSocket(BasicListenSocket<OtherProtoType> const& rhs)
+        : _sockfd(rhs._sockfd) {}
 
-    template<typename OtherTransLayerProtoType>
-    BasicListenSocket<TransLayerProtoType> & operator=(BasicListenSocket<OtherTransLayerProtoType> const & rhs)
-    {
+    template <typename OtherProtoType>
+    BasicListenSocket<ProtoType>& operator=(BasicListenSocket<OtherProtoType> const& rhs) {
         if (this == &rhs) return *this;
         _sockfd = rhs._sockfd;
         return *this;
     }
 
     ////////////////////////////////////////////////////////////
-    bool Bind(sockaddr_type const & local) {
-        return ErrWrap(::bind(_sockfd, local.data(), local.DataSize())) == 0;
-    }
+    bool Bind(sockaddr_type const& local) { return ErrWrap(::bind(_sockfd, local.data(), local.size())) == 0; }
 
-    bool Listen(int backlog = DEF_LISTEN_QUEUE_SIZE) {
-        return ErrWrap(::listen(_sockfd, backlog)) == 0;
-    }
+    bool Listen(int backlog = DEF_LISTEN_QUEUE_SIZE) { return ErrWrap(::listen(_sockfd, backlog)) == 0; }
 
-    bool Accept(socket_type & socket) {
-        int      sockfd;
-        if ((sockfd = ErrWrap(::accept(_sockfd, NULL, NULL))) < 0) return false;
+    bool Accept(socket_type& socket) {
+        int sockfd;
+        if ((sockfd = ErrWrap(::accept4(_sockfd, nullptr, nullptr, SOCK_NONBLOCK))) < 0) return false;
         socket._sockfd = sockfd;
         return true;
     }
 
-    bool  Close() {
-        return ErrWrap(::close(_sockfd)) == 0;
-    }
+    bool Close() { return ErrWrap(::close(_sockfd)) == 0; }
 
-    sockaddr_type LocalSockAddr() { 
+    sockaddr_type LocalSockAddr() {
         sockaddr addr;
-        socklen_t   addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(addr);
         ErrWrap(::getsockname(_sockfd, &addr, &addrlen));
         return sockaddr_type(&addr);
     }
 
     sockaddr_type RemoteSockAddr() {
         sockaddr addr;
-        socklen_t   addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(addr);
         if (ErrWrap(::getpeername(_sockfd, &addr, &addrlen)) == 0)
             return sockaddr_type(&addr);
         else if (IsV4())
@@ -91,23 +86,19 @@ public:
 
     ////////////////////////////////////////////////////////////
     // async funcs
-    template<typename ServiceType, typename HandlerType>
-    bool AsyncAccept(ServiceType & io_service, HandlerType const & handler)
-    {
+    template <typename ServiceType, typename HandlerType>
+    bool AsyncAccept(ServiceType& io_service, HandlerType const& handler) {
         return io_service.AsyncAccept(*this, handler);
     }
 
-    template<typename ServiceType>
-    void CloseAsync(ServiceType & io_service)
-    {
+    template <typename ServiceType>
+    void CloseAsync(ServiceType& io_service) {
         io_service.CloseAsync(_sockfd);
     }
 
     ////////////////////////////////////////////////////////////
     // SetSockOpt funcs
-    bool SetNonBlock() {
-        return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0;
-    }
+    bool SetNonBlock() { return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0; }
 
     bool SetSockReuse() {
         size_t optval = 1;
@@ -128,7 +119,7 @@ public:
         return optval;
     }
 
-    int  GetSockFd() const { return _sockfd; }
+    int GetSockFd() const { return _sockfd; }
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
@@ -136,11 +127,11 @@ public:
     bool operator!() const { return _sockfd >= 0; }
 
 private:
-    int             _sockfd;
+    int _sockfd;
 };
 
-} // end of namespace detail
-} // end of namespace asio
-} // end of namespace lsf
+}  // end of namespace detail
+}  // end of namespace asio
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

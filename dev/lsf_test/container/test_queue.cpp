@@ -11,11 +11,10 @@
 using namespace std;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define SHM_SIZE 1024
 
-LSF_TEST_CASE(bind_to_new_mem)
-{
+LSF_TEST_CASE(bind_to_new_mem) {
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Queue<TestNode, SharedMem>::CalcByteSize(SHM_SIZE)));
 
@@ -36,8 +35,7 @@ LSF_TEST_CASE(bind_to_new_mem)
     LSF_ASSERT(queue.size() == 3);
 }
 
-LSF_TEST_CASE(recovery_from_exist_mem)
-{
+LSF_TEST_CASE(recovery_from_exist_mem) {
     Queue<TestNode, SharedMem> queue;
 
     LSF_ASSERT(queue.BindAndRecoverStorage(SharedMem(SHM_KEY)));
@@ -49,8 +47,7 @@ LSF_TEST_CASE(recovery_from_exist_mem)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(queue_common_funcs)
-{
+LSF_TEST_CASE(queue_common_funcs) {
     // use shorter size type
     Queue<TestNode, SharedMem, uint16_t> queue;
 
@@ -86,8 +83,7 @@ LSF_TEST_CASE(queue_common_funcs)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
-{
+LSF_TEST_CASE(test_push_and_pop_from_front_and_back) {
     Queue<TestNode, SharedMem> queue;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -108,11 +104,11 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
     LSF_ASSERT(queue.PushFront(TestNode(5, 5)));
     LSF_ASSERT(queue.PushFront(TestNode(6, 6)));
     LSF_ASSERT(*(queue.GetFront()) == TestNode(6, 6));
-    LSF_ASSERT(*(queue.GetBack())  == TestNode(1, 1));
+    LSF_ASSERT(*(queue.GetBack()) == TestNode(1, 1));
     LSF_ASSERT(queue.PopFront());
     LSF_ASSERT(*(queue.GetFront()) == TestNode(5, 5));
     LSF_ASSERT(queue.PopBack());
-    LSF_ASSERT(*(queue.GetBack())  == TestNode(2, 2));
+    LSF_ASSERT(*(queue.GetBack()) == TestNode(2, 2));
     LSF_ASSERT(queue.PopFront());
     LSF_ASSERT(queue.PopBack());
     LSF_ASSERT(queue.PopBack());
@@ -122,8 +118,7 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_iterator)
-{
+LSF_TEST_CASE(test_iterator) {
     Queue<TestNode, SharedMem> queue;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, Queue<TestNode, SharedMem>::CalcByteSize(10)));
@@ -150,7 +145,7 @@ LSF_TEST_CASE(test_iterator)
     // test iterator
     Queue<TestNode, SharedMem>::iterator iter_begin = queue.begin();
     Queue<TestNode, SharedMem>::iterator iter = iter_begin;
-    Queue<TestNode, SharedMem>::iterator iter_end   = queue.end();
+    Queue<TestNode, SharedMem>::iterator iter_end = queue.end();
     LSF_ASSERT(iter_begin != iter_end);
     LSF_ASSERT(iter == iter_begin);
     LSF_ASSERT(*(iter++) == TestNode(4, 4));
@@ -182,7 +177,7 @@ LSF_TEST_CASE(test_iterator)
 
     // test reverse iterator
     Queue<TestNode, SharedMem>::reverse_iterator iter_rbegin = queue.rbegin();
-    Queue<TestNode, SharedMem>::reverse_iterator iter_rend   = queue.rend();
+    Queue<TestNode, SharedMem>::reverse_iterator iter_rend = queue.rend();
     Queue<TestNode, SharedMem>::reverse_iterator riter = iter_rbegin;
     LSF_ASSERT(iter_rbegin != iter_rend);
     LSF_ASSERT(riter == iter_rbegin);
@@ -200,8 +195,7 @@ LSF_TEST_CASE(test_iterator)
     LSF_ASSERT(riter == iter_rend);
 
     // test erase
-    while (queue.size() != 0)
-    {
+    while (queue.size() != 0) {
         LSF_ASSERT(queue.PopFront());
     }
     LSF_ASSERT(queue.empty());
@@ -209,9 +203,6 @@ LSF_TEST_CASE(test_iterator)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

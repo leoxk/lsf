@@ -19,27 +19,26 @@ using namespace lsf::util;
 
 static string conf_path;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 
-#define PRINT_ALL \
-    do { \
-        cout << *sets.FindRoot() << endl; \
-        cout << sets.ToString(TestNode(1, 1)) << endl; \
-        cout << sets.ToString(TestNode(2, 2)) << endl; \
-        cout << sets.ToString(TestNode(3, 3)) << endl; \
-        cout << sets.ToString(TestNode(4, 4)) << endl; \
-        cout << sets.ToString(TestNode(5, 5)) << endl; \
-        cout << sets.ToString(TestNode(6, 6)) << endl; \
-        cout << sets.ToString(TestNode(7, 7)) << endl; \
-        cout << sets.ToString(TestNode(8, 8)) << endl; \
-        cout << sets.ToString(TestNode(9, 9)) << endl; \
+#define PRINT_ALL                                        \
+    do {                                                 \
+        cout << *sets.FindRoot() << endl;                \
+        cout << sets.ToString(TestNode(1, 1)) << endl;   \
+        cout << sets.ToString(TestNode(2, 2)) << endl;   \
+        cout << sets.ToString(TestNode(3, 3)) << endl;   \
+        cout << sets.ToString(TestNode(4, 4)) << endl;   \
+        cout << sets.ToString(TestNode(5, 5)) << endl;   \
+        cout << sets.ToString(TestNode(6, 6)) << endl;   \
+        cout << sets.ToString(TestNode(7, 7)) << endl;   \
+        cout << sets.ToString(TestNode(8, 8)) << endl;   \
+        cout << sets.ToString(TestNode(9, 9)) << endl;   \
         cout << sets.ToString(TestNode(10, 10)) << endl; \
     } while (0)
 
-LSF_TEST_CASE(test_load_batch)
-{
-    ifstream    ifs;
-    size_t      line_count = 0;
+LSF_TEST_CASE(test_load_batch) {
+    ifstream ifs;
+    size_t line_count = 0;
 
     // get line count
     ifs.close();
@@ -48,7 +47,7 @@ LSF_TEST_CASE(test_load_batch)
         if (line.empty()) continue;
         line_count++;
     }
-    
+
     // init cache
     Set<uint32_t, SharedMem> sets;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -61,16 +60,16 @@ LSF_TEST_CASE(test_load_batch)
     ifs.open(conf_path.c_str());
     for (string line; !ifs.eof(); getline(ifs, line)) {
         if (line.empty()) continue;
-        //if (sets.size() >= 0 && sets.size() % (line_count / 10) == 0) {
-            //cout << "size: " << sets.size() << endl;
-            //LSF_ASSERT_EXIT(sets.CheckConsist());
+        // if (sets.size() >= 0 && sets.size() % (line_count / 10) == 0) {
+        // cout << "size: " << sets.size() << endl;
+        // LSF_ASSERT_EXIT(sets.CheckConsist());
         //}
         LSF_ASSERT_EXIT_ERR_ONLY(sets.Insert(TypeCast<uint32_t>(line)));
     }
 
     LSF_ASSERT(sets.CheckConsist());
     LSF_ASSERT(sets.size() == line_count);
-    
+
     // erase
     ifs.close();
     ifs.open(conf_path.c_str());
@@ -87,17 +86,15 @@ LSF_TEST_CASE(test_load_batch)
     LSF_ASSERT(sets.size() == 0);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc != 2) {
         cout << "Usage: " << argv[0] << " [conf_path]" << endl;
         exit(0);
-    }
-    else {
+    } else {
         conf_path = argv[1];
     }
 
-	LSF_TEST_ALL(argc, argv);
+    LSF_TEST_ALL(argc, argv);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

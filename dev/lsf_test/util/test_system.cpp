@@ -12,8 +12,7 @@ using namespace std;
 using namespace lsf::util;
 using namespace lsf::basic;
 
-LSF_TEST_CASE(file_related)
-{
+LSF_TEST_CASE(file_related) {
     LSF_ASSERT(System::IsDir("/"));
     LSF_ASSERT(System::IsDir("/bin"));
 
@@ -31,10 +30,8 @@ LSF_TEST_CASE(file_related)
     LSF_ASSERT(System::IsExecutable("/bin/cp"));
 }
 
-LSF_TEST_CASE(mkdir_and_rm)
-{
-    if (System::IsExist("./test_lsf_system_lib"))
-        System::Rm("./test_lsf_system_lib");
+LSF_TEST_CASE(mkdir_and_rm) {
+    if (System::IsExist("./test_lsf_system_lib")) System::Rm("./test_lsf_system_lib");
 
     LSF_ASSERT(System::MkDir("./test_lsf_system_lib/1/2/3"));
     LSF_ASSERT(System::IsDir("./test_lsf_system_lib/1/2/3"));
@@ -47,10 +44,8 @@ LSF_TEST_CASE(mkdir_and_rm)
     LSF_ASSERT(!System::IsDir("./test_lsf_system_lib_rename"));
 }
 
-LSF_TEST_CASE(rlimit_funcs)
-{
-    if (System::IsRoot())
-    {
+LSF_TEST_CASE(rlimit_funcs) {
+    if (System::IsRoot()) {
         // default setting
         LSF_ASSERT(System::SetMaxNofile());
         LSF_ASSERT(System::GetMaxNofile().first == System::DEF_MAX_NOFILE);
@@ -64,9 +59,7 @@ LSF_TEST_CASE(rlimit_funcs)
 
         LSF_ASSERT(System::SetMaxCore(1000000));
         LSF_ASSERT(System::GetMaxCore().first == 1000000);
-    }
-    else
-    {
+    } else {
         // with out root privilege, so set to hard max
         LSF_ASSERT(System::SetMaxNofile(System::GetMaxNofile().second));
 
@@ -74,10 +67,6 @@ LSF_TEST_CASE(rlimit_funcs)
     }
 }
 
-int main(int argc, char** argv)
-{
-    LSF_TEST_ALL(argc, argv);
-}
-
+int main(int argc, char** argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

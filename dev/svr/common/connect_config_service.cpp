@@ -9,8 +9,7 @@
 #include "svr/common/common_func.h"
 #include "svr/common/common_proto.h"
 
-bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket)
-{
+bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket) {
     // construct message
     msg::SS message;
     message.set_type(msg::SS_GET_DEPLOY_CONFIG_REQ);
@@ -18,27 +17,24 @@ bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket)
     message.mutable_get_deploy_config_req()->set_server_id(_pserver->GetServerId());
 
     // send and recv
-    if (!common::SendAndRecv(socket, message))
-    {
+    if (!common::SendAndRecv(socket, message)) {
         socket.Close();
         return false;
     }
 
     // check ret
-    if (!message.get_deploy_config_rsp().result())
-    {
+    if (!message.get_deploy_config_rsp().result()) {
         LSF_LOG_ERR("get config failed");
         return false;
     }
-     
+
     // set server config
     _pserver->SetServerConfig(message.get_deploy_config_rsp().config());
 
     return true;
 }
 
-void ConnectConfigService::SetConfigServerAddress(std::string const & address)
-{
+void ConnectConfigService::SetConfigServerAddress(std::string const& address) {
     _service_config.add_connect_address(address);
     _service_config.set_service_type(_service_type);
 }

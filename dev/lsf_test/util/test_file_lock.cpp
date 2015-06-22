@@ -12,8 +12,7 @@ using namespace std;
 using namespace lsf::util;
 
 #define FILE_PATH "./test.lock"
-LSF_TEST_CASE(test_file_lock)
-{
+LSF_TEST_CASE(test_file_lock) {
     // lock file
     FileLock locker;
     LSF_ASSERT(locker.Lock(FILE_PATH));
@@ -33,9 +32,6 @@ LSF_TEST_CASE(test_file_lock)
     LSF_ASSERT(System::Rm(FILE_PATH));
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

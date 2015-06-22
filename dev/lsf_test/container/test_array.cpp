@@ -11,11 +11,10 @@
 using namespace std;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define ARRAY_SIZE 10
 
-LSF_TEST_CASE(test_common)
-{
+LSF_TEST_CASE(test_common) {
     Array<TestNode, SharedMem> array;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -38,12 +37,11 @@ LSF_TEST_CASE(test_common)
     LSF_ASSERT(array.operator[](8) == TestNode());
     LSF_ASSERT(array.operator[](9) == TestNode());
 
-    LSF_ASSERT(array.GetPtr(10) == NULL);
-    LSF_ASSERT(array.GetPtr(11) == NULL);
+    LSF_ASSERT(array.GetPtr(10) == nullptr);
+    LSF_ASSERT(array.GetPtr(11) == nullptr);
 }
 
-LSF_TEST_CASE(test_iterator)
-{
+LSF_TEST_CASE(test_iterator) {
     typedef Array<TestNode, SharedMem> array_type;
     array_type array;
 
@@ -61,9 +59,6 @@ LSF_TEST_CASE(test_iterator)
     }
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

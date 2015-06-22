@@ -16,33 +16,29 @@
 namespace lsf {
 namespace util {
 
-class FileLock : public basic::Error
-{
+class FileLock : public basic::Error {
 public:
-    FileLock() : _lockfd(-1) { }
-        
+    FileLock() : _lockfd(-1) {}
+
     ~FileLock() { UnLock(); }
-    
-    bool Lock(char const * lockfile)
-    {
+
+    bool Lock(char const* lockfile) {
         if (IsLocked()) return false;
 
         if ((_lockfd = ErrWrap(::open(lockfile, O_RDWR | O_CREAT, 0644))) < 0) return false;
 
-        if (ErrWrap(::flock(_lockfd, LOCK_EX | LOCK_NB)) < 0) 
-        {
-            ::close(_lockfd); 
+        if (ErrWrap(::flock(_lockfd, LOCK_EX | LOCK_NB)) < 0) {
+            ::close(_lockfd);
             _lockfd = -1;
             return false;
         }
-        
+
         return true;
     }
 
-    bool UnLock()
-    {
+    bool UnLock() {
         if (!IsLocked()) return false;
-        ::close(_lockfd); 
+        ::close(_lockfd);
         _lockfd = -1;
         return true;
     }
@@ -53,7 +49,7 @@ private:
     int _lockfd;
 };
 
-} // end of namespace util
-} // end of namespace lsf
+}  // end of namespace util
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

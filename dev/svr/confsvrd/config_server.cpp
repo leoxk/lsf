@@ -14,15 +14,13 @@ using namespace google::protobuf;
 using namespace lsf::basic;
 using namespace lsf::util;
 
-bool ConfigServer::OnParseCommond(int argc, char** argv)
-{
+bool ConfigServer::OnParseCommond(int argc, char** argv) {
     // check input
-    if (argc < 2)
-    {
+    if (argc < 2) {
         std::cerr << "usage: " << argv[0] << " [path]" << std::endl;
         return false;
     }
-    
+
     // parse content
     _server_id = 0;
     _server_name = StringExt::GetBaseName(argv[0]);
@@ -33,26 +31,22 @@ bool ConfigServer::OnParseCommond(int argc, char** argv)
     return true;
 }
 
-bool ConfigServer::OnInitDeployConfig()
-{
+bool ConfigServer::OnInitDeployConfig() {
     // load game config
     if (!DeployConfigManager::Instance()->Init(_config_path.c_str())) return false;
 
     // get server config from deploy config
-    conf::Server const * pconf = DeployConfigManager::Instance()->GetServerConfig(_server_type, _server_id);
-    if (!pconf)
-    {
+    conf::Server const* pconf = DeployConfigManager::Instance()->GetServerConfig(_server_type, _server_id);
+    if (!pconf) {
         LSF_LOG_ERR("get config failed, server_type=%u, server_id=%u, %s", _server_type, _server_id);
         return false;
     }
     _server_config.CopyFrom(*pconf);
 
     // check server type and id
-    if (_server_type != _server_config.server_type() ||
-        _server_id != _server_config.server_id())
-    {
-        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id, 
-                _server_config.server_type(), _server_config.server_id());
+    if (_server_type != _server_config.server_type() || _server_id != _server_config.server_id()) {
+        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id,
+                    _server_config.server_type(), _server_config.server_id());
         return false;
     }
 
@@ -60,17 +54,13 @@ bool ConfigServer::OnInitDeployConfig()
     return true;
 }
 
-bool ConfigServer::OnRun()
-{
+bool ConfigServer::OnRun() {
     // start config service
     if (!AcceptConfigService::Instance()->Run(this)) return false;
 
     return true;
 }
 
-int main(int argc, char** argv)
-{
-    ConfigServer::Instance()->Run(argc, argv);
-}
+int main(int argc, char** argv) { ConfigServer::Instance()->Run(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

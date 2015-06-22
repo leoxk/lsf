@@ -23,16 +23,22 @@ export var_backup_files=(bin conf script)
 export var_max_try=30
 
 # mod settings
+declare -a var_index=("conf" "proxy" "conn0" "conn1" "conn2")
+
 declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
-                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60000 0")
+                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60000 0"
+                    ["conn0"]="./bin/connsvrd 127.0.0.1 60000 0"
+                    ["conn1"]="./bin/connsvrd 127.0.0.1 60000 1"
+                    ["conn2"]="./bin/connsvrd 127.0.0.1 60000 2"
+                    )
 
 ############################################################
 # Main Logic
 ############################################################
 function usage
 {
-  echo "Usage: $(path::basename $0) [start|stop|restart] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
-  echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${!var_mod[@]}] | tr ' ' '|')"
+  echo "Usage: $(path::basename $0) [start|stop|restart] [all|$(echo ${var_index[@]}] | tr ' ' '|')"
+  echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${var_index[@]}] | tr ' ' '|')"
   #echo "       $(path::basename $0) [backup|rollback]"
   echo "       $(path::basename $0) [clearshm]"
 }
@@ -70,8 +76,8 @@ function do_start
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::start ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::start ${var_mod[$_mod]}
       done ;;
 
     *)
@@ -85,8 +91,8 @@ function do_stop
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::stop ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::stop ${var_mod[$_mod]}
       done ;;
 
     *) server::stop ${var_mod[$1]};;
@@ -99,8 +105,8 @@ function do_restart
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::restart ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::restart ${var_mod[$_mod]}
       done ;;
 
     *) server::restart ${var_mod[$1]};;
@@ -113,8 +119,8 @@ function do_status
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::status ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::status ${var_mod[$_mod]}
       done ;;
 
     *) server::status ${var_mod[$1]};;
@@ -127,8 +133,8 @@ function do_checklive
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::checklive ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::checklive ${var_mod[$_mod]}
       done ;;
 
     *) server::checklive ${var_mod[$1]};;
@@ -141,8 +147,8 @@ function do_reload
 
   case $1 in
     all)
-      for _mod in "${var_mod[@]}"; do
-        server::reload ${_mod}
+      for _mod in "${var_index[@]}"; do
+        server::reload ${var_mod[$_mod]}
       done ;;
 
     *) server::reload ${var_mod[$1]};;

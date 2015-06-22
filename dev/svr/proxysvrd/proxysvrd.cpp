@@ -10,19 +10,10 @@
 using namespace google::protobuf;
 using namespace lsf::util;
 
-bool ProxyServer::OnRun()
-{
-    return true;
-}
+bool ProxyServer::OnRun() { return true; }
 
-bool ProxyServer::OnClientMessage()
-{
-    return true;
-}
+bool ProxyServer::OnClientMessage() { return true; }
 
-int main(int argc, char** argv)
-{
-    ProxyServer::Instance()->Run(argc, argv);
-}
+int main(int argc, char** argv) { ProxyServer::Instance()->Run(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

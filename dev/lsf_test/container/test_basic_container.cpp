@@ -11,11 +11,10 @@
 using namespace std;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define QUEUE_SIZE 1024
 
-LSF_TEST_CASE(bind_to_new_mem)
-{
+LSF_TEST_CASE(bind_to_new_mem) {
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(QUEUE_SIZE)));
 
@@ -35,8 +34,7 @@ LSF_TEST_CASE(bind_to_new_mem)
     LSF_ASSERT(list.size() == 3);
 }
 
-LSF_TEST_CASE(recovery_from_exist_mem)
-{
+LSF_TEST_CASE(recovery_from_exist_mem) {
     List<TestNode, SharedMem> list;
 
     LSF_ASSERT(list.BindAndRecoverStorage(SharedMem(SHM_KEY)));
@@ -47,19 +45,14 @@ LSF_TEST_CASE(recovery_from_exist_mem)
     LSF_ASSERT(list.ElemByteSize() == sizeof(TestNode));
 }
 
-LSF_TEST_CASE(recovery_from_new_type)
-{
+LSF_TEST_CASE(recovery_from_new_type) {
     List<TestNode1, SharedMem> list;
 
     LSF_ASSERT(!list.BindAndRecoverStorage(SharedMem(SHM_KEY)));
     LSF_ASSERT(!list.IsBindStorage());
     std::cout << list.ErrString() << std::endl;
-
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:

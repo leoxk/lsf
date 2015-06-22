@@ -5,7 +5,7 @@
 // Revision:    2015-06-08 by leoxiang
 
 #include <iostream>
-#include <functional>  
+#include <functional>
 #include "svr/proto/msg_ss.pb.h"
 #include "svr/common/basic_server.h"
 #include "svr/common/common_func.h"
@@ -18,36 +18,31 @@ using namespace lsf::util;
 
 ////////////////////////////////////////////////////////////
 // utility funcs
-conf::ConnectService const * BasicServer::GetConnectServiceConfig(conf::ENServiceType service_type)
-{
-    for (conf::ConnectService const & iter : _server_config.connect_service())
-    {
+conf::ConnectService const* BasicServer::GetConnectServiceConfig(conf::ENServiceType service_type) {
+    for (conf::ConnectService const& iter : _server_config.connect_service()) {
         if (iter.service_type() == service_type) return &iter;
     }
     LSF_LOG_ERR("get config failed, type=%u", service_type);
-    return NULL;
+    return nullptr;
 }
 
-conf::AcceptService const * BasicServer::GetAcceptServiceConfig(conf::ENServiceType service_type)
-{
-    for (conf::AcceptService const & iter : _server_config.accept_service())
-    {
+conf::AcceptService const* BasicServer::GetAcceptServiceConfig(conf::ENServiceType service_type) {
+    for (conf::AcceptService const& iter : _server_config.accept_service()) {
         if (iter.service_type() == service_type) return &iter;
     }
     LSF_LOG_ERR("get config failed, type=%u", service_type);
-    return NULL;
+    return nullptr;
 }
 
 ////////////////////////////////////////////////////////////
 // init logic
-void BasicServer::Run(int argc, char** argv)
-{
+void BasicServer::Run(int argc, char** argv) {
     // bind log to terminal
     SingleLog::Instance()->BindOutput(new TermLogDriver());
 
     // init protobuf log
-    ProtobufLog::Instance()->Init(); 
-    
+    ProtobufLog::Instance()->Init();
+
     // parse command
     if (!OnParseCommond(argc, argv)) return;
 
@@ -67,8 +62,8 @@ void BasicServer::Run(int argc, char** argv)
     if (!OnInitSignal()) return;
 
     // set callback func
-    IOService::Instance()->SetTickFunc(std::bind(&BasicServer::OnTick, this)); 
-    IOService::Instance()->SetExitFunc(std::bind(&BasicServer::OnExit, this)); 
+    IOService::Instance()->SetTickFunc(std::bind(&BasicServer::OnTick, this));
+    IOService::Instance()->SetExitFunc(std::bind(&BasicServer::OnExit, this));
 
     // main logic
     if (!OnRun()) return;
@@ -77,15 +72,13 @@ void BasicServer::Run(int argc, char** argv)
     IOService::Instance()->Run();
 }
 
-bool BasicServer::OnParseCommond(int argc, char** argv)
-{
+bool BasicServer::OnParseCommond(int argc, char** argv) {
     // check input
-    if (argc < 4)
-    {
+    if (argc < 4) {
         std::cerr << "usage: " << argv[0] << " [confsvrd_ip] [confsvrd_port] [server_id]" << std::endl;
         return false;
     }
-    
+
     // parse content
     _confsvrd_addrss = std::string(argv[1]) + "|" + argv[2];
     _server_id = TypeCast<uint32_t>(argv[3]);
@@ -94,32 +87,26 @@ bool BasicServer::OnParseCommond(int argc, char** argv)
     return true;
 }
 
-bool BasicServer::OnInitDeployConfig()
-{
+bool BasicServer::OnInitDeployConfig() {
     // init connect config service
     ConnectConfigService::Instance()->SetConfigServerAddress(_confsvrd_addrss);
     ConnectConfigService::Instance()->Run(this);
 
     // check server type and id
-    if (_server_type != _server_config.server_type() ||
-        _server_id != _server_config.server_id())
-    {
-        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id, 
-                _server_config.server_type(), _server_config.server_id());
+    if (_server_type != _server_config.server_type() || _server_id != _server_config.server_id()) {
+        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id,
+                    _server_config.server_type(), _server_config.server_id());
         return false;
     }
-
 
     LSF_LOG_INFO("get config from confsvrd successs");
 
     return true;
 }
 
-bool BasicServer::OnSetCurrentPath(char const * command)
-{
+bool BasicServer::OnSetCurrentPath(char const* command) {
     std::string path = StringExt::GetDirName(System::GetAbsPath(command));
-    if (!System::ChDir(path))
-    {
+    if (!System::ChDir(path)) {
         LSF_LOG_ERR("set current path failed, %s", System::ErrCharStr());
         return false;
     }
@@ -128,13 +115,11 @@ bool BasicServer::OnSetCurrentPath(char const * command)
     return true;
 }
 
-bool BasicServer::OnInitLocalLog()
-{
-    std::string local_log_path = 
+bool BasicServer::OnInitLocalLog() {
+    std::string local_log_path =
         "../log/" + _server_name + "/" + _server_name + "." + TypeCast<std::string>(_server_id);
 
-    if (!SingleLog::Instance()->BindOutput(new FileLogDriver(local_log_path, FileLogDriver::SHIFT_DAY)))
-    {
+    if (!SingleLog::Instance()->BindOutput(new FileLogDriver(local_log_path, FileLogDriver::SHIFT_DAY))) {
         LSF_LOG_ERR("init local log failed, %s", SingleLog::Instance()->ErrCharStr());
         return false;
     }
@@ -143,8 +128,7 @@ bool BasicServer::OnInitLocalLog()
     return true;
 }
 
-bool BasicServer::OnDeamonize()
-{
+bool BasicServer::OnDeamonize() {
     System::Daemonize();
     return true;
 }
@@ -153,19 +137,18 @@ bool BasicServer::OnDeamonize()
 // signal helper
 namespace detail {
 
-static BasicServer * pserver = NULL;
+static BasicServer* pserver = nullptr;
 
 void SignalHandler(int sig) { pserver->OnSignalHandle(sig); }
 
-} // end of namespace detail
+}  // end of namespace detail
 
-bool BasicServer::OnInitSignal()
-{
+bool BasicServer::OnInitSignal() {
     // set pserver
     ::detail::pserver = this;
 
-    System::SetSignal(SIGINT,  ::detail::SignalHandler);
-    System::SetSignal(SIGHUP,  ::detail::SignalHandler);
+    System::SetSignal(SIGINT, ::detail::SignalHandler);
+    System::SetSignal(SIGHUP, ::detail::SignalHandler);
     System::SetSignal(SIGQUIT, ::detail::SignalHandler);
     System::SetSignal(SIGPIPE, ::detail::SignalHandler);
     System::SetSignal(SIGTTOU, ::detail::SignalHandler);
@@ -178,20 +161,15 @@ bool BasicServer::OnInitSignal()
     return true;
 }
 
-void BasicServer::OnSignalHandle(int sig)
-{
-    if (sig == SIGSEGV)
-    {
+void BasicServer::OnSignalHandle(int sig) {
+    if (sig == SIGSEGV) {
         OnExit();
         System::SetSignal(SIGSEGV, SIG_DFL);
     }
-    if (sig == SIGUSR1)
-    {
+    if (sig == SIGUSR1) {
         IOService::Instance()->SetExit();
     }
-    if (sig == SIGUSR2)
-    {
-
+    if (sig == SIGUSR2) {
     }
 }
 

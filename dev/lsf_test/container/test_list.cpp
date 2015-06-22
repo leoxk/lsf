@@ -11,11 +11,10 @@
 using namespace std;
 using namespace lsf::container;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define QUEUE_SIZE 1024
 
-LSF_TEST_CASE(bind_to_new_mem)
-{
+LSF_TEST_CASE(bind_to_new_mem) {
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode>::CalcByteSize(QUEUE_SIZE)));
 
@@ -35,8 +34,7 @@ LSF_TEST_CASE(bind_to_new_mem)
     LSF_ASSERT(list.size() == 3);
 }
 
-LSF_TEST_CASE(recovery_from_exist_mem)
-{
+LSF_TEST_CASE(recovery_from_exist_mem) {
     List<TestNode, SharedMem> list;
 
     LSF_ASSERT(list.BindAndRecoverStorage(SharedMem(SHM_KEY)));
@@ -48,8 +46,7 @@ LSF_TEST_CASE(recovery_from_exist_mem)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(list_common_funcs)
-{
+LSF_TEST_CASE(list_common_funcs) {
     List<TestNode, SharedMem> list;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -84,8 +81,7 @@ LSF_TEST_CASE(list_common_funcs)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
-{
+LSF_TEST_CASE(test_push_and_pop_from_front_and_back) {
     List<TestNode, SharedMem> list;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -106,11 +102,11 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
     LSF_ASSERT(list.PushFront(TestNode(5, 5)));
     LSF_ASSERT(list.PushFront(TestNode(6, 6)));
     LSF_ASSERT(*(list.GetFront()) == TestNode(6, 6));
-    LSF_ASSERT(*(list.GetBack())  == TestNode(1, 1));
+    LSF_ASSERT(*(list.GetBack()) == TestNode(1, 1));
     LSF_ASSERT(list.PopFront());
     LSF_ASSERT(*(list.GetFront()) == TestNode(5, 5));
     LSF_ASSERT(list.PopBack());
-    LSF_ASSERT(*(list.GetBack())  == TestNode(2, 2));
+    LSF_ASSERT(*(list.GetBack()) == TestNode(2, 2));
     LSF_ASSERT(list.PopFront());
     LSF_ASSERT(list.PopBack());
     LSF_ASSERT(list.PopBack());
@@ -120,8 +116,7 @@ LSF_TEST_CASE(test_push_and_pop_from_front_and_back)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_iterator)
-{
+LSF_TEST_CASE(test_iterator) {
     List<TestNode, SharedMem> list;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(10)));
@@ -148,7 +143,7 @@ LSF_TEST_CASE(test_iterator)
     // test iterator
     List<TestNode, SharedMem>::iterator iter_begin = list.begin();
     List<TestNode, SharedMem>::iterator iter = iter_begin;
-    List<TestNode, SharedMem>::iterator iter_end   = list.end();
+    List<TestNode, SharedMem>::iterator iter_end = list.end();
     LSF_ASSERT(iter_begin != iter_end);
     LSF_ASSERT(iter == iter_begin);
     LSF_ASSERT(*(iter++) == TestNode(4, 4));
@@ -180,7 +175,7 @@ LSF_TEST_CASE(test_iterator)
 
     // test reverse iterator
     List<TestNode, SharedMem>::reverse_iterator iter_rbegin = list.rbegin();
-    List<TestNode, SharedMem>::reverse_iterator iter_rend   = list.rend();
+    List<TestNode, SharedMem>::reverse_iterator iter_rend = list.rend();
     List<TestNode, SharedMem>::reverse_iterator riter = iter_rbegin;
     LSF_ASSERT(iter_rbegin != iter_rend);
     LSF_ASSERT(riter == iter_rbegin);
@@ -198,8 +193,7 @@ LSF_TEST_CASE(test_iterator)
     LSF_ASSERT(riter == iter_rend);
 
     // test generic algorithm
-    for (iter = list.begin(); iter != list.end();)
-    {
+    for (iter = list.begin(); iter != list.end();) {
         LSF_ASSERT(list.Erase(iter++));
     }
     LSF_ASSERT(list.empty());
@@ -207,8 +201,7 @@ LSF_TEST_CASE(test_iterator)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(test_insert_and_erase_and_find)
-{
+LSF_TEST_CASE(test_insert_and_erase_and_find) {
     List<TestNode, SharedMem> list;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
     LSF_ASSERT(SharedMem::Create(SHM_KEY, List<TestNode, SharedMem>::CalcByteSize(10)));
@@ -219,14 +212,14 @@ LSF_TEST_CASE(test_insert_and_erase_and_find)
     LSF_ASSERT(list.PushBack(TestNode(2, 2)));
     LSF_ASSERT(list.PushBack(TestNode(3, 3)));
     LSF_ASSERT(list.PushBack(TestNode(4, 4)));
-    LSF_ASSERT(list.PushBack(TestNode(5, 5))); // 1 2 3 4 5
+    LSF_ASSERT(list.PushBack(TestNode(5, 5)));  // 1 2 3 4 5
 
     // test insert
-    LSF_ASSERT(list.Insert(list.begin(), TestNode(9, 9))); // 9 1 2 3 4 5
+    LSF_ASSERT(list.Insert(list.begin(), TestNode(9, 9)));  // 9 1 2 3 4 5
     LSF_ASSERT(*list.begin() == TestNode(9, 9));
     LSF_ASSERT(*++list.begin() == TestNode(1, 1));
 
-    LSF_ASSERT(list.Insert(++list.begin(), TestNode(8, 8))); // 9 8 1 2 3 4 5
+    LSF_ASSERT(list.Insert(++list.begin(), TestNode(8, 8)));  // 9 8 1 2 3 4 5
     LSF_ASSERT(*list.begin() == TestNode(9, 9));
     LSF_ASSERT(*++list.begin() == TestNode(8, 8));
 
@@ -240,11 +233,11 @@ LSF_TEST_CASE(test_insert_and_erase_and_find)
     LSF_ASSERT(list.Find(TestNode(5, 5)) == list.begin() + 6);
 
     // test erase
-    LSF_ASSERT(list.Erase(++list.begin())); 
+    LSF_ASSERT(list.Erase(++list.begin()));
     LSF_ASSERT(*list.begin() == TestNode(9, 9));
     LSF_ASSERT(*++list.begin() == TestNode(1, 1));
 
-    LSF_ASSERT(list.Erase(list.begin())); 
+    LSF_ASSERT(list.Erase(list.begin()));
     LSF_ASSERT(*list.begin() == TestNode(1, 1));
 
     LSF_ASSERT(list.Erase(list.begin(), list.end()));
@@ -252,9 +245,6 @@ LSF_TEST_CASE(test_insert_and_erase_and_find)
     LSF_ASSERT(list.empty());
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

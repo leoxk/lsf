@@ -12,28 +12,24 @@ using namespace std;
 using namespace lsf::algorithm;
 using namespace lsf::util;
 
-LSF_TEST_CASE(test_combination)
-{
+LSF_TEST_CASE(test_combination) {
     vector<int> vec;
     vec.push_back(1);
     vec.push_back(2);
     vec.push_back(3);
     vec.push_back(4);
     vec.push_back(5);
-    
-    //std::adjacent_find
 
     vector<string> result_vec;
-    lsf::algorithm::for_combination(vec.begin(), vec.end(), 3, [&result_vec] (std::vector<vector<int>::iterator> iter_vec) 
-            {
-            string result;
-            for (auto it = iter_vec.begin(); it != iter_vec.end(); ++it)
-            {
-                result += TypeCast<string>(**it);
-                if ((it + 1) != iter_vec.end()) result += ", ";
-            }
-            result_vec.push_back(result);
-        });
+    lsf::algorithm::for_combination(vec.begin(), vec.end(), 3,
+                                    [&result_vec](std::vector<vector<int>::iterator> iter_vec) {
+        string result;
+        for (auto it = iter_vec.begin(); it != iter_vec.end(); ++it) {
+            result += TypeCast<string>(**it);
+            if ((it + 1) != iter_vec.end()) result += ", ";
+        }
+        result_vec.push_back(result);
+    });
 
     LSF_ASSERT(result_vec.size() == 10);
     LSF_ASSERT(result_vec[0] == "1, 2, 3");
@@ -48,9 +44,6 @@ LSF_TEST_CASE(test_combination)
     LSF_ASSERT(result_vec[9] == "3, 4, 5");
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

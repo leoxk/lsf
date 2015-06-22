@@ -11,12 +11,9 @@ namespace basic {
 
 ////////////////////////////////////////////////////////////
 // EmptyType
-struct EmptyType
-{ };
+struct EmptyType {};
 
-} // end of namespace basic
-} // end of namespace lsf
-
-
+}  // end of namespace basic
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

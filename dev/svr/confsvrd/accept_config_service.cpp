@@ -10,8 +10,7 @@
 #include "svr/confsvrd/deploy_conf_mng.h"
 #include "svr/proto/msg_ss.pb.h"
 
-bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message)
-{
+bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
     msg::SS request;
     msg::SS response;
     response.set_type(msg::SS_GET_DEPLOY_CONFIG_RSP);
@@ -20,8 +19,7 @@ bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::str
     if (!common::UnPackProtoMsg(message, request)) return true;
 
     // check msg type
-    if (request.type() != msg::SS_GET_DEPLOY_CONFIG_REQ) 
-    {
+    if (request.type() != msg::SS_GET_DEPLOY_CONFIG_REQ) {
         common::SendMessage(socket, response);
         LSF_LOG_ERR("unknown message type, type=%u", request.type());
         return true;
@@ -29,10 +27,9 @@ bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::str
 
     // get config
     conf::ENServerType server_type = request.get_deploy_config_req().server_type();
-    uint32_t           server_id   = request.get_deploy_config_req().server_id();
-    conf::Server const * pconf = DeployConfigManager::Instance()->GetServerConfig(server_type, server_id);
-    if (!pconf)
-    {
+    uint32_t server_id = request.get_deploy_config_req().server_id();
+    conf::Server const* pconf = DeployConfigManager::Instance()->GetServerConfig(server_type, server_id);
+    if (!pconf) {
         common::SendMessage(socket, response);
         LSF_LOG_ERR("cant find deploy config, server_type=%u, server_id=%u", server_type, server_id);
         return true;

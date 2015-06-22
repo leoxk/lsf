@@ -20,6 +20,7 @@ SVR_MODULE = \
 			  dev/svr/common 	\
 			  dev/svr/confsvrd	\
 			  dev/svr/proxysvrd	\
+			  dev/svr/connsvrd	\
 
 TEST_MODULE = \
 			  dev/lsf_test/algorithm	\
@@ -62,7 +63,7 @@ test_compile:
 	done
 
 test_asio :
-	@./test/bin/test_ip
+	@./test/bin/test_net
 	@./test/bin/test_tcp
 	@./test/bin/test_udp
 	@./test/bin/test_asio

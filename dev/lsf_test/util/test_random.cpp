@@ -11,8 +11,7 @@
 using namespace std;
 using namespace lsf::util;
 
-LSF_TEST_CASE(test)
-{
+LSF_TEST_CASE(test) {
     // batch test
     for (int i = 0; i < 1000; i++) {
         size_t rand = SingleRandom::GetRand(0, 100);
@@ -25,9 +24,6 @@ LSF_TEST_CASE(test)
     LSF_ASSERT(SingleRandom::GetRand(1, 0) == 1);
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

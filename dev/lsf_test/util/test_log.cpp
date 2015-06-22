@@ -10,8 +10,7 @@
 using namespace std;
 using namespace lsf::util;
 
-LSF_TEST_CASE(bind_to_file)
-{
+LSF_TEST_CASE(bind_to_file) {
     Log log;
 
     // open file and output
@@ -24,8 +23,7 @@ LSF_TEST_CASE(bind_to_file)
     LSF_ASSERT(!log.IsBindOuput());
 }
 
-LSF_TEST_CASE(bind_to_terminal)
-{
+LSF_TEST_CASE(bind_to_terminal) {
     Log log;
 
     LSF_ASSERT(log.BindOutput(new TermLogDriver()));
@@ -34,33 +32,29 @@ LSF_TEST_CASE(bind_to_terminal)
     LSF_ASSERT(log.WriteLog(Log::TYPE_INFO, "test log to terminal err"));
 }
 
-LSF_TEST_CASE(test_macro)
-{
+LSF_TEST_CASE(test_macro) {
     LSF_ASSERT(!SingleLog::Instance()->IsBindOuput());
 
     // file
     LSF_ASSERT(SingleLog::Instance()->BindOutput(new FileLogDriver("/dev/null", FileLogDriver::SHIFT_NONE)));
     LSF_ASSERT(SingleLog::Instance()->IsBindOuput());
-    LSF_ASSERT(LSF_LOG_INFO ("test SingleLog info" ));
+    LSF_ASSERT(LSF_LOG_INFO("test SingleLog info"));
     LSF_ASSERT(LSF_LOG_DEBUG("test SingleLog debug"));
-    LSF_ASSERT(LSF_LOG_WARN ("test SingleLog warn" ));
-    LSF_ASSERT(LSF_LOG_ERR  ("test SingleLog err"  ));
+    LSF_ASSERT(LSF_LOG_WARN("test SingleLog warn"));
+    LSF_ASSERT(LSF_LOG_ERR("test SingleLog err"));
     LSF_ASSERT(LSF_LOG_FATAL("test SingleLog fatal"));
 
     // term
     LSF_ASSERT(SingleLog::Instance()->BindOutput(new TermLogDriver()));
     LSF_ASSERT(SingleLog::Instance()->IsBindOuput());
-    LSF_ASSERT(LSF_LOG_INFO ("test terminal SingleLog info" ));
+    LSF_ASSERT(LSF_LOG_INFO("test terminal SingleLog info"));
     LSF_ASSERT(LSF_LOG_DEBUG("test terminal SingleLog debug"));
-    LSF_ASSERT(LSF_LOG_WARN ("test terminal SingleLog warn" ));
-    LSF_ASSERT(LSF_LOG_ERR  ("test terminal SingleLog err"  ));
+    LSF_ASSERT(LSF_LOG_WARN("test terminal SingleLog warn"));
+    LSF_ASSERT(LSF_LOG_ERR("test terminal SingleLog err"));
     LSF_ASSERT(LSF_LOG_FATAL("test terminal SingleLog fatal"));
     LSF_ASSERT(LSF_LOG_FATAL("%s %u %d", "some thing", 100, 100));
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -16,35 +16,32 @@
 #include "lsf/util/protobuf_log.hpp"
 #include "lsf/util/serialize.hpp"
 #include "lsf/util/log.hpp"
+#include "lsf/basic/time.hpp"
 
-template<typename ElemType>
-class BasicManager : public lsf::basic::NonCopyable
-{
+template <typename ElemType>
+class BasicManager : public lsf::basic::NonCopyable {
 public:
-    typedef lsf::container::Pool<ElemType,lsf::container::HeapMem,uint32_t> pool_type;
+    typedef lsf::container::Pool<ElemType, lsf::container::HeapMem, uint32_t> pool_type;
     typedef typename pool_type::iterator iterator;
 
 public:
     ////////////////////////////////////////////////////////////
     // init mananger
-    bool Init(key_t shm_key, uint32_t max_size)
-    {
+    bool Init(key_t shm_key, uint32_t max_size) {
         // save shm key
         _shm_key = shm_key;
 
         // calc shm size and bind
         size_t byte_size = _pool.CalcByteSize(max_size);
-        if (!_pool.BindAndInitStorage(lsf::container::HeapMem(byte_size)))
-        {
+        if (!_pool.BindAndInitStorage(lsf::container::HeapMem(byte_size))) {
             LSF_LOG_ERR("bind and init storage failed, %s", _pool.ErrCharStr());
             return false;
         }
 
         // if find shm, then recover data
         lsf::container::SharedMem shared_mem(_shm_key);
-        if (shared_mem.IsAttached())
-        {
-            uint8_t * pbase = (uint8_t *)shared_mem.GetPtr();
+        if (shared_mem.IsAttached()) {
+            uint8_t *pbase = (uint8_t *)shared_mem.GetPtr();
             size_t total = shared_mem.GetSize();
             size_t off = 0;
 
@@ -54,29 +51,28 @@ public:
 
             // record begin time
             timeval tv_begin, tv_end;
-            ::gettimeofday(&tv_begin, NULL);
+            ::gettimeofday(&tv_begin, nullptr);
 
             // recover every elem
-            for (size_t i = 0; i < elem_size && i < _pool.max_size(); ++i)
-            {
+            for (size_t i = 0; i < elem_size && i < _pool.max_size(); ++i) {
                 // create elem
                 uint32_t id = _pool.Malloc();
-                ElemType & elem = _pool.Get(id);
+                ElemType &elem = _pool.Get(id);
 
                 // recover from buffer
-                if (!elem.UnSerialize(pbase, total, off)) 
-                {
-                    LSF_LOG_ERR("unserialize failed, count=%d, %s", i, lsf::util::ProtobufLog::Instance()->ErrCharStr());
+                if (!elem.UnSerialize(pbase, total, off)) {
+                    LSF_LOG_ERR("unserialize failed, count=%d, %s", i,
+                                lsf::util::ProtobufLog::Instance()->ErrCharStr());
                     return false;
                 }
             }
 
-            ::gettimeofday(&tv_end, NULL);
-            LSF_LOG_INFO("success recover elem, num=%d, utime=%u", elem_size,
-                    (tv_end.tv_sec - tv_begin.tv_sec) * 1000000 + (tv_end.tv_usec - tv_begin.tv_usec));
+            ::gettimeofday(&tv_end, nullptr);
+            LSF_LOG_INFO("success recover elem, num=%d, mtime=%u", elem_size,
+                         lsf::basic::Time::TimeValDiff(tv_begin, tv_end));
 
             // delete shm
-            lsf::container::SharedMem::Delete(_shm_key); 
+            lsf::container::SharedMem::Delete(_shm_key);
         }
 
         return true;
@@ -84,49 +80,42 @@ public:
 
     ////////////////////////////////////////////////////////////
     // when manager released, serialize all data
-    bool Release()
-    {
+    bool Release() {
         // if shm already exist, then delete it
-        if (lsf::container::SharedMem::IsShmExist(_shm_key) && 
-            !lsf::container::SharedMem::Delete(_shm_key))
-        {
+        if (lsf::container::SharedMem::IsShmExist(_shm_key) && !lsf::container::SharedMem::Delete(_shm_key)) {
             LSF_LOG_ERR("delete shared mem failed, %s", lsf::container::SharedMem::SysErrCharStr());
             return false;
         }
 
         // count need byte size
         size_t byte_size = 0;
-        for (auto it : _pool)
-        {
+        for (auto it : _pool) {
             byte_size += it->GetSize();
         }
 
         // create shm mem
-        if (!lsf::container::SharedMem::Create(_shm_key, byte_size))
-        {
-            LSF_LOG_ERR("create shared mem failed, key=%x, byte_size=%u, max_size=%u, %s",
-                    _shm_key, byte_size, _pool.max_size(), lsf::container::SharedMem::SysErrCharStr());
+        if (!lsf::container::SharedMem::Create(_shm_key, byte_size)) {
+            LSF_LOG_ERR("create shared mem failed, key=%x, byte_size=%u, max_size=%u, %s", _shm_key, byte_size,
+                        _pool.max_size(), lsf::container::SharedMem::SysErrCharStr());
             return false;
         }
         lsf::container::SharedMem shared_mem(_shm_key);
-        if (!shared_mem.IsAttached())
-        {
+        if (!shared_mem.IsAttached()) {
             LSF_LOG_ERR("shared mem is not attached, key=%x", _shm_key);
             return false;
         }
-        uint8_t * pbase = (uint8_t *)shared_mem.GetPtr();
+        uint8_t *pbase = (uint8_t *)shared_mem.GetPtr();
         size_t total = shared_mem.GetSize();
         size_t off = 0;
 
         // serialize total count
         lsf::util::Serialize(pbase, total, off, (uint32_t)_pool.size());
-        
+
         // serialize every elem
-        for (auto it : _pool)
-        {
-            if (!it->Serialize(pbase, total, off))
-            {
-                LSF_LOG_ERR("serialize failed, total=%u, off=%u, %s", total, off, lsf::util::ProtobufLog::Instance()->ErrCharStr());
+        for (auto it : _pool) {
+            if (!it->Serialize(pbase, total, off)) {
+                LSF_LOG_ERR("serialize failed, total=%u, off=%u, %s", total, off,
+                            lsf::util::ProtobufLog::Instance()->ErrCharStr());
                 return false;
             }
         }
@@ -134,9 +123,8 @@ public:
         return true;
     }
 
-
 public:
-    bool IsFull() const { return _pool.IsFull(); } 
+    bool IsFull() const { return _pool.IsFull(); }
 
     uint32_t size() const { return _pool.size(); }
 
@@ -147,10 +135,8 @@ public:
     iterator end() { return _pool.end(); }
 
 protected:
-    pool_type   _pool;
-    key_t       _shm_key;
+    pool_type _pool;
+    key_t _shm_key;
 };
-
-
 
 // vim:ts=4:sw=4:et:ft=cpp:

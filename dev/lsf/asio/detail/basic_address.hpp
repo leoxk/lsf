@@ -19,100 +19,89 @@ namespace asio {
 namespace detail {
 
 ////////////////////////////////////////////////////////////
-// DummyNetLayerProtoType
-////////////////////////////////////////////////////////////
-class DummyNetLayerProtoType
-{
-public:
-    static DummyNetLayerProtoType V4() { return DummyNetLayerProtoType(); }
-    static DummyNetLayerProtoType V6() { return DummyNetLayerProtoType(); }
-    int domain()   const { return 0; }
-    bool operator==(DummyNetLayerProtoType const & rhs) const { return true; }
-    bool operator!=(DummyNetLayerProtoType const & rhs) const { return false; }
-};
-
-////////////////////////////////////////////////////////////
 // BasicAddress
 ////////////////////////////////////////////////////////////
 // forward declare
-template<typename TransLayerProtoType> class BasicSockAddr;
+template <typename ProtoType>
+class BasicSockAddr;
 
-template<typename NetLayerProtoType>
-class BasicAddress
-{
+class BasicAddress {
 public:
-    typedef NetLayerProtoType    proto_type;
     typedef union {
-        in_addr     v4;
-        in6_addr    v6;
-    }                           addr_type;
+        in_addr v4;
+        in6_addr v6;
+    } addr_type;
 
-    template<typename TransLayerProtoType> friend class BasicSockAddr;
+    template <typename ProtoType>
+    friend class BasicSockAddr;
 
 public:
     ////////////////////////////////////////////////////////////
-    static BasicAddress Any(proto_type type = proto_type::V4()) { return BasicAddress(type); }
+    static BasicAddress Any(int domain = AF_INET) { return BasicAddress(domain); }
 
-    static BasicAddress Loopback(proto_type type = proto_type::V4()) {
-        if (type == proto_type::V4()) return BasicAddress(proto_type::V4(), "127.0.0.1"); 
-        else                          return BasicAddress(proto_type::V6(), "::1");
+    static BasicAddress Loopback(int domain = AF_INET) {
+        if (domain == AF_INET)
+            return BasicAddress(AF_INET, "127.0.0.1");
+        else
+            return BasicAddress(AF_INET6, "::1");
     }
 
     ////////////////////////////////////////////////////////////
-    explicit BasicAddress(proto_type type = proto_type::V4()) 
-        : _type(type) 
-    {
-        if (IsV4()) _addr.v4.s_addr = INADDR_ANY;
-        else        _addr.v6 = in6addr_any;
+    BasicAddress(int domain = AF_INET, std::string const& ip_str = "") : _domain(domain) {
+        if (domain == AF_INET) {
+            if (!ip_str.empty())
+                inet_pton(AF_INET, ip_str.c_str(), &_addr.v4);
+            else
+                inet_pton(AF_INET, "0.0.0.0", &_addr.v4);
+        } else {
+            if (!ip_str.empty())
+                inet_pton(AF_INET6, ip_str.c_str(), &_addr.v6);
+            else
+                inet_pton(AF_INET6, "::", &_addr.v6);
+        }
     }
 
-    BasicAddress(proto_type type, std::string const & ip_str) : _type(type)
-    {
-        if (IsV4()) inet_pton(AF_INET,  ip_str.c_str(), &_addr.v4);
-        else        inet_pton(AF_INET6, ip_str.c_str(), &_addr.v6);
-    }
-
-    BasicAddress(std::string const & ip_str) : _type(proto_type::V4())
-    {
-        if (inet_pton(AF_INET,  ip_str.c_str(), &_addr.v4) <= 0)
-        {
-            _type = proto_type::V6();
+    BasicAddress(std::string const& ip_str) : _domain(AF_INET) {
+        if (inet_pton(AF_INET, ip_str.c_str(), &_addr.v4) <= 0) {
+            _domain = AF_INET6;
             inet_pton(AF_INET6, ip_str.c_str(), &_addr.v6);
         }
     }
 
-    BasicAddress(in6_addr const & addr) : _type(proto_type::V6()) { ::memcpy(&_addr.v6, &addr, sizeof(_addr.v6)); }
+    BasicAddress(in6_addr const& addr) : _domain(AF_INET6) { ::memcpy(&_addr.v6, &addr, sizeof(_addr.v6)); }
 
-    BasicAddress(in_addr const & addr) : _type(proto_type::V4()) { ::memcpy(&_addr.v4, &addr, sizeof(_addr.v4)); }
+    BasicAddress(in_addr const& addr) : _domain(AF_INET) { ::memcpy(&_addr.v4, &addr, sizeof(_addr.v4)); }
 
     ////////////////////////////////////////////////////////////
     // mem funcs
     std::string ToString() const {
         char tmp[128];
-        if (IsV4()) return inet_ntop(AF_INET,  &_addr.v4, tmp, sizeof(tmp));
-        else        return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
+        if (_domain == AF_INET)
+            return inet_ntop(AF_INET, &_addr.v4, tmp, sizeof(tmp));
+        else
+            return inet_ntop(AF_INET6, &_addr.v6, tmp, sizeof(tmp));
     }
 
-    bool operator==(BasicAddress const & rhs) const {
-        if (_type != rhs._type) return false;
+    bool operator==(BasicAddress const& rhs) const {
+        if (_domain != rhs._domain) return false;
 
-        if (IsV4())      
+        if (_domain == AF_INET)
             return ::memcmp(&_addr.v4, &rhs._addr.v4, sizeof(_addr.v4)) == 0;
         else
             return ::memcmp(&_addr.v6, &rhs._addr.v6, sizeof(_addr.v4)) == 0;
     }
-    bool operator!=(BasicAddress const & rhs) const { return !(*this == rhs); }
-    
-    bool IsV4() const { return _type == proto_type::V4(); }
-    bool IsV6() const { return _type == proto_type::V6(); }
+    bool operator!=(BasicAddress const& rhs) const { return !(*this == rhs); }
+
+    bool IsV4() const { return _domain == AF_INET; }
+    bool IsV6() const { return _domain == AF_INET6; }
 
 private:
-    proto_type  _type;
-    addr_type   _addr;      // network byte order
+    int _domain;
+    addr_type _addr;  // network byte order
 };
 
-} // end of namespace detail
-} // end of namespace asio
-} // end of namespace lsf
+}  // end of namespace detail
+}  // end of namespace asio
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

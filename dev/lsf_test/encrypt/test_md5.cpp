@@ -14,8 +14,7 @@ using namespace lsf::util;
 
 const char content[] = "leoxiang";
 
-LSF_TEST_CASE(test)
-{
+LSF_TEST_CASE(test) {
     char enc_buf[16];
 
     Md5HashBuffer(enc_buf, content, strlen(content));
@@ -24,9 +23,6 @@ LSF_TEST_CASE(test)
     LSF_ASSERT(StringExt::BinToHexString(enc_buf, sizeof(enc_buf)) == "637efe4601a183fb76b3b013101f7758");
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

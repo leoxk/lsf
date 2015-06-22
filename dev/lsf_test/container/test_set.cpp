@@ -14,28 +14,26 @@ using namespace std;
 using namespace lsf::container;
 using namespace lsf::util;
 
-#define SHM_KEY  0x082157ff
+#define SHM_KEY 0x082157ff
 #define QUEUE_SIZE 1024
 
-#define PRINT_ALL \
-    do { \
-        cout << *sets.FindRoot() << endl; \
-        cout << sets.ToString(0) << endl; \
-        cout << sets.ToString(1) << endl; \
-        cout << sets.ToString(2) << endl; \
-        cout << sets.ToString(3) << endl; \
-        cout << sets.ToString(4) << endl; \
-        cout << sets.ToString(5) << endl; \
-        cout << sets.ToString(6) << endl; \
-        cout << sets.ToString(7) << endl; \
-        cout << sets.ToString(8) << endl; \
-        cout << sets.ToString(9) << endl; \
+#define PRINT_ALL                          \
+    do {                                   \
+        cout << *sets.FindRoot() << endl;  \
+        cout << sets.ToString(0) << endl;  \
+        cout << sets.ToString(1) << endl;  \
+        cout << sets.ToString(2) << endl;  \
+        cout << sets.ToString(3) << endl;  \
+        cout << sets.ToString(4) << endl;  \
+        cout << sets.ToString(5) << endl;  \
+        cout << sets.ToString(6) << endl;  \
+        cout << sets.ToString(7) << endl;  \
+        cout << sets.ToString(8) << endl;  \
+        cout << sets.ToString(9) << endl;  \
         cout << sets.ToString(10) << endl; \
     } while (0)
 
-
-LSF_TEST_CASE(easy_test)
-{
+LSF_TEST_CASE(easy_test) {
     // test bind storage and initiate
     Set<TestNode, SharedMem> sets;
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));
@@ -79,7 +77,7 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(*(sets.Find(TestNode(8, 8))) == TestNode(8, 8));
     LSF_ASSERT(*(sets.Find(TestNode(9, 9))) == TestNode(9, 9));
     LSF_ASSERT(*(sets.Find(TestNode(10, 10))) == TestNode(10, 10));
- 
+
     // test iterator
     LSF_ASSERT(*(sets.begin() + 0) == TestNode(1, 1));
     LSF_ASSERT(*(sets.begin() + 1) == TestNode(2, 2));
@@ -93,19 +91,19 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(*(sets.begin() + 9) == TestNode(10, 10));
     LSF_ASSERT(sets.begin() + 10 == sets.end());
 
-    LSF_ASSERT(*(sets.end() - 1)  == TestNode(10,10));
-    LSF_ASSERT(*(sets.end() - 2)  == TestNode(9, 9));
-    LSF_ASSERT(*(sets.end() - 3)  == TestNode(8, 8));
-    LSF_ASSERT(*(sets.end() - 4)  == TestNode(7, 7));
-    LSF_ASSERT(*(sets.end() - 5)  == TestNode(6, 6));
-    LSF_ASSERT(*(sets.end() - 6)  == TestNode(5, 5));
-    LSF_ASSERT(*(sets.end() - 7)  == TestNode(4, 4));
-    LSF_ASSERT(*(sets.end() - 8)  == TestNode(3, 3));
-    LSF_ASSERT(*(sets.end() - 9)  == TestNode(2, 2));
+    LSF_ASSERT(*(sets.end() - 1) == TestNode(10, 10));
+    LSF_ASSERT(*(sets.end() - 2) == TestNode(9, 9));
+    LSF_ASSERT(*(sets.end() - 3) == TestNode(8, 8));
+    LSF_ASSERT(*(sets.end() - 4) == TestNode(7, 7));
+    LSF_ASSERT(*(sets.end() - 5) == TestNode(6, 6));
+    LSF_ASSERT(*(sets.end() - 6) == TestNode(5, 5));
+    LSF_ASSERT(*(sets.end() - 7) == TestNode(4, 4));
+    LSF_ASSERT(*(sets.end() - 8) == TestNode(3, 3));
+    LSF_ASSERT(*(sets.end() - 9) == TestNode(2, 2));
     LSF_ASSERT(*(sets.end() - 10) == TestNode(1, 1));
     LSF_ASSERT(sets.end() - 11 == sets.end());
 
-    LSF_ASSERT(*(sets.rbegin() + 0) == TestNode(10,10));
+    LSF_ASSERT(*(sets.rbegin() + 0) == TestNode(10, 10));
     LSF_ASSERT(*(sets.rbegin() + 1) == TestNode(9, 9));
     LSF_ASSERT(*(sets.rbegin() + 2) == TestNode(8, 8));
     LSF_ASSERT(*(sets.rbegin() + 3) == TestNode(7, 7));
@@ -141,10 +139,10 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(sets.Erase(TestNode(8, 8)));
     LSF_ASSERT(sets.Erase(TestNode(10, 10)));
 
-    LSF_ASSERT(sets.Find(TestNode(2, 2))   == sets.end());
-    LSF_ASSERT(sets.Find(TestNode(4, 4))   == sets.end());
-    LSF_ASSERT(sets.Find(TestNode(6, 6))   == sets.end());
-    LSF_ASSERT(sets.Find(TestNode(8, 8))   == sets.end());
+    LSF_ASSERT(sets.Find(TestNode(2, 2)) == sets.end());
+    LSF_ASSERT(sets.Find(TestNode(4, 4)) == sets.end());
+    LSF_ASSERT(sets.Find(TestNode(6, 6)) == sets.end());
+    LSF_ASSERT(sets.Find(TestNode(8, 8)) == sets.end());
     LSF_ASSERT(sets.Find(TestNode(10, 10)) == sets.end());
     LSF_ASSERT(sets.empty());
     LSF_ASSERT(0 == sets.size());
@@ -152,8 +150,7 @@ LSF_TEST_CASE(easy_test)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-LSF_TEST_CASE(random_test)
-{
+LSF_TEST_CASE(random_test) {
     Set<TestNode, SharedMem> sets;
 
     size_t size = 10000;
@@ -194,9 +191,6 @@ LSF_TEST_CASE(random_test)
     LSF_ASSERT(SharedMem::Delete(SHM_KEY));
 }
 
-int main(int argc, char **argv)
-{
-	LSF_TEST_ALL(argc, argv);
-}
+int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }
 
 // vim:ts=4:sw=4:et:ft=cpp:

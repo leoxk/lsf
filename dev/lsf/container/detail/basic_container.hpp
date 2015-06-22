@@ -18,37 +18,30 @@ namespace container {
 namespace detail {
 
 // for container which do not need iterator
-class EmptyIterator { };
+class EmptyIterator {};
 
 ////////////////////////////////////////////////////////////
 // BasicBasicContainer
 ////////////////////////////////////////////////////////////
-template<
-typename ElemType,
-typename SizeType,
-typename StoreType,
-    typename StateType,
-    typename IteratorType = EmptyIterator>
-class BasicContainer :
-    public basic::Error,
-    public basic::NonCopyable
-{
+template <typename ElemType, typename SizeType, typename StoreType, typename StateType,
+          typename IteratorType = EmptyIterator>
+class BasicContainer : public basic::Error, public basic::NonCopyable {
 public:
-    typedef ElemType                           value_type;
-    typedef SizeType                           size_type;
-    typedef IteratorType                       iterator;
-    typedef StateType                          state_type;
-    typedef std::reverse_iterator<iterator>    reverse_iterator;
+    typedef ElemType value_type;
+    typedef SizeType size_type;
+    typedef IteratorType iterator;
+    typedef StateType state_type;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
 
 public:
-    BasicContainer() : _ptr_state(NULL) { }
+    BasicContainer() : _ptr_state(nullptr) {}
 
     // bind and recover storage
     bool BindAndRecoverStorage(StoreType store) {
-        _ptr_state = NULL;
+        _ptr_state = nullptr;
         _store = store;
 
-        if (_store.GetPtr() == NULL) {
+        if (_store.GetPtr() == nullptr) {
             ErrString() = LSF_DEBUG_INFO + _store.ErrString();
             return false;
         }
@@ -64,10 +57,10 @@ public:
 
     // bind and initiate storage
     bool BindAndInitStorage(StoreType store) {
-        _ptr_state = NULL;
+        _ptr_state = nullptr;
         _store = store;
 
-        if (_store.GetPtr() == NULL) {
+        if (_store.GetPtr() == nullptr) {
             ErrString() = LSF_DEBUG_INFO + _store.ErrString();
             return false;
         }
@@ -84,9 +77,9 @@ public:
 
     size_t ElemByteSize() const { return _ptr_state->ElemByteSize(); }
 
-    bool full()  const { return _ptr_state->full();  }
+    bool full() const { return _ptr_state->full(); }
     bool empty() const { return _ptr_state->empty(); }
-    bool IsBindStorage() const { return _ptr_state != NULL; }
+    bool IsBindStorage() const { return _ptr_state != nullptr; }
 
     // static funcs
     static size_t CalcByteSize(size_type size) { return StateType::CalcByteSize(size); }
@@ -96,12 +89,12 @@ public:
     static size_t CalcElemMaxSize(StoreType store) { return StateType::CalcElemMaxSize(store.GetPtr()); }
 
 protected:
-    StateType*     _ptr_state;
-    StoreType      _store;
+    StateType *_ptr_state;
+    StoreType _store;
 };
 
-} // end of namespace detail
-} // end of namespace container
-} // end of namespace lsf
+}  // end of namespace detail
+}  // end of namespace container
+}  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

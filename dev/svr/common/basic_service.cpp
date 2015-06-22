@@ -18,11 +18,9 @@ using namespace lsf::util;
 ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
 // main routine
-bool BasicService::Run(BasicServer * pserver)
-{
+bool BasicService::Run(BasicServer* pserver) {
     // check input
-    if (pserver == NULL)
-    {
+    if (pserver == nullptr) {
         LSF_LOG_ERR("server is null");
         return false;
     }
@@ -41,59 +39,48 @@ bool BasicService::Run(BasicServer * pserver)
 
 //////////////////////////////////////////////////////////
 // async handler
-bool BasicService::OnSocketRead(lsf::asio::AsyncInfo & info)
-{
+bool BasicService::OnSocketRead(lsf::asio::AsyncInfo& info) {
     std::string message;
     size_t pos = 0;
 
-    while (common::GetSingleMessageFromStream(info.buffer, pos, message))
-    {
+    while (common::GetSingleMessageFromStream(info.buffer, pos, message)) {
         // callback
         if (!OnConnectionMessage(Socket(info.fd), message)) return false;
     }
 
     // buffer remain some bytes not used
-    if (pos < info.buffer.length())
-    {
-        LSF_LOG_INFO("there is some buffer not used, %s", 
-                StringExt::BinToHexString(info.buffer.data() + pos, info.buffer.length() - pos).c_str());
+    if (pos < info.buffer.length()) {
+        LSF_LOG_INFO("there is some buffer not used, %s",
+                     StringExt::BinToHexString(info.buffer.data() + pos, info.buffer.length() - pos).c_str());
     }
 
     return true;
 }
 
-bool BasicService::OnSocketPeerClose(lsf::asio::AsyncInfo & info)
-{
-    return true;
+bool BasicService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) { 
+    Socket socket(info.fd);
+    LSF_LOG_INFO("connection close by peer, local=%s, remote=%s",
+            socket.LocalSockAddr().ToCharStr(), socket.RemoteSockAddr().ToCharStr());
+    return true; 
 }
 
 //////////////////////////////////////////////////////////
 // default connection handler
-bool BasicService::OnConnectionCreate(lsf::asio::Socket socket)
-{
-    return true;
-}
+bool BasicService::OnConnectionCreate(lsf::asio::Socket socket) { return true; }
 
-bool BasicService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message)
-{
+bool BasicService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
     LSF_LOG_ERR("you should override this handler");
     return true;
 }
 
-bool BasicService::OnConnectionPeerClose(lsf::asio::Socket socket)
-{
-    return true;
-}
+bool BasicService::OnConnectionPeerClose(lsf::asio::Socket socket) { return true; }
 
 ////////////////////////////////////////////////////////////
 // BasicAcceptService
 ////////////////////////////////////////////////////////////
-bool BasicAcceptService::OnInitConfig()
-{
-    for (conf::AcceptService const & conf : _pserver->GetServerConfig().accept_service())
-    {
-        if (conf.service_type() == _service_type)
-        {
+bool BasicAcceptService::OnInitConfig() {
+    for (conf::AcceptService const& conf : _pserver->GetServerConfig().accept_service()) {
+        if (conf.service_type() == _service_type) {
             _service_config.CopyFrom(conf);
             return true;
         }
@@ -103,30 +90,31 @@ bool BasicAcceptService::OnInitConfig()
     return false;
 }
 
-bool BasicAcceptService::OnInitSocket()
-{
-    for (std::string const & iter : _service_config.listen_address())
-    {
+bool BasicAcceptService::OnInitSocket() {
+    for (std::string const& iter : _service_config.listen_address()) {
         ListenSocket lsocket = tcp::ListenSocket::CreateListenSocket();
         SockAddr lsockaddr = SockAddr(iter);
 
         // init listen socket
-        if (!lsocket.Bind(lsockaddr))
-        {
+        if (!lsocket.SetSockReuse()) {
+            LSF_LOG_ERR("sockreuse failed, address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
+            lsocket.Close();
+            return false;
+        }
+        if (!lsocket.Bind(lsockaddr)) {
             LSF_LOG_ERR("bind failed, address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
             lsocket.Close();
             return false;
         }
-        if (!lsocket.Listen())
-        {
+        if (!lsocket.Listen()) {
             LSF_LOG_ERR("listen failed, address=%s, %s", lsockaddr.ToCharStr(), lsocket.ErrCharStr());
             lsocket.Close();
             return false;
         }
 
         // async accept
-        if (!lsocket.AsyncAccept(*IOService::Instance(), std::bind(&BasicAcceptService::OnSocketAccept, std::ref(*this), std::placeholders::_1)))
-        {
+        if (!lsocket.AsyncAccept(*IOService::Instance(), std::bind(&BasicAcceptService::OnSocketAccept, std::ref(*this),
+                                                                   std::placeholders::_1))) {
             LSF_LOG_ERR("async accept failed, %s", IOService::Instance()->ErrCharStr());
             lsocket.Close();
             return false;
@@ -138,19 +126,16 @@ bool BasicAcceptService::OnInitSocket()
     return true;
 }
 
-bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo & info)
-{
+bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo& info) {
     // print info
     Socket socket(info.accept_fd);
-    LSF_LOG_INFO("accept new connection, local=%s, remote=%s", 
-            socket.LocalSockAddr().ToCharStr(), 
-            socket.RemoteSockAddr().ToCharStr());
+    LSF_LOG_INFO("accept new connection, local=%s, remote=%s", socket.LocalSockAddr().ToCharStr(),
+                 socket.RemoteSockAddr().ToCharStr());
 
     // async read
-    if (!socket.AsyncRead(*IOService::Instance(), 
-                std::bind(&BasicAcceptService::OnSocketRead, std::ref(*this), std::placeholders::_1), 
-                std::bind(&BasicAcceptService::OnSocketPeerClose, std::ref(*this), std::placeholders::_1)))
-    {
+    if (!socket.AsyncRead(*IOService::Instance(),
+                          std::bind(&BasicAcceptService::OnSocketRead, std::ref(*this), std::placeholders::_1),
+                          std::bind(&BasicAcceptService::OnSocketPeerClose, std::ref(*this), std::placeholders::_1))) {
         LSF_LOG_ERR("async read failed, %s", IOService::Instance()->ErrCharStr());
         return false;
     }
@@ -162,13 +147,10 @@ bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo & info)
 ////////////////////////////////////////////////////////////
 // BasicConnectService
 ////////////////////////////////////////////////////////////
-bool BasicConnectService::OnInitConfig()
-{
+bool BasicConnectService::OnInitConfig() {
     // get config
-    for (conf::ConnectService const & conf : _pserver->GetServerConfig().connect_service())
-    {
-        if (conf.service_type() == _service_type)
-        {
+    for (conf::ConnectService const& conf : _pserver->GetServerConfig().connect_service()) {
+        if (conf.service_type() == _service_type) {
             // copy config
             _service_config.CopyFrom(conf);
 
@@ -180,33 +162,28 @@ bool BasicConnectService::OnInitConfig()
     return false;
 }
 
-bool BasicConnectService::OnInitSocket()
-{
+bool BasicConnectService::OnInitSocket() {
     // pre-create connection instance
     _conn_vec.insert(_conn_vec.begin(), _service_config.connect_address_size(), Socket(-1));
 
     // try connect
-    for (int i = 0; i < _service_config.connect_address_size(); ++i)
-    {
+    for (int i = 0; i < _service_config.connect_address_size(); ++i) {
         if (!TryConnect(i)) return false;
     }
 
     return true;
 }
 
-bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo & info, size_t index)
-{
+bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index) {
     // print info
     Socket socket(info.fd);
-    LSF_LOG_INFO("make new connection, local=%s, remote=%s", 
-            socket.LocalSockAddr().ToCharStr(), 
-            socket.RemoteSockAddr().ToCharStr());
+    LSF_LOG_INFO("make new connection, local=%s, remote=%s", socket.LocalSockAddr().ToCharStr(),
+                 socket.RemoteSockAddr().ToCharStr());
 
     // async read
-    if (!socket.AsyncRead(*IOService::Instance(), 
-                std::bind(&BasicService::OnSocketRead, std::ref(*this), std::placeholders::_1), 
-                std::bind(&BasicService::OnSocketPeerClose, std::ref(*this), std::placeholders::_1)))
-    {
+    if (!socket.AsyncRead(*IOService::Instance(),
+                          std::bind(&BasicService::OnSocketRead, std::ref(*this), std::placeholders::_1),
+                          std::bind(&BasicService::OnSocketPeerClose, std::ref(*this), std::placeholders::_1))) {
         LSF_LOG_ERR("async read failed, %s", IOService::Instance()->ErrCharStr());
         return false;
     }
@@ -218,18 +195,15 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo & info, size_t in
     return OnConnectionCreate(Socket(info.fd));
 }
 
-bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo & info)
-{
+bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
     // find connect_address
     size_t index;
-    for (index = 0; index < _conn_vec.size(); ++index)
-    {
+    for (index = 0; index < _conn_vec.size(); ++index) {
         if (_conn_vec[index] == Socket(info.fd)) break;
     }
 
     // not found
-    if (index == _conn_vec.size())
-    {
+    if (index == _conn_vec.size()) {
         LSF_LOG_ERR("not found index when reconnn, socket=%d", info.fd);
         return false;
     }
@@ -243,14 +217,12 @@ bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo & info)
     return true;
 }
 
-bool BasicConnectService::TryConnect(size_t index)
-{
+bool BasicConnectService::TryConnect(size_t index) {
     Socket socket = tcp::Socket::CreateSocket();
     SockAddr sockaddr = SockAddr(_service_config.connect_address(index));
 
     // sync connect
-    if (!socket.Connect(sockaddr))
-    {
+    if (!socket.Connect(sockaddr)) {
         LSF_LOG_ERR("init connect socket failed, %s", socket.ErrCharStr());
         socket.Close();
         return false;
@@ -259,8 +231,7 @@ bool BasicConnectService::TryConnect(size_t index)
     // callback
     AsyncInfo info;
     info.fd = socket.GetSockFd();
-    if (!OnSocketConnect(info, index))
-    {
+    if (!OnSocketConnect(info, index)) {
         socket.Close();
         return false;
     }
@@ -268,15 +239,14 @@ bool BasicConnectService::TryConnect(size_t index)
     return true;
 }
 
-bool BasicConnectService::TryAsyncConnect(size_t index)
-{
+bool BasicConnectService::TryAsyncConnect(size_t index) {
     Socket socket = tcp::Socket::CreateSocket();
     SockAddr sockaddr = SockAddr(_service_config.connect_address(index));
 
     // async connect
-    if (!socket.AsyncConnect(*IOService::Instance(), sockaddr, 
-                std::bind(&BasicConnectService::OnSocketConnect, std::ref(*this), std::placeholders::_1, index)))
-    {
+    if (!socket.AsyncConnect(
+             *IOService::Instance(), sockaddr,
+             std::bind(&BasicConnectService::OnSocketConnect, std::ref(*this), std::placeholders::_1, index))) {
         LSF_LOG_ERR("init connect socket failed, %s", IOService::Instance()->ErrCharStr());
         socket.Close();
         return false;
