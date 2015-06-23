@@ -1,10 +1,10 @@
-// File:        connect_config_service.cpp
+// File:        common_service.cpp
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-17 by leoxiang
 
-#include "svr/common/connect_config_service.h"
+#include "svr/common/common_service.h"
 #include "svr/common/common_header.h"
 #include "svr/common/common_func.h"
 #include "svr/common/common_proto.h"

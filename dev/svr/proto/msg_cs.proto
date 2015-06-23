@@ -9,16 +9,14 @@ package msg;
 
 ////////////////////////////////////////////////////////////
 // client to server messages
-enum ENCS
-{
+enum ENCS {
    CS_GET_CONFIG_REQ = 1;
    CS_GET_CONFIG_RSP = 2;
    CS_REGISTER_TO_RPOXY_REQ = 3;
    CS_REGISTER_TO_RPOXY_RSP = 4;
 }
 
-message CS
-{
+message CS {
     optional ENCS       type = 1;
     optional TcpHead    proxy_head = 2;
 }

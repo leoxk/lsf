@@ -1,4 +1,4 @@
-// File:        connect_config_service.h
+// File:        common_service.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -7,6 +7,8 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_service.h"
 
+////////////////////////////////////////////////////////////
+// ConnectConfigService
 class ConnectConfigService : public BasicConnectService, public lsf::basic::Singleton<ConnectConfigService> {
 public:
     ConnectConfigService() : BasicConnectService(conf::SERVICE_TYPE_CONFIG_CENTER) {}
@@ -20,5 +22,8 @@ public:
 protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
 };
+
+////////////////////////////////////////////////////////////
+// ConnectClientMsgTransferService
 
 // vim:ts=4:sw=4:et:ft=cpp:

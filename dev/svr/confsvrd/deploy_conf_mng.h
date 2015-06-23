@@ -7,6 +7,8 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
+////////////////////////////////////////////////////////////
+// DeployConfigManager
 class DeployConfigManager : public lsf::basic::Singleton<DeployConfigManager> {
 public:
     bool Init(char const* path);

@@ -14,6 +14,8 @@ namespace msg {
 
 static const uint8_t MAGIC[] = {0xf8, 0x8f};
 
+////////////////////////////////////////////////////////////
+// Header
 class Header {
 public:
     void ntoh() { length = ntohl(length); }

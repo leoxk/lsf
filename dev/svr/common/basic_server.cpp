@@ -10,7 +10,7 @@
 #include "svr/common/basic_server.h"
 #include "svr/common/common_func.h"
 #include "svr/common/common_header.h"
-#include "svr/common/connect_config_service.h"
+#include "svr/common/common_service.h"
 
 using namespace lsf::basic;
 using namespace lsf::asio;

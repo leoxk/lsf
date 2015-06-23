@@ -1,4 +1,4 @@
-// File:        accept_config_service.cpp
+// File:        config_service.cpp
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -6,7 +6,7 @@
 
 #include "svr/common/common_header.h"
 #include "svr/common/common_func.h"
-#include "svr/confsvrd/accept_config_service.h"
+#include "svr/confsvrd/config_service.h"
 #include "svr/confsvrd/deploy_conf_mng.h"
 #include "svr/proto/msg_ss.pb.h"
 

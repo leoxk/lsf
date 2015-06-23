@@ -57,11 +57,11 @@ bool BasicService::OnSocketRead(lsf::asio::AsyncInfo& info) {
     return true;
 }
 
-bool BasicService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) { 
+bool BasicService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
     Socket socket(info.fd);
     LSF_LOG_INFO("connection close by peer, local=%s, remote=%s",
             socket.LocalSockAddr().ToCharStr(), socket.RemoteSockAddr().ToCharStr());
-    return true; 
+    return true;
 }
 
 //////////////////////////////////////////////////////////

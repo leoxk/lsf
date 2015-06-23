@@ -7,6 +7,8 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_server.h"
 
+////////////////////////////////////////////////////////////
+// ConnectServer
 class ConnectServer : public BasicServer, public lsf::basic::Singleton<ConnectServer> {
 public:
     ConnectServer() : BasicServer(conf::SERVER_TYPE_CONN_SERVER) {}

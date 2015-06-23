@@ -7,6 +7,8 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_server.h"
 
+////////////////////////////////////////////////////////////
+// ProxyServer
 class ProxyServer : public BasicServer, public lsf::basic::Singleton<ProxyServer> {
 public:
     ProxyServer() : BasicServer(conf::SERVER_TYPE_PROXY_SERVER) {}

@@ -12,6 +12,8 @@
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
 
+////////////////////////////////////////////////////////////
+// BasicServer
 class BasicServer : public lsf::basic::NonCopyable {
 public:
     BasicServer(conf::ENServerType server_type) : _server_type(server_type), _server_id(0) {}

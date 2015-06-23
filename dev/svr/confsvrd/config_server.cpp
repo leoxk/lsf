@@ -8,7 +8,7 @@
 #include "svr/common/common_header.h"
 #include "svr/confsvrd/config_server.h"
 #include "svr/confsvrd/deploy_conf_mng.h"
-#include "svr/confsvrd/accept_config_service.h"
+#include "svr/confsvrd/config_service.h"
 
 using namespace google::protobuf;
 using namespace lsf::basic;

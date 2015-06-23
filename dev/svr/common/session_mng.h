@@ -25,7 +25,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////
-// Session Manager
+// SessionManager
 class SessionManager : public BasicManager<Session>, public lsf::basic::Singleton<SessionManager> {
 public:
     typedef BasicManager<Session> base_type;

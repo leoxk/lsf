@@ -1,4 +1,4 @@
-// File:        accept_config_service.h
+// File:        config_service.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -7,6 +7,8 @@
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_service.h"
 
+////////////////////////////////////////////////////////////
+// AcceptConfigService
 class AcceptConfigService : public BasicAcceptService, public lsf::basic::Singleton<AcceptConfigService> {
 public:
     AcceptConfigService() : BasicAcceptService(conf::SERVICE_TYPE_CONFIG_CENTER) {}
