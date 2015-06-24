@@ -44,6 +44,7 @@ bool OnRecvFunc(AsyncInfo &info, tcp::Socket client_socket) {
     LSF_ASSERT(info.buffer == content);
 
     // client close conn
+    client_socket.CloseAsync(*IOService::Instance());
     client_socket.Close();
 
     return true;
@@ -61,8 +62,6 @@ bool OnSendFunc(AsyncInfo &info, tcp::Socket server_socket) {
                                        std::bind(OnRecvFunc, std::placeholders::_1, client_socket),
                                        std::bind(OnPeerCloseFunc, std::placeholders::_1, client_socket)));
 
-    // client shutdown
-    client_socket.CloseAsync(*IOService::Instance());
     return true;
 }
 

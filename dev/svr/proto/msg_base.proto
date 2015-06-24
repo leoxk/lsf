@@ -16,7 +16,7 @@ package msg;
 
 message TcpHead
 {
-    optional uint32 index               = 1;
+    optional int32  index               = 1;
     optional string client_ip           = 2;
     optional uint32 client_port         = 3;
     optional bool   is_new_connection   = 4;

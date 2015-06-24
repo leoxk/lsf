@@ -18,7 +18,7 @@ enum ENCS {
 
 message CS {
     optional ENCS       type = 1;
-    optional TcpHead    proxy_head = 2;
+    optional TcpHead    head = 2;
 }
 
 // vim:ts=4:sw=4:et:ft=proto:

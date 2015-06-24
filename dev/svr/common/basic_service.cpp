@@ -75,6 +75,20 @@ bool BasicService::OnConnectionMessage(lsf::asio::Socket socket, std::string& me
 
 bool BasicService::OnConnectionPeerClose(lsf::asio::Socket socket) { return true; }
 
+void BasicService::CloseConnection(lsf::asio::Socket socket) {
+    socket.CloseAsync(IOService::Reference());
+    socket.Close();
+}
+
+bool BasicService::SendConnection(lsf::asio::Socket socket, std::string const & message) {
+    if (!socket.Send(message, DEF_SEND_TIMEOUT)) {
+        LSF_LOG_ERR("send message failed, length=%u, from=%s, to=%s", message.length(),
+                socket.LocalSockAddr().ToCharStr(), socket.LocalSockAddr().ToCharStr());
+        return false;
+    }
+    return true;
+}
+
 ////////////////////////////////////////////////////////////
 // BasicAcceptService
 ////////////////////////////////////////////////////////////
@@ -140,28 +154,8 @@ bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo& info) {
         return false;
     }
 
-    // init sock info
-    msg::TcpHead & tcp_head = _acct_sock[socket];
-    tcp_head.set_index(socket.GetSockFd());
-    tcp_head.set_client_ip(socket.RemoteSockAddr().GetAddress().ToString());
-    tcp_head.set_client_port(socket.RemoteSockAddr().GetPort());
-    tcp_head.set_is_new_connection(true);
-    tcp_head.set_is_close_connection(false);
-    tcp_head.set_connect_time(IOService::Instance()->GetClockTime());
-
     // callback
     return OnConnectionCreate(Socket(info.accept_fd));
-}
-
-bool BasicAcceptService::SendMessage(std::string const & buffer, lsf::asio::Socket socket)
-{
-    // socket.Send(buffer)
-    return true;
-}
-
-bool BasicAcceptService::BroadcastMessage(std::string const & buffer)
-{
-    return true;
 }
 
 ////////////////////////////////////////////////////////////
@@ -215,7 +209,11 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t ind
     return OnConnectionCreate(Socket(info.fd));
 }
 
+
 bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
+    // call base function
+    if (!BasicService::OnSocketPeerClose(info)) return false;
+
     // find connect_address
     size_t index;
     for (index = 0; index < _conn_scok.size(); ++index) {

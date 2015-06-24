@@ -50,6 +50,7 @@ public:
 
     ////////////////////////////////////////////////////////////
     // constructor
+    BasicSocket() {}
     BasicSocket(int sockfd) : _sockfd(sockfd) {}
 
     template <typename OtherProtoType>
@@ -65,17 +66,12 @@ public:
 
     ////////////////////////////////////////////////////////////
     // common func
-    // ssize_t SendRaw(void const *buf, size_t len) { return ErrWrap(::send(_sockfd, buf, len, MSG_NOSIGNAL)); }
-    //
-    // ssize_t RecvRaw(void *buf, size_t len) { return ErrWrap(::recv(_sockfd, buf, len, 0)); }
-
     bool Bind(sockaddr_type const &local) { return ErrWrap(::bind(_sockfd, local.data(), local.size())) == 0; }
 
-    bool Close() { return ErrWrap(::close(_sockfd)) == 0; }
-
-    // bool ConnectRaw(sockaddr_type const &remote) {
-    //     return ErrWrap(::connect(_sockfd, remote.data(), remote.size())) == 0;
-    // }
+    bool Close() {
+        int ret = ErrWrap(::close(_sockfd));
+        _sockfd = -1;
+        return ret == 0; }
 
     ////////////////////////////////////////////////////////////
     // sync connect

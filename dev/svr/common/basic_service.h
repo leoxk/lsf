@@ -7,7 +7,6 @@
 #pragma once
 
 #include <vector>
-#include <map>
 #include "lsf/asio/tcp.hpp"
 #include "lsf/asio/net.hpp"
 #include "lsf/basic/noncopyable.hpp"
@@ -20,7 +19,11 @@
 // BasicService
 class BasicService : public lsf::basic::NonCopyable {
 public:
+    static const size_t DEF_SEND_TIMEOUT = 1000; // milli seconds
+
+public:
     BasicService(conf::ENServiceType service_type) : _service_type(service_type) {}
+    virtual ~BasicService() { }
 
     // main routine
     bool Run(BasicServer* pserver);
@@ -34,6 +37,8 @@ protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
     virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
+    virtual void CloseConnection(lsf::asio::Socket socket);
+    virtual bool SendConnection(lsf::asio::Socket socket, std::string const & message);
 
     // init logic
     virtual bool OnInitConfig() = 0;
@@ -42,23 +47,16 @@ protected:
 protected:
     conf::ENServiceType _service_type;
     BasicServer* _pserver = nullptr;
-    uint64_t     _send_timeout;
 };
 
 ////////////////////////////////////////////////////////////
 // BasicAcceptService
 class BasicAcceptService : public BasicService {
 public:
-    typedef std::map<lsf::asio::Socket, msg::TcpHead> acct_sock_type;
-
-public:
     BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type) {}
-    bool OnSocketAccept(lsf::asio::AsyncInfo& info);
-    bool SendMessage(std::string const & buffer, lsf::asio::Socket socket);
-    bool BroadcastMessage(std::string const & buffer);
+    virtual ~BasicAcceptService() {}
 
-public:
-    size_t ConnSize() const { return _acct_sock.size(); }
+    virtual bool OnSocketAccept(lsf::asio::AsyncInfo& info);
 
 protected:
     virtual bool OnInitConfig();
@@ -66,7 +64,6 @@ protected:
 
 protected:
     conf::AcceptService _service_config;
-    acct_sock_type _acct_sock;
 };
 
 ////////////////////////////////////////////////////////////
@@ -77,6 +74,8 @@ public:
 
 public:
     BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
+    virtual ~BasicConnectService() {}
+
     virtual bool OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index);
     virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
 

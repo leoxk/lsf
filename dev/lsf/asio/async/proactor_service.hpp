@@ -393,6 +393,7 @@ public:
         if (close_connection) {
             CloseAsync(fd);
             ::close(fd);
+            return;
         }
     }
 
