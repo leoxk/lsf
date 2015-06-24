@@ -153,8 +153,17 @@ bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo& info) {
     return OnConnectionCreate(Socket(info.accept_fd));
 }
 
-bool BasicAcceptService::SendMessage(std::string const & buffer, lsf::asio::Socket socket);
-bool BasicAcceptService::BroadcastMessage(std::string const & buffer);
+bool BasicAcceptService::SendMessage(std::string const & buffer, lsf::asio::Socket socket)
+{
+    // socket.Send(buffer)
+    return true;
+}
+
+bool BasicAcceptService::BroadcastMessage(std::string const & buffer)
+{
+    return true;
+}
+
 ////////////////////////////////////////////////////////////
 // BasicConnectService
 ////////////////////////////////////////////////////////////

@@ -96,7 +96,7 @@ public:
     bool IsV6() const { return _domain == AF_INET6; }
 
 private:
-    int _domain;
+    int _domain = AF_INET;
     addr_type _addr;  // network byte order
 };
 

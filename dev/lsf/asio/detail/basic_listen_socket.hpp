@@ -127,7 +127,7 @@ public:
     bool operator!() const { return _sockfd >= 0; }
 
 private:
-    int _sockfd;
+    int _sockfd = -1;
 };
 
 }  // end of namespace detail

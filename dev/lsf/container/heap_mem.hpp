@@ -14,9 +14,8 @@ namespace container {
 class HeapMem : public basic::Error {
 public:
     // contructor and destructor
-    explicit HeapMem() : _ptr_mem(nullptr), _ptr_use_cnt(nullptr), _byte_size(0) {}
-
-    explicit HeapMem(size_t byte_size) : _ptr_mem(nullptr), _ptr_use_cnt(nullptr), _byte_size(0) { Malloc(byte_size); }
+    HeapMem() { }
+    HeapMem(size_t byte_size) { Malloc(byte_size); }
 
     HeapMem(HeapMem const &rhs) {
         _ptr_mem = rhs._ptr_mem;
@@ -63,9 +62,9 @@ private:
         }
     }
 
-    void *_ptr_mem;
-    size_t *_ptr_use_cnt;
-    size_t _byte_size;
+    void *_ptr_mem = nullptr;
+    size_t *_ptr_use_cnt = nullptr;
+    size_t _byte_size = 0;
 };
 
 }  // end of namespace container

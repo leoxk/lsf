@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iterator>
+
 namespace lsf {
 namespace container {
 namespace detail {
@@ -146,13 +149,13 @@ private:
 // ListIterator
 ////////////////////////////////////////////////////////////
 template <typename ElemType, typename SizeType>
-class ListIterator {
+class ListIterator : public std::iterator<std::bidirectional_iterator_tag, ElemType> {
 public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef ElemType value_type;
-    typedef ElemType *pointer;
-    typedef ElemType &reference;
-    typedef int difference_type;
+    typedef std::iterator<std::bidirectional_iterator_tag, ElemType> base_type;
+    typedef typename base_type::value_type value_type;
+    typedef typename base_type::pointer pointer;
+    typedef typename base_type::reference reference;
+    typedef typename base_type::difference_type  difference_type;
     typedef ListState<ElemType, SizeType> state_type;
     typedef SizeType size_type;
 

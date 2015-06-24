@@ -15,35 +15,33 @@ namespace lsf {
 namespace asio {
 namespace tcp {
 
+////////////////////////////////////////////////////////////
+// Protocol
 class Protocol {
 public:
-    static Protocol V4() { return Protocol(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP); }
-    static Protocol V6() { return Protocol(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP); }
+    constexpr static Protocol V4() { return Protocol(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP); }
+    constexpr static Protocol V6() { return Protocol(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP); }
 
 public:
-    Protocol(int domain, int type, int protocol) : _domain(domain), _type(type), _protocol(protocol) {}
+    constexpr Protocol(int domain, int type, int protocol) : _domain(domain), _type(type), _protocol(protocol) {}
 
     int domain() const { return _domain; }
     int type() const { return _type; }
     int protocol() const { return _protocol; }
 
 private:
-    int _domain;
-    int _type;
-    int _protocol;
+    int _domain = AF_INET;
+    int _type = SOCK_STREAM;
+    int _protocol = IPPROTO_TCP;
 };
 
-namespace {
+// constexpr
+constexpr Protocol V4 = Protocol::V4();
+constexpr Protocol V6 = Protocol::V6();
 
-static const Protocol V4(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-static const Protocol V6(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
-
-}  // end of anonymous namespace
-
+// typedef
 typedef detail::BasicSockAddr<Protocol> SockAddr;
-
 typedef detail::BasicSocket<Protocol> Socket;
-
 typedef detail::BasicListenSocket<Protocol> ListenSocket;
 
 }  // end of namespace tcp

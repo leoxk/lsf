@@ -25,10 +25,6 @@ public:
     // main routine
     bool Run(BasicServer* pserver);
 
-    // // active action
-    // virtual bool SendMesaage(std::string const & buffer);
-    // virtual bool BroadcastMesaage(std::string const & buffer);
-    //
     // async handler
     virtual bool OnSocketRead(lsf::asio::AsyncInfo& info);
     virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
@@ -45,7 +41,8 @@ protected:
 
 protected:
     conf::ENServiceType _service_type;
-    BasicServer* _pserver;
+    BasicServer* _pserver = nullptr;
+    uint64_t     _send_timeout;
 };
 
 ////////////////////////////////////////////////////////////

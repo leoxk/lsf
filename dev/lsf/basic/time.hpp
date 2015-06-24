@@ -27,7 +27,6 @@ public:
         ::gettimeofday(&tv, nullptr);
         return TimeValToMilli(tv);
     }
-
 };
 
 }  // end of namespace basic

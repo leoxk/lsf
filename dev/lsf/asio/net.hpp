@@ -23,41 +23,38 @@ typedef detail::BasicSocket<> Socket;
 typedef detail::BasicListenSocket<> ListenSocket;
 
 ////////////////////////////////////////////////////////////
-// IOService Content
-namespace detail {
-
-class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
-public:
-    IOServiceContent() : use_epoll(false), epoll_service(nullptr), poll_service(nullptr) {}
-
-public:
-    bool use_epoll;
-    ProactorSerivce *epoll_service;
-    ProactorSerivce *poll_service;
-};
-
-}  // end of namespace detail
-
-////////////////////////////////////////////////////////////
 // IOService
 class IOService {
 public:
     static ProactorSerivce *Instance() {
-        if (detail::IOServiceContent::Instance()->use_epoll) {
-            if (detail::IOServiceContent::Instance()->epoll_service == nullptr)
-                detail::IOServiceContent::Instance()->epoll_service = new ProactorSerivce(new async::EpollEventDriver);
-            return detail::IOServiceContent::Instance()->epoll_service;
+        if (IOServiceContent::Instance()->use_epoll) {
+            if (IOServiceContent::Instance()->epoll_service == nullptr)
+                IOServiceContent::Instance()->epoll_service = new ProactorSerivce(new async::EpollEventDriver);
+            return IOServiceContent::Instance()->epoll_service;
         } else {
-            if (detail::IOServiceContent::Instance()->poll_service == nullptr)
-                detail::IOServiceContent::Instance()->poll_service = new ProactorSerivce(new async::PollEventDriver);
-            return detail::IOServiceContent::Instance()->poll_service;
+            if (IOServiceContent::Instance()->poll_service == nullptr)
+                IOServiceContent::Instance()->poll_service = new ProactorSerivce(new async::PollEventDriver);
+            return IOServiceContent::Instance()->poll_service;
         }
     }
 
     static ProactorSerivce &Reference() { return *Instance(); }
 
-    static void UseEpoll() { detail::IOServiceContent::Instance()->use_epoll = true; }
-    static void UsePoll() { detail::IOServiceContent::Instance()->use_epoll = false; }
+    static void UseEpoll() { IOServiceContent::Instance()->use_epoll = true; }
+    static void UsePoll() { IOServiceContent::Instance()->use_epoll = false; }
+
+protected:
+    ////////////////////////////////////////////////////////////
+    // IOService Content
+    class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
+    public:
+        IOServiceContent() : use_epoll(false), epoll_service(nullptr), poll_service(nullptr) {}
+
+    public:
+        bool use_epoll;
+        ProactorSerivce *epoll_service;
+        ProactorSerivce *poll_service;
+    };
 
 protected:
     IOService() {}                            // construtor is hidden

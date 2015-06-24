@@ -28,8 +28,9 @@ public:
         if (count > MAX_STACK_SIZE) count = MAX_STACK_SIZE;
 
         // get stack
-        size = ::backtrace(array, count);
-        messages = ::backtrace_symbols(array, size);
+        void* array[MAX_STACK_SIZE];
+        int size = ::backtrace(array, count);
+        char ** messages = ::backtrace_symbols(array, size);
 
         // compose string
         for (int i = 1; i < size; ++i) {
@@ -60,9 +61,6 @@ public:
     }
 
 private:
-    void* array[MAX_STACK_SIZE];
-    char** messages;
-    int size;
 };
 
 ////////////////////////////////////////////////////////////

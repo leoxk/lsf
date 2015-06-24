@@ -14,13 +14,15 @@ namespace lsf {
 namespace asio {
 namespace udp {
 
+////////////////////////////////////////////////////////////
+// Protocol
 class Protocol {
 public:
     static Protocol V4() { return Protocol(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP); }
     static Protocol V6() { return Protocol(AF_INET6, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP); }
 
 public:
-    Protocol(int domain, int type, int protocol) : _domain(domain), _type(type), _protocol(protocol) {}
+    constexpr Protocol(int domain, int type, int protocol) : _domain(domain), _type(type), _protocol(protocol) {}
 
     int domain() const { return _domain; }
     int type() const { return _type; }
@@ -32,15 +34,12 @@ private:
     int _protocol;
 };
 
-namespace {
+// constexpr
+constexpr Protocol V4(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+constexpr Protocol V6(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
-static const Protocol V4(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-static const Protocol V6(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
-
-}  // end of anonymous namespace
-
+// typedef
 typedef detail::BasicSockAddr<Protocol> SockAddr;
-
 typedef detail::BasicSocket<Protocol> Socket;
 
 }  // end of namespace udp

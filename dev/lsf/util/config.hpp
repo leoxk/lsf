@@ -20,10 +20,6 @@
 namespace lsf {
 namespace util {
 
-const static std::string DEF_DELIMIT = " \t=";
-const static std::string DEF_COMMENT = "#";
-const static std::string DEF_MODULE_NAME = "__anonymous__";
-
 ////////////////////////////////////////////////////////////
 // Config
 class Config : public basic::Error {
@@ -31,10 +27,13 @@ public:
     typedef std::map<std::string, std::string> map_type;
     typedef std::map<std::string, map_type> store_type;
 
+    constexpr static const char * DEF_DELIMIT = " \t=";
+    constexpr static const char * DEF_COMMENT = "#";
+    constexpr static const char * DEF_MODULE_NAME = "__anonymous__";
+
 public:
-    explicit Config(std::string const& filename = "", std::string const& delimit = DEF_DELIMIT,
-                    std::string const& comment = DEF_COMMENT)
-        : _size(0), _delimit(delimit), _comment(comment) {
+    Config(std::string const& filename = "", char const * delimit = DEF_DELIMIT, char const * comment = DEF_COMMENT)
+        : _delimit(delimit), _comment(comment) {
         if (!filename.empty()) ParseFromFile(filename);
     }
 
@@ -105,16 +104,17 @@ public:
 
 private:
     // internal variables
-    size_t _size;
-    std::string _delimit;
-    std::string _comment;
+    size_t _size = 0;
+    std::string _delimit = DEF_DELIMIT;
+    std::string _comment = DEF_COMMENT;
     store_type _data;
 };
 
+////////////////////////////////////////////////////////////
 // parse config from is
 inline std::istream& operator>>(std::istream& is, Config& cf) {
     std::string line;
-    std::string module = DEF_MODULE_NAME;
+    std::string module = Config::DEF_MODULE_NAME;
 
     for (; !is.eof(); std::getline(is, line)) {
         size_t pos1, pos2;

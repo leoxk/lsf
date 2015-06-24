@@ -18,8 +18,6 @@ namespace util {
 
 class FileLock : public basic::Error {
 public:
-    FileLock() : _lockfd(-1) {}
-
     ~FileLock() { UnLock(); }
 
     bool Lock(char const* lockfile) {
@@ -46,7 +44,7 @@ public:
     bool IsLocked() { return _lockfd != -1; }
 
 private:
-    int _lockfd;
+    int _lockfd = -1;
 };
 
 }  // end of namespace util

@@ -34,8 +34,6 @@ public:
     typedef std::reverse_iterator<iterator> reverse_iterator;
 
 public:
-    BasicContainer() : _ptr_state(nullptr) {}
-
     // bind and recover storage
     bool BindAndRecoverStorage(StoreType store) {
         _ptr_state = nullptr;
@@ -72,9 +70,7 @@ public:
 
     // accessor funcs
     size_type size() const { return _ptr_state->size(); }
-
     size_type max_size() const { return _ptr_state->max_size(); }
-
     size_t ElemByteSize() const { return _ptr_state->ElemByteSize(); }
 
     bool full() const { return _ptr_state->full(); }
@@ -83,13 +79,11 @@ public:
 
     // static funcs
     static size_t CalcByteSize(size_type size) { return StateType::CalcByteSize(size); }
-
     static size_t CalcElemByteSize(StoreType store) { return StateType::CalcElemByteSize(store.GetPtr()); }
-
     static size_t CalcElemMaxSize(StoreType store) { return StateType::CalcElemMaxSize(store.GetPtr()); }
 
 protected:
-    StateType *_ptr_state;
+    StateType *_ptr_state = nullptr;
     StoreType _store;
 };
 

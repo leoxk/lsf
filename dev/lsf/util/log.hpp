@@ -44,7 +44,7 @@ public:
     const static uint16_t SHIFT_MONTH = 2;
 
 public:
-    FileLogDriver() : _shift(), _last_shift(0) {}
+    FileLogDriver() {}
 
     FileLogDriver(std::string const& prefix, uint16_t shift = SHIFT_DAY) : _shift(shift), _prefix(prefix) { _Open(); }
 
@@ -136,8 +136,8 @@ private:
     }
 
 private:
-    uint16_t _shift;
-    size_t _last_shift;
+    uint16_t _shift = 0;
+    size_t _last_shift = 0;
     std::string _prefix;
     std::string _log_path;
     std::ofstream _ofs;
@@ -173,11 +173,9 @@ public:
 
 public:
     // constructor
-    Log(uint16_t mask = TYPE_ALL) : _pdriver(nullptr), _mask(mask) {}
+    Log(uint16_t mask = TYPE_ALL) : _mask(mask) {}
 
-    ~Log() {
-        if (_pdriver) delete _pdriver;
-    }
+    ~Log() { if (_pdriver) delete _pdriver; }
 
     // membet funcs
     bool BindOutput(BasicLogDriver* pdriver) {
@@ -248,8 +246,8 @@ public:
     bool IsBindOuput() const { return _pdriver && _pdriver->IsReady(); }
 
 private:
-    BasicLogDriver* _pdriver;
-    uint16_t _mask;
+    BasicLogDriver* _pdriver = nullptr;
+    uint16_t _mask = 0;
 };
 
 ////////////////////////////////////////////////////////////

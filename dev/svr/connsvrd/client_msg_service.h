@@ -12,8 +12,6 @@
 // AcceptClientMsgService
 class AcceptClientMsgService : public BasicAcceptService, public lsf::basic::Singleton<AcceptClientMsgService> {
 public:
-    typedef std::unordered_multimap<int,
-public:
     AcceptClientMsgService() : BasicAcceptService(conf::SERVICE_TYPE_CLIENT_MSG) {}
 
 protected:

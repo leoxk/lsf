@@ -19,7 +19,7 @@ public:
     static const size_t MAX_RANDOM_COUNT = 10000;
 
 public:
-    Random(size_t max_cnt = MAX_RANDOM_COUNT) : _max_cnt(max_cnt), _use_cnt(0) { InitSeed(); }
+    Random(size_t max_cnt = MAX_RANDOM_COUNT) : _max_cnt(max_cnt) { InitSeed(); }
 
     void InitSeed() {
         timeval tv;
@@ -60,8 +60,8 @@ public:
     size_t GetUseCount() const { return _use_cnt; }
 
 private:
-    size_t _max_cnt;
-    size_t _use_cnt;
+    size_t _max_cnt = 0;
+    size_t _use_cnt = 0;
 };
 
 ////////////////////////////////////////////////////////////

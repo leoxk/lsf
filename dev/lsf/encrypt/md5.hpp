@@ -61,7 +61,7 @@ inline static void MD5InitA(MD5Context *ctx) {
  * the data and converts bytes into longwords for this routine.
  */
 inline static void MD5TransformA(uint32_t buf[4], uint32_t const in[16]) {
-    register uint32_t a, b, c, d;
+    uint32_t a, b, c, d;
 
     a = buf[0];
     b = buf[1];

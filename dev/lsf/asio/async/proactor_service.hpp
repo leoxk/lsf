@@ -83,7 +83,12 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
-    // Async Read
+    // Async Recv
+    template <typename SocketType, typename HandlerType1, typename HandlerType2>
+    bool AsyncRecv(SocketType& socket, HandlerType1 const& handler, HandlerType2 const& peer_close_handler) {
+        return AsyncRead(socket, handler, peer_close_handler);
+    }
+
     template <typename SocketType, typename HandlerType1, typename HandlerType2>
     bool AsyncRead(SocketType& socket, HandlerType1 const& handler, HandlerType2 const& peer_close_handler) {
         // call same routine
@@ -118,7 +123,17 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
-    // Async Write
+    // Async Send
+    template <typename SocketType, typename HandlerType>
+    bool AsyncSend(SocketType& socket, std::string const& buffer, HandlerType const& handler) {
+        return AsyncWrite(socket, buffer.c_str(), buffer.length(), handler);
+    }
+
+    template <typename SocketType, typename HandlerType>
+    bool AsyncSend(SocketType& socket, void const* buffer, size_t buflen, HandlerType const& handler) {
+        return AsyncWrite(socket, buffer, buflen, handler);
+    }
+
     template <typename SocketType, typename HandlerType>
     bool AsyncWrite(SocketType& socket, std::string const& buffer, HandlerType const& handler) {
         return AsyncWrite(socket, buffer.c_str(), buffer.length(), handler);

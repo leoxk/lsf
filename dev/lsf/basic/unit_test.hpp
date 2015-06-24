@@ -28,7 +28,7 @@
 #define LSF_TEST_CASE(arg_case_name)                                                                    \
     class LSF_TEST_##arg_case_name : public ::lsf::basic::TestCase {                                    \
     public:                                                                                             \
-        explicit LSF_TEST_##arg_case_name(std::string const& case_name) : TestCase(case_name) {}        \
+        LSF_TEST_##arg_case_name(std::string const& case_name) : TestCase(case_name) {}        \
         virtual void Run();                                                                             \
     private:                                                                                            \
         static ::lsf::basic::TestCase* const _helper;                                                   \
@@ -46,7 +46,7 @@
         else {                                                                                                   \
             std::cout << LSF_TEST_RED << "[  Failed  ] " << LSF_TEST_EOC << __FILE__ << "|" << __LINE__ << " "   \
                       << #expr << std::endl;                                                                     \
-            lsf::basic::lsf_test_case_result = false;                                                            \
+            lsf::basic::UnitTest::Instance()->SetFail();                                                            \
         }                                                                                                        \
     } while (0)
 
@@ -58,7 +58,7 @@
         else {                                                                                                   \
             std::cout << LSF_TEST_RED << "[  Failed  ] " << LSF_TEST_EOC << __FILE__ << "|" << __LINE__ << " "   \
                       << #expr << std::endl;                                                                     \
-            lsf::basic::lsf_test_case_result = false;                                                            \
+            lsf::basic::UnitTest::Instance()->SetFail();                                                            \
             exit(-1);                                                                                            \
         }                                                                                                        \
     } while (0)
@@ -68,7 +68,7 @@
         if (!(expr)) {                                                                                         \
             std::cout << LSF_TEST_RED << "[  Failed  ] " << LSF_TEST_EOC << __FILE__ << "|" << __LINE__ << " " \
                       << #expr << std::endl;                                                                   \
-            lsf::basic::lsf_test_case_result = false;                                                          \
+            lsf::basic::UnitTest::Instance()->SetFail();                                                          \
         }                                                                                                      \
     } while (0)
 
@@ -77,24 +77,19 @@
         if (!(expr)) {                                                                                         \
             std::cout << LSF_TEST_RED << "[  Failed  ] " << LSF_TEST_EOC << __FILE__ << "|" << __LINE__ << " " \
                       << #expr << std::endl;                                                                   \
-            lsf::basic::lsf_test_case_result = false;                                                          \
+            lsf::basic::UnitTest::Instance()->SetFail();                                                          \
             exit(-1);                                                                                          \
         }                                                                                                      \
     } while (0)
 
-////////////////////////////////////////////////////////////
-// Class declare
 namespace lsf {
 namespace basic {
 
-namespace {
-static bool lsf_test_case_result = true;
-}  // end of namespace anonymous
-
+////////////////////////////////////////////////////////////
+// TestCase
 class TestCase {
 public:
     TestCase(std::string const& case_name) : _case_name(case_name) {}
-
     virtual ~TestCase() {}
 
     virtual void Run() = 0;
@@ -105,6 +100,8 @@ protected:
     std::string _case_name;
 };
 
+////////////////////////////////////////////////////////////
+// UnitTest
 class UnitTest : public basic::Singleton<UnitTest> {
 public:
     typedef std::vector<TestCase*> container_type;
@@ -134,7 +131,7 @@ public:
         // unit test content
         gettimeofday(&tv_begin, nullptr);
         for (UnitTest::iterator it = _case_list.begin(); it != _case_list.end(); it++, cnt++) {
-            lsf::basic::lsf_test_case_result = true;
+            _test_case_result = true;
 
             timeval case_begin, case_end;
 
@@ -150,7 +147,7 @@ public:
             uint64_t milli_sec = (case_end.tv_sec * 1000 + case_end.tv_usec / 1000) -
                                  (case_begin.tv_sec * 1000 + case_begin.tv_usec / 1000);
 
-            if (lsf::basic::lsf_test_case_result) {
+            if (_test_case_result) {
                 std::cout << LSF_TEST_GREEN << "[  Result  ] Passed" << LSF_TEST_EOC << std::endl;
                 std::cout << LSF_TEST_GREEN << "[   Time   ] " << milli_sec / 1000 << "." << milli_sec % 1000
                           << LSF_TEST_EOC << std::endl;
@@ -181,8 +178,11 @@ public:
         return result;
     }
 
+    void SetFail() { _test_case_result = false; }
+
 private:
     container_type _case_list;
+    bool _test_case_result = true;
 };
 
 }  // end of namespace basic
