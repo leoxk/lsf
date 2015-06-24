@@ -124,10 +124,7 @@ public:
             }
 
             // handle socket close
-            if (ret == 0) {
-                _is_peer_close = true;
-                break;
-            }
+            if (ret == 0) break;
 
             // handle recv data
             content.append(buffer, ret);
@@ -289,6 +286,11 @@ public:
         return _sockfd != rhs._sockfd;
     }
 
+    template <typename OtherProtoType>
+    bool operator<(BasicSocket<OtherProtoType> const &rhs) const {
+        return _sockfd < rhs._sockfd;
+    }
+
 private:
     bool _WaitActionTimeout(int fd, bool wait_read, bool wait_write, uint64_t milli_expire)
     {
@@ -321,7 +323,6 @@ private:
 
 private:
     int     _sockfd = -1;
-    bool    _is_peer_close = false;
 };
 
 }  // end of namespace detail

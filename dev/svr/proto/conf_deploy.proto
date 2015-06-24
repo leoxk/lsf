@@ -43,7 +43,7 @@ message ConnectService
 message Server
 {
     optional ENServerType   server_type = 1;
-    optional uint32         server_id = 2; 
+    optional uint32         server_id = 2;
     optional string         local_log_path = 3;
     repeated ConnectService connect_service = 4;
     repeated AcceptService  accept_service = 5;

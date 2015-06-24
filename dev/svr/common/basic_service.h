@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include <set>
+#include <vector>
+#include <map>
 #include "lsf/asio/tcp.hpp"
 #include "lsf/asio/net.hpp"
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
+#include "svr/proto/msg_base.pb.h"
 #include "svr/common/basic_server.h"
 
 ////////////////////////////////////////////////////////////
@@ -23,6 +25,10 @@ public:
     // main routine
     bool Run(BasicServer* pserver);
 
+    // // active action
+    // virtual bool SendMesaage(std::string const & buffer);
+    // virtual bool BroadcastMesaage(std::string const & buffer);
+    //
     // async handler
     virtual bool OnSocketRead(lsf::asio::AsyncInfo& info);
     virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
@@ -46,8 +52,16 @@ protected:
 // BasicAcceptService
 class BasicAcceptService : public BasicService {
 public:
+    typedef std::map<lsf::asio::Socket, msg::TcpHead> acct_sock_type;
+
+public:
     BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type) {}
     bool OnSocketAccept(lsf::asio::AsyncInfo& info);
+    bool SendMessage(std::string const & buffer, lsf::asio::Socket socket);
+    bool BroadcastMessage(std::string const & buffer);
+
+public:
+    size_t ConnSize() const { return _acct_sock.size(); }
 
 protected:
     virtual bool OnInitConfig();
@@ -55,13 +69,14 @@ protected:
 
 protected:
     conf::AcceptService _service_config;
+    acct_sock_type _acct_sock;
 };
 
 ////////////////////////////////////////////////////////////
 // BasicService
 class BasicConnectService : public BasicService {
 public:
-    typedef std::vector<lsf::asio::Socket> conn_vec_type;
+    typedef std::vector<lsf::asio::Socket> conn_scok_type;
 
 public:
     BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
@@ -76,7 +91,7 @@ protected:
 
 protected:
     conf::ConnectService _service_config;
-    conn_vec_type _conn_vec;
+    conn_scok_type _conn_scok;
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -140,10 +140,21 @@ bool BasicAcceptService::OnSocketAccept(lsf::asio::AsyncInfo& info) {
         return false;
     }
 
+    // init sock info
+    msg::TcpHead & tcp_head = _acct_sock[socket];
+    tcp_head.set_index(socket.GetSockFd());
+    tcp_head.set_client_ip(socket.RemoteSockAddr().GetAddress().ToString());
+    tcp_head.set_client_port(socket.RemoteSockAddr().GetPort());
+    tcp_head.set_is_new_connection(true);
+    tcp_head.set_is_close_connection(false);
+    tcp_head.set_connect_time(IOService::Instance()->GetClockTime());
+
     // callback
     return OnConnectionCreate(Socket(info.accept_fd));
 }
 
+bool BasicAcceptService::SendMessage(std::string const & buffer, lsf::asio::Socket socket);
+bool BasicAcceptService::BroadcastMessage(std::string const & buffer);
 ////////////////////////////////////////////////////////////
 // BasicConnectService
 ////////////////////////////////////////////////////////////
@@ -164,7 +175,7 @@ bool BasicConnectService::OnInitConfig() {
 
 bool BasicConnectService::OnInitSocket() {
     // pre-create connection instance
-    _conn_vec.insert(_conn_vec.begin(), _service_config.connect_address_size(), Socket(-1));
+    _conn_scok.insert(_conn_scok.begin(), _service_config.connect_address_size(), Socket(-1));
 
     // try connect
     for (int i = 0; i < _service_config.connect_address_size(); ++i) {
@@ -189,7 +200,7 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t ind
     }
 
     // asign to socket vector
-    _conn_vec[index] = socket;
+    _conn_scok[index] = socket;
 
     // callback
     return OnConnectionCreate(Socket(info.fd));
@@ -198,18 +209,18 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t ind
 bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
     // find connect_address
     size_t index;
-    for (index = 0; index < _conn_vec.size(); ++index) {
-        if (_conn_vec[index] == Socket(info.fd)) break;
+    for (index = 0; index < _conn_scok.size(); ++index) {
+        if (_conn_scok[index] == Socket(info.fd)) break;
     }
 
     // not found
-    if (index == _conn_vec.size()) {
+    if (index == _conn_scok.size()) {
         LSF_LOG_ERR("not found index when reconnn, socket=%d", info.fd);
         return false;
     }
 
     // reset connection
-    _conn_vec[index] = Socket(-1);
+    _conn_scok[index] = Socket(-1);
 
     // try reconnect
     if (!TryConnect(index)) return false;

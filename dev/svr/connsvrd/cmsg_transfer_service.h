@@ -14,7 +14,9 @@ public:
     AcceptClientMsgTransferService() : BasicAcceptService(conf::SERVICE_TYPE_CLIENT_MSG_TRANSFER) { }
 
 private:
-
+    virtual bool OnConnectionCreate(lsf::asio::Socket socket);
+    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
+    virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:
