@@ -31,9 +31,10 @@ bool OnTimerFunc(AsyncInfo &info) {
 
 ////////////////////////////////////////////////////////////
 bool OnPeerCloseFunc(AsyncInfo &info, tcp::Socket client_socket) {
-    int fd = -1;
-    LSF_ASSERT(IOService::Instance()->AsyncAddTimer(0, 1, OnTimerFunc, &fd));
-    LSF_ASSERT(fd != -1);
+    // test timer
+    LSF_ASSERT(IOService::Instance()->AsyncAddTimerSingle(1, OnTimerFunc));
+    LSF_ASSERT(IOService::Instance()->AsyncAddTimerMulti(1, 98, OnTimerFunc));
+    LSF_ASSERT(IOService::Instance()->AsyncAddTimerSingle(500, OnTimerFunc));
 
     return true;
 }
@@ -53,14 +54,13 @@ bool OnRecvFunc(AsyncInfo &info, tcp::Socket client_socket) {
 ////////////////////////////////////////////////////////////
 bool OnSendFunc(AsyncInfo &info, tcp::Socket server_socket) {
     // test address
-    tcp::Socket client_socket(info.fd);
-    LSF_ASSERT(server_socket.RemoteSockAddr() == client_socket.LocalSockAddr());
-    LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
+    LSF_ASSERT(server_socket.RemoteSockAddr() == info.socket.LocalSockAddr());
+    LSF_ASSERT(server_socket.LocalSockAddr() == info.socket.RemoteSockAddr());
 
     // read data
     LSF_ASSERT(server_socket.AsyncRead(*IOService::Instance(),
-                                       std::bind(OnRecvFunc, std::placeholders::_1, client_socket),
-                                       std::bind(OnPeerCloseFunc, std::placeholders::_1, client_socket)));
+                                       std::bind(OnRecvFunc, std::placeholders::_1, info.socket),
+                                       std::bind(OnPeerCloseFunc, std::placeholders::_1, info.socket)));
 
     return true;
 }
@@ -68,17 +68,15 @@ bool OnSendFunc(AsyncInfo &info, tcp::Socket server_socket) {
 ////////////////////////////////////////////////////////////
 bool OnAcceptFunc(AsyncInfo &info, tcp::Socket client_socket) {
     // test listen address
-    tcp::Socket listen_socket(info.fd);
-    LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
+    LSF_ASSERT(info.listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
 
     // test address
-    tcp::Socket server_socket(info.accept_fd);
-    LSF_ASSERT(server_socket.RemoteSockAddr() == client_socket.LocalSockAddr());
-    LSF_ASSERT(server_socket.LocalSockAddr() == client_socket.RemoteSockAddr());
+    LSF_ASSERT(info.socket.RemoteSockAddr() == client_socket.LocalSockAddr());
+    LSF_ASSERT(info.socket.LocalSockAddr() == client_socket.RemoteSockAddr());
 
     // send msg
     LSF_ASSERT(client_socket.AsyncWrite(*IOService::Instance(), content.c_str(), content.size(),
-                                        std::bind(OnSendFunc, std::placeholders::_1, server_socket)));
+                                        std::bind(OnSendFunc, std::placeholders::_1, info.socket)));
 
     return true;
 }
@@ -89,9 +87,8 @@ bool OnConnectFunc(AsyncInfo &info, tcp::ListenSocket listen_socket) {
     LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
 
     // async accept
-    tcp::Socket socket(info.fd);
     LSF_ASSERT(
-        listen_socket.AsyncAccept(*IOService::Instance(), std::bind(OnAcceptFunc, std::placeholders::_1, socket)));
+        listen_socket.AsyncAccept(*IOService::Instance(), std::bind(OnAcceptFunc, std::placeholders::_1, info.socket)));
 
     return true;
 }

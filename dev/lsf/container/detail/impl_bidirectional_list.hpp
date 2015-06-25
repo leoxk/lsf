@@ -155,7 +155,7 @@ public:
     typedef typename base_type::value_type value_type;
     typedef typename base_type::pointer pointer;
     typedef typename base_type::reference reference;
-    typedef typename base_type::difference_type  difference_type;
+    typedef typename base_type::difference_type difference_type;
     typedef ListState<ElemType, SizeType> state_type;
     typedef SizeType size_type;
 

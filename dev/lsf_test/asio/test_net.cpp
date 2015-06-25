@@ -6,6 +6,7 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/asio/net.hpp"
+#include "lsf/asio/tcp.hpp"
 
 using namespace std;
 using namespace lsf::asio;
@@ -51,7 +52,15 @@ LSF_TEST_CASE(test_address) {
     LSF_ASSERT(Address(AF_INET6) == Address::Any(AF_INET6));
     LSF_ASSERT(Address::Any(AF_INET).ToString() == "0.0.0.0");
     LSF_ASSERT(Address::Any(AF_INET6).ToString() == "::");
-    std::cout << Address::Any(AF_INET6).ToString() << std::endl;
+
+    // test setsockopt
+    Socket socket = tcp::Socket::CreateSocket();
+    std::cout << "default recvbuf: " << socket.GetRecvBufLen() << std::endl
+              << "default sendbuf: " << socket.GetSendBufLen() << std::endl;
+    LSF_ASSERT(socket.SetSendBuf(32000));
+    LSF_ASSERT(socket.SetRecvBuf(32000));
+    LSF_ASSERT(socket.GetSendBufLen() == 2*32000);
+    LSF_ASSERT(socket.GetRecvBufLen() == 2*32000);
 }
 
 int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }

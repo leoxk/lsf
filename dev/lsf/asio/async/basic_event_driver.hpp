@@ -21,7 +21,7 @@ public:
 
 public:
     virtual bool RegisterEvent(int fd, int flag) = 0;
-    virtual bool CancelEvent(int fd) = 0;
+    virtual void CancelEvent(int fd) = 0;
     virtual bool WaitEvent(int timeout) = 0;
     virtual bool GetReadyEvent(int* pfd, int* pflag) = 0;
 };

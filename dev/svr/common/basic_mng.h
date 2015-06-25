@@ -89,8 +89,8 @@ public:
 
         // count need byte size
         size_t byte_size = 0;
-        for (auto it : _pool) {
-            byte_size += it->GetSize();
+        for (auto const & elem : _pool) {
+            byte_size += elem.GetSize();
         }
 
         // create shm mem
@@ -112,8 +112,8 @@ public:
         lsf::util::Serialize(pbase, total, off, (uint32_t)_pool.size());
 
         // serialize every elem
-        for (auto it : _pool) {
-            if (!it->Serialize(pbase, total, off)) {
+        for (auto const & elem : _pool) {
+            if (!elem.Serialize(pbase, total, off)) {
                 LSF_LOG_ERR("serialize failed, total=%u, off=%u, %s", total, off,
                             lsf::util::ProtobufLog::Instance()->ErrCharStr());
                 return false;

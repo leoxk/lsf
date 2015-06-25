@@ -6,10 +6,12 @@
 
 #pragma once
 
-#include <functional>
 #include <map>
+#include <functional>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
+#include "lsf/asio/detail/basic_socket.hpp"
+#include "lsf/asio/detail/basic_listen_socket.hpp"
 
 namespace lsf {
 namespace asio {
@@ -18,19 +20,7 @@ namespace async {
 ////////////////////////////////////////////////////////////
 // Function Closure
 ////////////////////////////////////////////////////////////
-class AsyncInfo {
-public:
-    void Clear() {
-        fd = 0;
-        accept_fd = 0;
-        buffer.clear();
-    }
-
-public:
-    int fd = 0;
-    int accept_fd = 0;
-    std::string buffer;
-};
+class AsyncInfo;
 
 class CompletionFunc {
 public:
@@ -47,6 +37,7 @@ public:
     int action = 0;
     func_type func = nullptr;
     std::string buffer;
+    size_t timer_count = 0;
 };
 
 ////////////////////////////////////////////////////////////
@@ -60,7 +51,9 @@ public:
 
 public:
     template <typename HandlerType>
-    bool AddCompletionTask(int fd, int action, HandlerType func, void const *buffer = nullptr, size_t buflen = 0) {
+    bool AddCompletionTask(int fd, int action, HandlerType func,
+            void const *buffer = nullptr, size_t buflen = 0, size_t timer_count = 0) {
+        // get completion func
         CompletionFunc *pfunc = nullptr;
         switch (action) {
             case CompletionFunc::ACTION_ACCEPT:
@@ -83,9 +76,11 @@ public:
         }
         if (pfunc == nullptr) return false;
 
+        // assign values
         pfunc->action = action;
         pfunc->func = CompletionFunc::func_type(func);
-        pfunc->buffer.assign((char *)buffer, buflen);
+        if (buffer && buflen != 0) pfunc->buffer.assign((char *)buffer, buflen);
+        if (timer_count != 0) pfunc->timer_count = timer_count;
         return true;
     }
 

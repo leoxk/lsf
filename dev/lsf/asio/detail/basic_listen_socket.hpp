@@ -39,6 +39,7 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
+    BasicListenSocket() {}
     BasicListenSocket(int sockfd) : _sockfd(sockfd) {}
 
     template <typename OtherProtoType>
@@ -64,7 +65,7 @@ public:
         return true;
     }
 
-    bool Close() { return ErrWrap(::close(_sockfd)) == 0; }
+    void Close() { if (_sockfd < 0) return; ::close(_sockfd); }
 
     sockaddr_type LocalSockAddr() {
         sockaddr addr;

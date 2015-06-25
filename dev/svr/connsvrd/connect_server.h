@@ -1,4 +1,4 @@
-// File:        connsvrd.h
+// File:        connect_server.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -14,13 +14,7 @@ public:
     ConnectServer() : BasicServer(conf::SERVER_TYPE_CONN_SERVER) {}
 
 public:
-    virtual bool OnInitConnect() { return true; }
-
-    virtual bool OnInitNetLog() { return true; }
-
     virtual bool OnRun();
-
-    virtual bool OnClientMessage();
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

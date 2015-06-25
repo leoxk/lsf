@@ -48,12 +48,12 @@ protected:
     // IOService Content
     class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
     public:
-        IOServiceContent() : use_epoll(false), epoll_service(nullptr), poll_service(nullptr) {}
+        IOServiceContent() {}
 
     public:
-        bool use_epoll;
-        ProactorSerivce *epoll_service;
-        ProactorSerivce *poll_service;
+        bool use_epoll = false;
+        ProactorSerivce *epoll_service = nullptr;
+        ProactorSerivce *poll_service = nullptr;
     };
 
 protected:

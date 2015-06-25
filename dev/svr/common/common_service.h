@@ -25,5 +25,16 @@ protected:
 
 ////////////////////////////////////////////////////////////
 // ConnectClientMsgTransferService
+class ConnectClientMsgTransferService : public BasicConnectService, public lsf::basic::Singleton<ConnectClientMsgTransferService> {
+public:
+    ConnectClientMsgTransferService() : BasicConnectService(conf::SERVICE_TYPE_CLIENT_MSG_TRANSFER) {}
+
+protected:
+    virtual bool OnConnectionCreate(lsf::asio::Socket socket);
+    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string & message);
+
+protected:
+    lsf::asio::Socket _socket;
+};
 
 // vim:ts=4:sw=4:et:ft=cpp:

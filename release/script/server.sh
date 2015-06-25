@@ -23,13 +23,15 @@ export var_backup_files=(bin conf script)
 export var_max_try=30
 
 # mod settings
-declare -a var_index=("conf" "proxy" "conn0" "conn1" "conn2")
-
+declare -a var_index=("conf"
+                      "proxy"
+                      "conn"
+                      "game"
+                      )
 declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
-                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60000 0"
-                    ["conn0"]="./bin/connsvrd 127.0.0.1 60000 0"
-                    ["conn1"]="./bin/connsvrd 127.0.0.1 60000 1"
-                    ["conn2"]="./bin/connsvrd 127.0.0.1 60000 2"
+                    ["proxy"]="./bin/proxysvrd 127.0.0.1 60000"
+                    ["conn"]="./bin/connsvrd 127.0.0.1 60000"
+                    ["game"]="./bin/gamesvrd 127.0.0.1 60000"
                     )
 
 ############################################################

@@ -48,7 +48,6 @@ public:
 
     template <typename AnyType>
     AnyType ErrWrap(AnyType expr) const {
-        if (!_err_string.empty()) _err_string.clear();
         if ((int)expr < 0) _err_string = SysErrString();
         return expr;
     }
@@ -56,10 +55,10 @@ public:
     template <typename AnyType>
     AnyType ErrWrapPointer(AnyType expr) const {
         if (!_err_string.empty()) _err_string.clear();
-        if (expr == nullptr) err_string = SysErrString();
         return expr;
     }
 
+    void SetErrorNo(int error) const { _err_string = std::strerror(error); }
     std::string const& ErrString() const { return _err_string; }
     std::string& ErrString() { return _err_string; }
 

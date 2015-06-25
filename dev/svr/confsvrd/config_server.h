@@ -15,13 +15,7 @@ public:
 
 public:
     virtual bool OnParseCommond(int argc, char** argv);
-
     virtual bool OnInitDeployConfig();
-
-    virtual bool OnInitProxy() { return true; }
-
-    virtual bool OnInitNetLog() { return true; }
-
     virtual bool OnRun();
 
 private:

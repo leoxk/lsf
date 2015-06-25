@@ -9,6 +9,7 @@
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <string>
+#include <utility>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/macro.hpp"
@@ -21,6 +22,17 @@
 namespace lsf {
 namespace asio {
 namespace async {
+
+////////////////////////////////////////////////////////////
+// AsyncInfo
+////////////////////////////////////////////////////////////
+class AsyncInfo {
+public:
+    detail::BasicSocket<> socket;
+    detail::BasicListenSocket<> listen_socket;
+    std::string buffer;
+    int timer_fd = -1;
+};
 
 ////////////////////////////////////////////////////////////
 // ProactorSerivce
@@ -61,7 +73,8 @@ public:
     template <typename SocketType, typename SockAddrType, typename HandlerType>
     bool AsyncConnect(SocketType& socket, SockAddrType const& sockaddr, HandlerType const& handler) {
         // try connect
-        if (!socket.Connect(sockaddr) && errno != EINPROGRESS) {
+        int ret = ::connect(socket.GetSockFd(), sockaddr.data(), sockaddr.size());
+        if (ret != 0 && errno != EINPROGRESS) {
             ErrString() = LSF_DEBUG_INFO + socket.ErrString();
             return false;
         }
@@ -83,7 +96,7 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
-    // Async Recv
+    // Async  Recv
     template <typename SocketType, typename HandlerType1, typename HandlerType2>
     bool AsyncRecv(SocketType& socket, HandlerType1 const& handler, HandlerType2 const& peer_close_handler) {
         return AsyncRead(socket, handler, peer_close_handler);
@@ -160,7 +173,22 @@ public:
     ////////////////////////////////////////////////////////////
     // Async Timer
     template <typename HandlerType>
-    bool AsyncAddTimer(uint64_t milli_expire, uint64_t milli_interval, HandlerType const& handler, int* pfd = nullptr) {
+    bool AsyncAddTimerSingle(uint64_t milli_expire, HandlerType const& handler) {
+        return AsyncAddTimer(milli_expire, 0, 1, handler);
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimerForever(uint64_t milli_expire, HandlerType const& handler) {
+        return AsyncAddTimer(milli_expire, milli_expire, 0, handler);
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimerMulti(uint64_t milli_expire, size_t trigger_count, HandlerType const& handler) {
+        return AsyncAddTimer(milli_expire, milli_expire, trigger_count, handler);
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimer(uint64_t milli_expire, uint64_t milli_interval, size_t trigger_count, HandlerType const& handler) {
         // check input
         if (milli_expire == 0) milli_expire = 1;
 
@@ -187,14 +215,13 @@ public:
         }
 
         // add completion task
-        if (!_queue.AddCompletionTask(fd, CompletionFunc::ACTION_TIMER, handler)) {
+        if (!_queue.AddCompletionTask(fd, CompletionFunc::ACTION_TIMER, handler, nullptr, 0, trigger_count)) {
             _pdriver->CancelEvent(fd);
             ::close(fd);
             ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
             return false;
         }
 
-        if (pfd != nullptr) *pfd = fd;
         return true;
     }
 
@@ -222,6 +249,9 @@ public:
     ////////////////////////////////////////////////////////////
     // Close Async
     void CloseAsync(int fd) {
+        // check input
+        if (fd < 0) return;
+
         // cancel registration
         _pdriver->CancelEvent(fd);
 
@@ -302,9 +332,8 @@ public:
     // Accept Event
     void OnAcceptEvent(int fd) {
         detail::BasicListenSocket<> listen_socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
+        AsyncInfo info;
+        info.listen_socket = listen_socket;
 
         // accept
         detail::BasicSocket<> accept_socket(-1);
@@ -312,7 +341,7 @@ public:
             ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
             return;
         }
-        info.accept_fd = accept_socket.GetSockFd();
+        info.socket = accept_socket;
 
         // call accept handler
         CompletionFunc* pfunc = nullptr;
@@ -329,9 +358,8 @@ public:
     // Read Event
     void OnReadEvent(int fd) {
         detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
+        AsyncInfo info;
+        info.socket = socket;
         info.buffer.reserve(MAX_BUFFER_LEN);  // avoid copy
 
         // read loop
@@ -401,9 +429,8 @@ public:
     // Write Event
     void OnWriteEvent(int fd) {
         detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
+        AsyncInfo info;
+        info.socket = socket;
 
         // get completion func
         CompletionFunc* pfunc = nullptr;
@@ -435,6 +462,9 @@ public:
             total += ret;
         }
 
+        // move buffer
+        info.buffer = std::move(pfunc->buffer);
+
         // if send wrong
         if (close_connection) {
             CloseAsync(fd);
@@ -446,8 +476,7 @@ public:
             ::close(fd);
         } else {
             // always cancel write registration after event
-            _pdriver->CancelEvent(fd);
-            _queue.CancelCompletionTask(fd);
+            CloseAsync(fd);
         }
     }
 
@@ -455,9 +484,8 @@ public:
     // Connect Event
     void OnConnectEvent(int fd) {
         detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
+        AsyncInfo info;
+        info.socket = socket;
 
         // get completion func
         CompletionFunc* pfunc = nullptr;
@@ -480,9 +508,8 @@ public:
     ////////////////////////////////////////////////////////////
     // Timer Event
     void OnTimerEvent(int fd) {
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
+        AsyncInfo info;
+        info.timer_fd = fd;
 
         // read data
         uint64_t count;
@@ -500,14 +527,28 @@ public:
         }
 
         // call write handler as many as it triggers
+        bool should_delete = false;
         for (uint64_t i = 0; i < count; ++i) {
+            // callback
             if (!pfunc->func(info)) {
                 AsyncDelTimer(fd);
                 return;
             }
+            // check remain count
+            if (pfunc->timer_count == 1) {
+                should_delete = true;
+                break;
+            }
+            else if (pfunc->timer_count != 0) {
+                pfunc->timer_count--;
+            }
         }
 
         // check if need delete
+        if (should_delete) {
+            AsyncDelTimer(fd);
+            return;
+        }
         uint64_t expire;
         if (!AsyncGetTimer(fd, &expire)) {
             AsyncDelTimer(fd);

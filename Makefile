@@ -21,6 +21,7 @@ SVR_MODULE = \
 			  dev/svr/confsvrd	\
 			  dev/svr/proxysvrd	\
 			  dev/svr/connsvrd	\
+			  dev/svr/gamesvrd	\
 
 TEST_MODULE = \
 			  dev/lsf_test/algorithm	\

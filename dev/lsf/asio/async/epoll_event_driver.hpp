@@ -40,10 +40,7 @@ public:
         return false;
     }
 
-    bool CancelEvent(int fd) {
-        epoll_event ev = {0, {0}};
-        return ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, &ev));
-    }
+    void CancelEvent(int fd) { ::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL); }
 
     bool WaitEvent(int timeout) {
         _cur_pos = 0;

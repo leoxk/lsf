@@ -52,7 +52,7 @@ bool AcceptClientMsgService::OnConnectionPeerClose(lsf::asio::Socket socket)
 {
     // erase map entry
     _sock_map.erase(socket);
-    CloseConnection(socket);
+    ConnectionClose(socket);
 
     return true;
 }
@@ -76,12 +76,12 @@ bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
     if (!common::PackProtoMsg(buffer, response)) return true;
 
     // send
-    SendConnection(socket, buffer);
+    ConnectionSend(socket, buffer);
 
     // check and close connection
     if (close_connection) {
         _sock_map.erase(socket);
-        CloseConnection(socket);
+        ConnectionClose(socket);
     }
 
     return true;

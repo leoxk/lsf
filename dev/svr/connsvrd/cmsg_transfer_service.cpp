@@ -13,7 +13,7 @@ using namespace lsf::asio;
 
 bool AcceptClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket) {
     // close old connection
-    if (_socket.operator!()) CloseConnection(_socket);
+    if (_socket.operator!()) ConnectionClose(_socket);
 
     // set new connection
     _socket = socket;
@@ -29,12 +29,12 @@ bool AcceptClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socke
 
 bool AcceptClientMsgTransferService::OnConnectionPeerClose(lsf::asio::Socket socket) {
     // close connection
-    CloseConnection(_socket);
+    ConnectionClose(_socket);
     return true;
 }
 
 bool AcceptClientMsgTransferService::TransferMessage(std::string const & message) {
-    return SendConnection(_socket, message);
+    return ConnectionSend(_socket, message);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

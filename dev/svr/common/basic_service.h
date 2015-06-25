@@ -37,8 +37,8 @@ protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
     virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
-    virtual void CloseConnection(lsf::asio::Socket socket);
-    virtual bool SendConnection(lsf::asio::Socket socket, std::string const & message);
+    virtual void ConnectionClose(lsf::asio::Socket socket);
+    virtual bool ConnectionSend(lsf::asio::Socket socket, std::string const & message);
 
     // init logic
     virtual bool OnInitConfig() = 0;
@@ -72,18 +72,21 @@ class BasicConnectService : public BasicService {
 public:
     typedef std::vector<lsf::asio::Socket> conn_scok_type;
 
+    static const size_t DEF_CONN_CHECK_INTERVAL = 1*1000; // milli seconds
+    static const size_t DEF_CONNECT_TIMEOUT = 5*1000; // milli seconds
+
 public:
     BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
     virtual ~BasicConnectService() {}
 
     virtual bool OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index);
     virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
+    virtual bool OnSocketConnectCheck();
 
 protected:
     virtual bool OnInitConfig();
     virtual bool OnInitSocket();
-    virtual bool TryConnect(size_t index);
-    virtual bool TryAsyncConnect(size_t index);
+    virtual void ConnectionClose(lsf::asio::Socket socket);
 
 protected:
     conf::ConnectService _service_config;

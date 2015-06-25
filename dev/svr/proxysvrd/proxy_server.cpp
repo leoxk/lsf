@@ -1,18 +1,16 @@
-// File:        proxysvrd.cpp
+// File:        proxy_server.cpp
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-10 by leoxiang
 
 #include "svr/common/common_header.h"
-#include "svr/proxysvrd/proxysvrd.h"
+#include "svr/proxysvrd/proxy_server.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;
 
 bool ProxyServer::OnRun() { return true; }
-
-bool ProxyServer::OnClientMessage() { return true; }
 
 int main(int argc, char** argv) { ProxyServer::Instance()->Run(argc, argv); }
 

@@ -46,17 +46,19 @@ public:
         return true;
     }
 
-    bool CancelEvent(int fd) {
+    void CancelEvent(int fd) {
+        // find fd
         size_t pos;
-        for (pos = 0; pos < MAX_FD_NUM; pos++)
+        for (pos = 0; pos < _fds_size; pos++) {
             if (_fds[pos].fd == fd) break;
+        }
+        if (pos == _fds_size) return;
 
-        if (pos == MAX_FD_NUM) return false;
         // use memmove instead of memcpy, for overlap reason
-        ::memmove(_fds + pos, _fds + pos + 1, (_fds_size - 1 - pos) * sizeof(pollfd));
-
+        if (pos != (_fds_size - 1)) {
+            ::memmove(_fds + pos, _fds + pos + 1, (_fds_size - 1 - pos) * sizeof(pollfd));
+        }
         _fds_size--;
-        return true;
     }
 
     bool WaitEvent(int timeout) {

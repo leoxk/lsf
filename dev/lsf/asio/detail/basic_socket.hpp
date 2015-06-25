@@ -68,31 +68,32 @@ public:
     // common func
     bool Bind(sockaddr_type const &local) { return ErrWrap(::bind(_sockfd, local.data(), local.size())) == 0; }
 
-    bool Close() {
-        int ret = ErrWrap(::close(_sockfd));
-        _sockfd = -1;
-        return ret == 0; }
+    void Close() { if (_sockfd < 0) return; ::close(_sockfd); }
 
     ////////////////////////////////////////////////////////////
     // sync connect
     bool Connect(sockaddr_type const &remote, uint64_t milli_expire = DEF_TIMEOUT) {
-
-        int ret = ::connect(_sockfd, remote.data(), remote.size());
+        int ret = ErrWrap(::connect(_sockfd, remote.data(), remote.size()));
 
         // success
-        if (ret >= 0) return true;
+        if (ret == 0) return true;
 
         // not because non-block return fail
         if (errno != EINPROGRESS) {
-            ErrWrap(ret);
             return false;
         }
 
         // wait write event
         if (!_WaitActionTimeout(_sockfd, false, true, milli_expire)) return false;
 
-        return true;
+        // check result
+        ret = GetSockError();
+        if (ret != 0) {
+            SetErrorNo(ret);
+            return false;
+        }
 
+        return true;
     }
 
     ////////////////////////////////////////////////////////////
@@ -224,15 +225,17 @@ public:
     bool SetBlock() { return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) & (~O_NONBLOCK))) == 0; }
 
     bool SetSendBuf(size_t buflen) {
-        return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_SNDBUF, &buflen, sizeof(buflen))) == 0;
+        int optval = buflen;
+        return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval))) == 0;
     }
 
     bool SetRecvBuf(size_t buflen) {
-        return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_RCVBUF, &buflen, sizeof(buflen))) == 0;
+        int optval = buflen;
+        return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval))) == 0;
     }
 
     bool SetSockReuse() {
-        size_t optval = 1;
+        int optval = 1;
         return ErrWrap(::setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) == 0;
     }
 
@@ -252,25 +255,34 @@ public:
     }
 
     size_t GetRecvBufLen() const {
-        size_t optval;
-        socklen_t optlen;
+        int optval = 0;
+        socklen_t optlen = sizeof(optval);
         ::getsockopt(_sockfd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
-        return optval;
+        return (size_t)optval;
     }
 
     size_t GetSendBufLen() const {
-        size_t optval;
-        socklen_t optlen;
+        int optval = 0;
+        socklen_t optlen = sizeof(optval);
         ::getsockopt(_sockfd, SOL_SOCKET, SO_SNDBUF, &optval, &optlen);
+        return (size_t)optval;
+    }
+
+    int GetSockError() const {
+        if (_sockfd < 0) return EBADF;
+        int optval = 0;
+        socklen_t optlen = sizeof(optval);
+        if (::getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) != 0) optval = errno;
         return optval;
     }
 
+    void SetSockFd(int sockfd) { _sockfd = sockfd; }
     int GetSockFd() const { return _sockfd; }
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
-    bool operator!() const { return _sockfd >= 0; }
+    bool operator!() const { return GetSockError() == 0; }
 
     template <typename OtherProtoType>
     bool operator==(BasicSocket<OtherProtoType> const &rhs) const {

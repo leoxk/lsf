@@ -74,15 +74,15 @@ void BasicServer::Run(int argc, char** argv) {
 
 bool BasicServer::OnParseCommond(int argc, char** argv) {
     // check input
-    if (argc < 4) {
+    if (argc < 3) {
         std::cerr << "usage: " << argv[0] << " [confsvrd_ip] [confsvrd_port] [server_id]" << std::endl;
         return false;
     }
 
     // parse content
     _confsvrd_addrss = std::string(argv[1]) + "|" + argv[2];
-    _server_id = TypeCast<uint32_t>(argv[3]);
     _server_name = StringExt::GetBaseName(argv[0]);
+    _server_id = argc == 3 ? 0 : TypeCast<uint32_t>(argv[3]);
 
     return true;
 }
@@ -90,7 +90,7 @@ bool BasicServer::OnParseCommond(int argc, char** argv) {
 bool BasicServer::OnInitDeployConfig() {
     // init connect config service
     ConnectConfigService::Instance()->SetConfigServerAddress(_confsvrd_addrss);
-    ConnectConfigService::Instance()->Run(this);
+    if (!ConnectConfigService::Instance()->Run(this)) return false;
 
     // check server type and id
     if (_server_type != _server_config.server_type() || _server_id != _server_config.server_id()) {

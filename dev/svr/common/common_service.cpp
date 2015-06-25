@@ -9,6 +9,8 @@
 #include "svr/common/common_func.h"
 #include "svr/common/common_proto.h"
 
+////////////////////////////////////////////////////////////
+// ConnectConfigService
 bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket) {
     // construct message
     msg::SS message;
@@ -18,7 +20,7 @@ bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket) {
 
     // send and recv
     if (!common::SendAndRecv(socket, message)) {
-        socket.Close();
+        ConnectionClose(socket);
         return false;
     }
 
@@ -37,6 +39,20 @@ bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket) {
 void ConnectConfigService::SetConfigServerAddress(std::string const& address) {
     _service_config.add_connect_address(address);
     _service_config.set_service_type(_service_type);
+}
+
+////////////////////////////////////////////////////////////
+// ConnectClientMsgTransferService
+bool ConnectClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket) {
+    // can only keep one instance
+    if (_socket.operator!()) ConnectionClose(_socket);
+
+    return true;
+}
+
+bool ConnectClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message) {
+    // can only keep one instance
+    return true;
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:
