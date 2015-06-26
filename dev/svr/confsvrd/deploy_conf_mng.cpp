@@ -28,20 +28,16 @@ bool DeployConfigManager::Init(char const* path) {
     }
 
     // merge default conf
-    conf::Server const& def_conf = _deploy_config.default_config();
-    for (int i = 0; i < _deploy_config.server_config_size(); ++i) {
-        _deploy_config.mutable_server_config(i)->MergeFrom(def_conf);
+    for (auto & conf : *_deploy_config.mutable_server_config()) {
+        conf.MergeFrom(_deploy_config.default_config());
     }
 
     return true;
 }
 
-conf::Server const* DeployConfigManager::GetServerConfig(conf::ENServerType server_type, uint32_t server_id) {
-    for (int i = 0; i < _deploy_config.server_config_size(); ++i) {
-        conf::Server const& conf = _deploy_config.server_config(i);
-        if (conf.server_type() == server_type && conf.server_id() == server_id) {
-            return &conf;
-        }
+conf::Server const* DeployConfigManager::GetServerConfig(conf::ENServerType server_type, uint32_t server_id) const {
+    for (auto const & conf : _deploy_config.server_config()) {
+        if (conf.server_type() == server_type && conf.server_id() == server_id) return &conf;
     }
     return nullptr;
 }

@@ -6,11 +6,16 @@
 
 #include "svr/common/common_header.h"
 #include "svr/proxysvrd/proxy_server.h"
+#include "svr/proxysvrd/server_msg_transfer_service.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;
 
-bool ProxyServer::OnRun() { return true; }
+bool ProxyServer::OnRun() {
+    if (!AcceptServerMsgTransferService::Instance()->Run(this)) return false;
+    if (!AcceptServerMsgTransferService::Instance()->InitSocketMapFromServerConfig()) return false;
+    return true;
+}
 
 int main(int argc, char** argv) { ProxyServer::Instance()->Run(argc, argv); }
 

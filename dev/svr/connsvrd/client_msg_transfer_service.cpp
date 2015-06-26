@@ -1,10 +1,10 @@
-// File:        cmsg_transfer_service.cpp
+// File:        client_msg_transfer_service.cpp
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-23 by leoxiang
 
-#include "svr/connsvrd/cmsg_transfer_service.h"
+#include "svr/connsvrd/client_msg_transfer_service.h"
 #include "svr/common/common_header.h"
 #include "svr/common/common_func.h"
 #include "svr/connsvrd/client_msg_service.h"
@@ -21,15 +21,13 @@ bool AcceptClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket
     return true;
 }
 
+void AcceptClientMsgTransferService::OnConnectionClose(lsf::asio::Socket socket) {
+    if (_socket == socket) _socket.SetSockFd(-1);
+}
+
 bool AcceptClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
     // transfer
     AcceptClientMsgService::Instance()->SendResposeToClient(message);
-    return true;
-}
-
-bool AcceptClientMsgTransferService::OnConnectionPeerClose(lsf::asio::Socket socket) {
-    // close connection
-    ConnectionClose(_socket);
     return true;
 }
 

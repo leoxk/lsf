@@ -20,29 +20,32 @@
 class BasicService : public lsf::basic::NonCopyable {
 public:
     static const size_t DEF_SEND_TIMEOUT = 1000; // milli seconds
+    friend class lsf::asio::ProactorSerivce;
 
 public:
     BasicService(conf::ENServiceType service_type) : _service_type(service_type) {}
     virtual ~BasicService() { }
-
-    // main routine
     bool Run(BasicServer* pserver);
-
-    // async handler
+    // most of time you should not mess with these callbacks
     virtual bool OnSocketRead(lsf::asio::AsyncInfo& info);
     virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
+    virtual void OnSocketClose(lsf::asio::Socket socket);
+    virtual bool OnGetSingleMessageFromStream(std::string const& buffer, size_t& pos, std::string& message);
+    virtual bool OnPutSingleMessageIntoStream(std::string & buffer, std::string const& message);
 
 protected:
-    // connection handler
-    virtual bool OnConnectionCreate(lsf::asio::Socket socket);
-    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
-    virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
-    virtual void ConnectionClose(lsf::asio::Socket socket);
-    virtual bool ConnectionSend(lsf::asio::Socket socket, std::string const & message);
-
     // init logic
     virtual bool OnInitConfig() = 0;
     virtual bool OnInitSocket() = 0;
+
+    // connection handler
+    void ConnectionClose(lsf::asio::Socket socket);
+    bool ConnectionSend(lsf::asio::Socket socket, std::string const& message);
+    bool ConnectionSend(lsf::asio::Socket socket, google::protobuf::MessageLite const& proto_msg);
+    virtual bool OnConnectionCreate(lsf::asio::Socket socket) { return true; }
+    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message) { return true; }
+    virtual void OnConnectionPeerClose(lsf::asio::Socket socket) { }
+    virtual void OnConnectionClose(lsf::asio::Socket socket) { }
 
 protected:
     conf::ENServiceType _service_type;
@@ -53,9 +56,11 @@ protected:
 // BasicAcceptService
 class BasicAcceptService : public BasicService {
 public:
+    friend class lsf::asio::ProactorSerivce;
+
+public:
     BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type) {}
     virtual ~BasicAcceptService() {}
-
     virtual bool OnSocketAccept(lsf::asio::AsyncInfo& info);
 
 protected:
@@ -71,22 +76,21 @@ protected:
 class BasicConnectService : public BasicService {
 public:
     typedef std::vector<lsf::asio::Socket> conn_scok_type;
+    friend class lsf::asio::ProactorSerivce;
 
-    static const size_t DEF_CONN_CHECK_INTERVAL = 1*1000; // milli seconds
+    static const size_t DEF_CONN_CHECK_INTERVAL = 10*1000; // milli seconds
     static const size_t DEF_CONNECT_TIMEOUT = 5*1000; // milli seconds
 
 public:
     BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
     virtual ~BasicConnectService() {}
-
     virtual bool OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index);
-    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
-    virtual bool OnSocketConnectCheck();
+    virtual void OnSocketClose(lsf::asio::Socket socket);
 
 protected:
     virtual bool OnInitConfig();
     virtual bool OnInitSocket();
-    virtual void ConnectionClose(lsf::asio::Socket socket);
+    virtual bool OnConnectionCheck();
 
 protected:
     conf::ConnectService _service_config;

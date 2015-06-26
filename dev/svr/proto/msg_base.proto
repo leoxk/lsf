@@ -14,8 +14,7 @@ package msg;
 
 /*}*/
 
-message TcpHead
-{
+message TcpHead {
     optional int32  index               = 1;
     optional string client_ip           = 2;
     optional uint32 client_port         = 3;
@@ -24,12 +23,20 @@ message TcpHead
     optional uint32 connect_time        = 6;
 }
 
-message ProxyHead
-{
-    optional conf.ENServerType src_server_type = 1;
-    optional conf.ENServerType dst_server_type = 2;
-    optional uint32            src_server_id = 3;
-    optional uint32            dst_server_id = 4;
+enum ENProxyTransferType {
+    PROXY_TRANSFER_TYPE_BY_ID = 1;
+    PROXY_TRANSFER_TYPE_BY_HASH = 2;
+    PROXY_TRANSFER_TYPE_BY_BROADCAST = 3;
+    PROXY_TRANSFER_TYPE_BY_RANDOM = 4;
+}
+
+message ProxyHead {
+    optional ENProxyTransferType transfer_type   = 1;
+    optional conf.ENServerType   src_server_type = 2;
+    optional conf.ENServerType   dst_server_type = 3;
+    optional uint32              src_server_id   = 4;
+    optional uint32              dst_server_id   = 5;
+    optional uint64              dst_hash_id     = 6;
 }
 
 // vim:ts=4:sw=4:et:ft=proto:

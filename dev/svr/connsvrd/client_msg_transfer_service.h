@@ -1,4 +1,4 @@
-// File:        cmsg_transfer_service.h
+// File:        client_msg_transfer_service.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -18,8 +18,8 @@ public:
 
 protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
+    virtual void OnConnectionClose(lsf::asio::Socket socket);
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
-    virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
 
 protected:
     lsf::asio::Socket _socket;

@@ -7,7 +7,7 @@
 #include "svr/common/common_header.h"
 #include "svr/connsvrd/connect_server.h"
 #include "svr/connsvrd/client_msg_service.h"
-#include "svr/connsvrd/cmsg_transfer_service.h"
+#include "svr/connsvrd/client_msg_transfer_service.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;

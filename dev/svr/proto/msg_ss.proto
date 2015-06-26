@@ -10,61 +10,55 @@ package msg;
 
 ////////////////////////////////////////////////////////////
 // server to server messages
-message GetDeployConfigReq
-{
+message GetDeployConfigReq {
     optional conf.ENServerType  server_type = 1;
     optional uint32             server_id = 2;
 }
 
-message GetDeployConfigRsp
-{
+message GetDeployConfigRsp {
     optional bool result = 1;
     optional conf.Server config = 2;
 }
 
-message GetGameConfigReq
-{
+message GetGameConfigReq {
     optional conf.ENServerType  server_type = 1;
 }
 
-message GetGameConfigRsp
-{
+message GetGameConfigRsp {
     optional bool result = 1;
 }
 
-message ReisterToProxyReq
-{
+message ReisterToProxyReq {
     optional conf.ENServerType  server_type = 1;
     optional uint32             server_id = 2;
 }
 
-message ReisterToProxyRsp
-{
+message ReisterToProxyRsp {
     optional bool result = 1;
+}
+
+message GetAllDeployConfigReq {
+
+}
+
+message GetAllDeployConfigRsp {
+    repeated conf.Server all_config = 1;
 }
 
 ////////////////////////////////////////////////////////////
 // server to server message
-enum ENSS
-{
-   SS_GET_DEPLOY_CONFIG_REQ = 1;
-   SS_GET_DEPLOY_CONFIG_RSP = 2;
-   SS_GET_GAME_CONFIG_REQ = 3;
-   SS_GET_GAME_CONFIG_RSP = 4;
-   SS_REGISTER_TO_RPOXY_REQ = 5;
-   SS_REGISTER_TO_RPOXY_RSP = 6;
-}
-
 message SS
 {
-    optional ENSS                 type = 1;
-    optional ProxyHead            proxy_head = 2;
-    optional GetDeployConfigReq   get_deploy_config_req = 10;
-    optional GetDeployConfigRsp   get_deploy_config_rsp = 11;
-    optional GetGameConfigReq     get_game_config_req = 12;
-    optional GetGameConfigRsp     get_game_config_rsp = 13;
-    optional ReisterToProxyReq    register_to_proxy_req = 14;
-    optional ReisterToProxyRsp    register_to_proxy_rsp = 15;
+    optional uint32                 msg_id = 1;
+    optional ProxyHead              proxy_head = 2;
+    optional GetDeployConfigReq     get_deploy_config_req = 10;
+    optional GetDeployConfigRsp     get_deploy_config_rsp = 11;
+    optional GetGameConfigReq       get_game_config_req = 12;
+    optional GetGameConfigRsp       get_game_config_rsp = 13;
+    optional ReisterToProxyReq      register_to_proxy_req = 14;
+    optional ReisterToProxyRsp      register_to_proxy_rsp = 15;
+    optional GetAllDeployConfigReq  get_all_deploy_config_req = 16;
+    optional GetAllDeployConfigRsp  get_all_deploy_config_rsp = 17;
 }
 
 

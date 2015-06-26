@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include "lsf/basic/singleton.hpp"
 #include "lsf/asio/async/proactor_service.hpp"
 #include "lsf/asio/async/epoll_event_driver.hpp"
@@ -22,6 +23,7 @@ typedef detail::BasicSockAddr<> SockAddr;
 typedef detail::BasicSocket<> Socket;
 typedef detail::BasicListenSocket<> ListenSocket;
 
+////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 // IOService
 class IOService {
@@ -64,5 +66,17 @@ protected:
 
 }  // end of namespace asio
 }  // end of namespace lsf
+
+////////////////////////////////////////////////////////////
+// define hash function
+namespace std {
+template<>
+struct hash<lsf::asio::Socket> {
+public:
+    size_t operator()(lsf::asio::Socket const &sock) const {
+        return std::hash<int>()(sock.GetSockFd());
+    }
+};
+} // end namespace std
 
 // vim:ts=4:sw=4:et:

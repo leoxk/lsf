@@ -22,7 +22,7 @@ conf::ConnectService const* BasicServer::GetConnectServiceConfig(conf::ENService
     for (conf::ConnectService const& iter : _server_config.connect_service()) {
         if (iter.service_type() == service_type) return &iter;
     }
-    LSF_LOG_ERR("get config failed, type=%u", service_type);
+    LSF_LOG_ERR_WITH_STACK("get config failed, type=%u", service_type);
     return nullptr;
 }
 
@@ -30,7 +30,7 @@ conf::AcceptService const* BasicServer::GetAcceptServiceConfig(conf::ENServiceTy
     for (conf::AcceptService const& iter : _server_config.accept_service()) {
         if (iter.service_type() == service_type) return &iter;
     }
-    LSF_LOG_ERR("get config failed, type=%u", service_type);
+    LSF_LOG_ERR_WITH_STACK("get config failed, type=%u", service_type);
     return nullptr;
 }
 
@@ -89,25 +89,25 @@ bool BasicServer::OnParseCommond(int argc, char** argv) {
 
 bool BasicServer::OnInitDeployConfig() {
     // init connect config service
-    ConnectConfigService::Instance()->SetConfigServerAddress(_confsvrd_addrss);
+    ConnectConfigService::Instance()->SetServiceConfig(_confsvrd_addrss);
     if (!ConnectConfigService::Instance()->Run(this)) return false;
+    if (!ConnectConfigService::Instance()->GetServerConfig(_server_config)) return false;
 
     // check server type and id
     if (_server_type != _server_config.server_type() || _server_id != _server_config.server_id()) {
-        LSF_LOG_ERR("server not match, input=%u %u, config=%u %u", _server_type, _server_id,
+        LSF_LOG_ERR_WITH_STACK("server not match, input=%u %u, config=%u %u", _server_type, _server_id,
                     _server_config.server_type(), _server_config.server_id());
         return false;
     }
 
     LSF_LOG_INFO("get config from confsvrd successs");
-
     return true;
 }
 
 bool BasicServer::OnSetCurrentPath(char const* command) {
     std::string path = StringExt::GetDirName(System::GetAbsPath(command));
     if (!System::ChDir(path)) {
-        LSF_LOG_ERR("set current path failed, %s", System::ErrCharStr());
+        LSF_LOG_ERR_WITH_STACK("set current path failed, %s", System::ErrCharStr());
         return false;
     }
 
@@ -120,7 +120,7 @@ bool BasicServer::OnInitLocalLog() {
         "../log/" + _server_name + "/" + _server_name + "." + TypeCast<std::string>(_server_id);
 
     if (!SingleLog::Instance()->BindOutput(new FileLogDriver(local_log_path, FileLogDriver::SHIFT_DAY))) {
-        LSF_LOG_ERR("init local log failed, %s", SingleLog::Instance()->ErrCharStr());
+        LSF_LOG_ERR_WITH_STACK("init local log failed, %s", SingleLog::Instance()->ErrCharStr());
         return false;
     }
 

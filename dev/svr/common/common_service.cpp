@@ -11,47 +11,59 @@
 
 ////////////////////////////////////////////////////////////
 // ConnectConfigService
-bool ConnectConfigService::OnConnectionCreate(lsf::asio::Socket socket) {
-    // construct message
-    msg::SS message;
-    message.set_type(msg::SS_GET_DEPLOY_CONFIG_REQ);
-    message.mutable_get_deploy_config_req()->set_server_type(_pserver->GetServerType());
-    message.mutable_get_deploy_config_req()->set_server_id(_pserver->GetServerId());
-
-    // send and recv
-    if (!common::SendAndRecv(socket, message)) {
-        ConnectionClose(socket);
-        return false;
-    }
-
-    // check ret
-    if (!message.get_deploy_config_rsp().result()) {
-        LSF_LOG_ERR("get config failed");
-        return false;
-    }
-
-    // set server config
-    _pserver->SetServerConfig(message.get_deploy_config_rsp().config());
-
-    return true;
-}
-
-void ConnectConfigService::SetConfigServerAddress(std::string const& address) {
+void ConnectConfigService::SetServiceConfig(std::string const& address) {
     _service_config.add_connect_address(address);
     _service_config.set_service_type(_service_type);
 }
 
-////////////////////////////////////////////////////////////
-// ConnectClientMsgTransferService
-bool ConnectClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket) {
-    // can only keep one instance
-    if (_socket.operator!()) ConnectionClose(_socket);
+bool ConnectConfigService::GetServerConfig(conf::Server & config) {
+    // construct message
+    msg::SS message;
+    message.set_msg_id(msg::SS::kGetDeployConfigReqFieldNumber);
+    message.mutable_get_deploy_config_req()->set_server_type(_pserver->GetServerType());
+    message.mutable_get_deploy_config_req()->set_server_id(_pserver->GetServerId());
+
+    // send and recv
+    if (!common::SendAndRecv(_conn_scok[0], message)) return false;
+
+    // check ret
+    if (message.msg_id() != msg::SS::kGetDeployConfigRspFieldNumber || !message.get_deploy_config_rsp().result()) {
+        LSF_LOG_ERR("get config failed");
+        return false;
+    }
+
+    // return config
+    config.CopyFrom(message.get_deploy_config_rsp().config());
 
     return true;
 }
 
+bool ConnectConfigService::GetAllConfig(google::protobuf::RepeatedPtrField<conf::Server> & all_config) {
+    // construct message
+    msg::SS message;
+    message.set_msg_id(msg::SS::kGetAllDeployConfigReqFieldNumber);
+    message.mutable_get_all_deploy_config_req();
+
+    // send and recv
+    if (!common::SendAndRecv(_conn_scok[0], message)) return false;
+
+    // check ret
+    if (message.msg_id() != msg::SS::kGetAllDeployConfigRspFieldNumber) {
+        LSF_LOG_ERR("get all config failed");
+        return false;
+    }
+
+    // return config
+    all_config.CopyFrom(message.get_all_deploy_config_rsp().all_config());
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////
+// ConnectClientMsgTransferService
 bool ConnectClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message) {
     // can only keep one instance
+    // TODO
     return true;
 }
 

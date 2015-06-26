@@ -12,7 +12,8 @@ using namespace google::protobuf;
 using namespace lsf::util;
 
 bool GameServer::OnRun() {
-    // ConnectPro
+    if (!ConnectClientMsgTransferService::Instance()->Run(this)) return false;
+    if (!ConnectServerMsgTransferService::Instance()->Run(this)) return false;
     return true;
 }
 

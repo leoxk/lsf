@@ -43,7 +43,7 @@ bool BasicService::OnSocketRead(lsf::asio::AsyncInfo& info) {
     std::string message;
     size_t pos = 0;
 
-    while (common::GetSingleMessageFromStream(info.buffer, pos, message)) {
+    while (OnGetSingleMessageFromStream(info.buffer, pos, message)) {
         // callback
         if (!OnConnectionMessage(info.socket, message)) return false;
     }
@@ -58,36 +58,62 @@ bool BasicService::OnSocketRead(lsf::asio::AsyncInfo& info) {
 }
 
 bool BasicService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
+    // print info
     LSF_LOG_INFO("connection close by peer, local=%s, remote=%s",
             info.socket.LocalSockAddr().ToCharStr(), info.socket.RemoteSockAddr().ToCharStr());
+
+    // callback
+    OnSocketClose(info.socket);
+
     return true;
 }
 
-//////////////////////////////////////////////////////////
-// default connection handler
-bool BasicService::OnConnectionCreate(lsf::asio::Socket socket) { return true; }
-
-bool BasicService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
-    LSF_LOG_ERR("you should override this handler");
-    return true;
+void BasicService::OnSocketClose(lsf::asio::Socket socket) {
+    // callback
+    OnConnectionClose(socket);
 }
 
-bool BasicService::OnConnectionPeerClose(lsf::asio::Socket socket) { return true; }
+bool BasicService::OnGetSingleMessageFromStream(std::string const& buffer, size_t& pos, std::string& message) {
+    return common::GetSingleMessageFromStream(buffer, pos, message);
+}
+
+bool BasicService::OnPutSingleMessageIntoStream(std::string & buffer, std::string const& message) {
+    return common::PutSingleMessageIntoStream(buffer, message);
+}
 
 void BasicService::ConnectionClose(lsf::asio::Socket socket) {
+    // check input
+    if (socket.GetSockFd() < 0) return;
+
     // must call CloseAsync first
     socket.CloseAsync(IOService::Reference());
     socket.Close();
+
+    // callback
+    OnSocketClose(socket);
 }
 
-bool BasicService::ConnectionSend(lsf::asio::Socket socket, std::string const & message) {
-    // call async send
-    if (!socket.Send(message, DEF_SEND_TIMEOUT)) {
+bool BasicService::ConnectionSend(lsf::asio::Socket socket, std::string const &message) {
+    // puck into stream
+    std::string buffer;
+    if (!OnPutSingleMessageIntoStream(buffer, message)) return false;
+
+    // sync send
+    if (!socket.Send(buffer, DEF_SEND_TIMEOUT)) {
         LSF_LOG_ERR("send message failed, length=%u, from=%s, to=%s", message.length(),
                 socket.LocalSockAddr().ToCharStr(), socket.LocalSockAddr().ToCharStr());
         return false;
     }
     return true;
+}
+
+bool BasicService::ConnectionSend(lsf::asio::Socket socket, google::protobuf::MessageLite const &proto_msg) {
+    // pack proto
+    std::string message;
+    if (!common::PackProtoMsg(message, proto_msg)) return false;
+
+    // send
+    return ConnectionSend(socket, message);
 }
 
 ////////////////////////////////////////////////////////////
@@ -204,7 +230,7 @@ bool BasicConnectService::OnInitSocket() {
 
     // add connection routine check
     if (!IOService::Instance()->AsyncAddTimerForever(DEF_CONN_CHECK_INTERVAL,
-                std::bind(&BasicConnectService::OnSocketConnectCheck, this))) {
+                std::bind(&BasicConnectService::OnConnectionCheck, this))) {
         LSF_LOG_ERR("async add timer failed, %s", IOService::Instance()->ErrCharStr());
         return false;
     }
@@ -228,36 +254,27 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t ind
     if (!info.socket.AsyncRead(*IOService::Instance(),
                           std::bind(&BasicService::OnSocketRead, std::ref(*this), std::placeholders::_1),
                           std::bind(&BasicService::OnSocketPeerClose, std::ref(*this), std::placeholders::_1))) {
-        LSF_LOG_ERR("async read failed, %s", IOService::Instance()->ErrCharStr());
+        LSF_LOG_ERR("async read failed, fd=%u, %s", info.socket.GetSockFd(), IOService::Instance()->ErrCharStr());
         return false;
     }
 
-    // asign to socket vector
+    // if already has a connection, close first
+    if (_conn_scok[index].operator!()) {
+        LSF_LOG_FATAL("connect when there is already a connection, sockaddr=%s",
+                _service_config.connect_address(index).c_str());
+        ConnectionClose(_conn_scok[index]);
+    }
     _conn_scok[index] = info.socket;
 
     // callback
     return OnConnectionCreate(info.socket);
 }
 
-
-bool BasicConnectService::OnSocketPeerClose(lsf::asio::AsyncInfo& info) {
-    // call base function
-    if (!BasicService::OnSocketPeerClose(info)) return false;
-
-    // close connection
-    ConnectionClose(info.socket);
-
-    return true;
-}
-
-bool BasicConnectService::OnSocketConnectCheck() {
+bool BasicConnectService::OnConnectionCheck() {
     // travers all connection and check
     for (int i = 0; i < _service_config.connect_address_size(); ++i) {
         // check status
         if (_conn_scok[i].operator!()) continue;
-
-        // connection is broken, close and reconnect
-        ConnectionClose(_conn_scok[i]);
 
         // create socket
         Socket socket = tcp::Socket::CreateSocket();
@@ -276,10 +293,7 @@ bool BasicConnectService::OnSocketConnectCheck() {
     return true;
 }
 
-void BasicConnectService::ConnectionClose(lsf::asio::Socket socket) {
-    // check input
-    if (socket.GetSockFd() < 0) return;
-
+void BasicConnectService::OnSocketClose(lsf::asio::Socket socket) {
     // erase entry
     for (auto & sock : _conn_scok) {
         if (sock == socket) {
@@ -287,9 +301,6 @@ void BasicConnectService::ConnectionClose(lsf::asio::Socket socket) {
             break;
         }
     }
-
-    // call base func
-    BasicService::ConnectionClose(socket);
 }
 
 // vim:ts=4:sw=4:et:ft=cpp:

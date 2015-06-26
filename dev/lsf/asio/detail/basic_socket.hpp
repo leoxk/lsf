@@ -282,7 +282,7 @@ public:
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
-    bool operator!() const { return GetSockError() == 0; }
+    bool operator!() const { return _sockfd >= 0; }
 
     template <typename OtherProtoType>
     bool operator==(BasicSocket<OtherProtoType> const &rhs) const {

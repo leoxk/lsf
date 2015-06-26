@@ -7,12 +7,11 @@
 #include "svr/connsvrd/client_msg_service.h"
 #include "svr/common/common_header.h"
 #include "svr/common/common_func.h"
-#include "svr/connsvrd/cmsg_transfer_service.h"
+#include "svr/connsvrd/client_msg_transfer_service.h"
 
 using namespace lsf::asio;
 
-bool AcceptClientMsgService::OnConnectionCreate(lsf::asio::Socket socket)
-{
+bool AcceptClientMsgService::OnConnectionCreate(lsf::asio::Socket socket) {
     // add map entery
     msg::TcpHead & tcp_head = _sock_map[socket];
     tcp_head.set_index(socket.GetSockFd());
@@ -25,15 +24,14 @@ bool AcceptClientMsgService::OnConnectionCreate(lsf::asio::Socket socket)
     return true;
 }
 
-bool AcceptClientMsgService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message)
-{
+bool AcceptClientMsgService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
     // unpack msg
     msg::CS request;
     if (!common::UnPackProtoMsg(message, request)) return true;
 
     // copy tcp head
     msg::TcpHead & head = _sock_map[socket];
-    request.mutable_head()->CopyFrom(head);
+    request.mutable_tcp_head()->CopyFrom(head);
 
     // clear new connection mark
     if (head.is_new_connection()) head.clear_is_new_connection();
@@ -48,13 +46,9 @@ bool AcceptClientMsgService::OnConnectionMessage(lsf::asio::Socket socket, std::
     return true;
 }
 
-bool AcceptClientMsgService::OnConnectionPeerClose(lsf::asio::Socket socket)
-{
+void AcceptClientMsgService::OnConnectionClose(lsf::asio::Socket socket) {
     // erase map entry
     _sock_map.erase(socket);
-    ConnectionClose(socket);
-
-    return true;
 }
 
 bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
@@ -63,16 +57,16 @@ bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
     if (!common::UnPackProtoMsg(message, response)) return true;
 
     // get socket from head
-    Socket socket = { response.head().index() };
+    Socket socket = { response.tcp_head().index() };
     if (socket.operator!()) {
-        LSF_LOG_ERR("socket get from tcp head err, sockfd%u", socket.GetSockFd());
+        LSF_LOG_ERR("socket get from tcp head err, fd=%u", socket.GetSockFd());
         return true;
     }
-    bool close_connection = response.head().is_close_connection();
+    bool close_connection = response.tcp_head().is_close_connection();
 
     // pack new message
     std::string buffer;
-    response.clear_head();
+    response.clear_tcp_head();
     if (!common::PackProtoMsg(buffer, response)) return true;
 
     // send

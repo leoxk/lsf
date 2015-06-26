@@ -9,17 +9,6 @@
 #include "svr/common/basic_service.h"
 #include "svr/common/common_proto.h"
 
-// define hash function
-namespace std {
-template<>
-class hash<lsf::asio::Socket> {
-public:
-    size_t operator()(lsf::asio::Socket const &sock) const {
-        return std::hash<int>()(sock.GetSockFd());
-    }
-};
-} // end namespace std
-
 ////////////////////////////////////////////////////////////
 // AcceptClientMsgService
 class AcceptClientMsgService : public BasicAcceptService, public lsf::basic::Singleton<AcceptClientMsgService> {
@@ -34,7 +23,7 @@ public:
 protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
-    virtual bool OnConnectionPeerClose(lsf::asio::Socket socket);
+    virtual void OnConnectionClose(lsf::asio::Socket socket);
 
 protected:
     sock_map_type _sock_map;

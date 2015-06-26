@@ -21,7 +21,7 @@ public:
     static const size_t MAX_EV_NUM = 128;
 
 public:
-    EpollEventDriver() { _epfd = ErrWrap(::epoll_create(0)); } // this size is not used nowadays, see man 
+    EpollEventDriver() { _epfd = ErrWrap(::epoll_create(128000)); } // this size is not used nowadays, see man
 
     bool RegisterEvent(int fd, int flag) {
         if (!(flag & FLAG_READ) && !(flag & FLAG_WRITE)) return false;

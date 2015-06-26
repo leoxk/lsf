@@ -10,8 +10,7 @@ package data;
 
 ////////////////////////////////////////////////////////////
 // Session
-enum ENSessionState
-{
+enum ENSessionState {
     SESSION_STATE_ON_CLIENT_MSG           = 1;   // 收到客户端消息
     SESSION_STATE_ON_ROOMSVR_MSG          = 2;   // 收到roomsvr消息
     SESSION_STATE_ON_KVDBSVR_SELECT_MSG   = 3;   // 收到private_dbsvrd消息
@@ -26,14 +25,12 @@ enum ENSessionState
     SESSION_STATE_FINISH                  = 1000; // 会话结束
 }
 
-enum ENSessionDBState
-{
+enum ENSessionDBState {
     SESSION_DB_STATE_SELECT = 1; // 拉取数据
     SESSION_DB_STATE_UPDATE = 2; // 更新数据
 }
 
-message Session
-{
+message Session {
     optional uint32             sess_id           = 1;                // 会话ID
     optional uint32             sess_type         = 2;                // 会话类型
     optional ENSessionState     sess_state        = 3;                // 会话状态
