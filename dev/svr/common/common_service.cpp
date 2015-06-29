@@ -62,7 +62,12 @@ bool ConnectConfigService::GetAllConfig(google::protobuf::RepeatedPtrField<conf:
 ////////////////////////////////////////////////////////////
 // ConnectClientMsgTransferService
 bool ConnectClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message) {
-    // can only keep one instance
+    // unpack message
+    msg::CS request;
+    if (!common::UnPackProtoMsg(message, request)) return true;
+
+    // create session
+    return true;
     // TODO
     return true;
 }

@@ -1,4 +1,4 @@
-// File:        deploy_conf_mng.cpp
+// File:        deploy_conf_manager.cpp
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -6,7 +6,7 @@
 
 #include <fstream>
 #include "svr/common/common_header.h"
-#include "svr/confsvrd/deploy_conf_mng.h"
+#include "svr/confsvrd/deploy_conf_manager.h"
 
 using namespace google::protobuf;
 using namespace lsf::basic;

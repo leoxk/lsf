@@ -1,4 +1,4 @@
-// File:        basic_mng.h
+// File:        basic_manager.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include <sys/time.h>
-#include <set>
-#include <unordered_map>
+#include <map>
 #include "lsf/container/pool.hpp"
 #include "lsf/container/heap_mem.hpp"
 #include "lsf/basic/singleton.hpp"
@@ -21,22 +19,25 @@
 template <typename ElemType>
 class BasicManager : public lsf::basic::NonCopyable {
 public:
-    typedef lsf::container::Pool<ElemType, lsf::container::HeapMem, uint32_t> pool_type;
-    typedef typename pool_type::iterator iterator;
+    typedef typename ElemType::key_type key_type;
+    typedef ElemType value_type;
+    typedef std::map<key_type,value_type> map_type;
+    typedef typename map_type::iterator iterator;
+    constexpr static const float DEF_LOAD_FACTOR = 0.9;
 
 public:
     ////////////////////////////////////////////////////////////
     // init mananger
-    bool Init(key_t shm_key, uint32_t max_size) {
-        // save shm key
-        _shm_key = shm_key;
-
-        // calc shm size and bind
-        size_t byte_size = _pool.CalcByteSize(max_size);
-        if (!_pool.BindAndInitStorage(lsf::container::HeapMem(byte_size))) {
-            LSF_LOG_ERR("bind and init storage failed, %s", _pool.ErrCharStr());
+    bool Init(key_t shm_key, size_t max_size, float load_factor = DEF_LOAD_FACTOR) {
+        // check input
+        if (shm_key == 0 || max_size == 0) {
+            LSF_LOG_ERR("invalid input, %u, %u", shm_key, max_size);
             return false;
         }
+
+        // save value
+        _shm_key = shm_key;
+        _max_size = max_size;
 
         // if find shm, then recover data
         lsf::container::SharedMem shared_mem(_shm_key);
@@ -46,30 +47,22 @@ public:
             size_t off = 0;
 
             // get total count
-            uint32_t elem_size = 0;
+            size_t elem_size = 0;
             lsf::util::UnSerialize(pbase, total, off, elem_size);
 
-            // record begin time
-            timeval tv_begin, tv_end;
-            ::gettimeofday(&tv_begin, nullptr);
-
             // recover every elem
-            for (size_t i = 0; i < elem_size && i < _pool.max_size(); ++i) {
-                // create elem
-                uint32_t id = _pool.Malloc();
-                ElemType &elem = _pool.Get(id);
-
+            for (size_t i = 0; i < elem_size && i < max_size; ++i) {
                 // recover from buffer
-                if (!elem.UnSerialize(pbase, total, off)) {
+                value_type tmp;
+                if (!tmp.UnSerialize(pbase, total, off)) {
                     LSF_LOG_ERR("unserialize failed, count=%d, %s", i,
                                 lsf::util::ProtobufLog::Instance()->ErrCharStr());
                     return false;
                 }
-            }
 
-            ::gettimeofday(&tv_end, nullptr);
-            LSF_LOG_INFO("success recover elem, num=%d, mtime=%u", elem_size,
-                         lsf::basic::Time::TimeValDiff(tv_begin, tv_end));
+                // insert into map
+                _map[tmp.GetKey()] = std::move(tmp);
+            }
 
             // delete shm
             lsf::container::SharedMem::Delete(_shm_key);
@@ -89,14 +82,12 @@ public:
 
         // count need byte size
         size_t byte_size = 0;
-        for (auto const & elem : _pool) {
-            byte_size += elem.GetSize();
-        }
+        for (auto const & elem : _map) byte_size += elem.GetSize();
 
         // create shm mem
         if (!lsf::container::SharedMem::Create(_shm_key, byte_size)) {
-            LSF_LOG_ERR("create shared mem failed, key=%x, byte_size=%u, max_size=%u, %s", _shm_key, byte_size,
-                        _pool.max_size(), lsf::container::SharedMem::SysErrCharStr());
+            LSF_LOG_ERR("create shared mem failed, key=%x, byte_size=%u, %s", _shm_key, byte_size,
+                        lsf::container::SharedMem::SysErrCharStr());
             return false;
         }
         lsf::container::SharedMem shared_mem(_shm_key);
@@ -109,10 +100,10 @@ public:
         size_t off = 0;
 
         // serialize total count
-        lsf::util::Serialize(pbase, total, off, (uint32_t)_pool.size());
+        lsf::util::Serialize(pbase, total, off, (size_t)_map.size());
 
         // serialize every elem
-        for (auto const & elem : _pool) {
+        for (auto const & elem : _map) {
             if (!elem.Serialize(pbase, total, off)) {
                 LSF_LOG_ERR("serialize failed, total=%u, off=%u, %s", total, off,
                             lsf::util::ProtobufLog::Instance()->ErrCharStr());
@@ -124,19 +115,21 @@ public:
     }
 
 public:
-    bool IsFull() const { return _pool.IsFull(); }
+    value_type & operator[](key_type const & key) { return _map[key]; }
+    void erase(key_type const& key) { _map.erase(key); }
+    bool exist(key_type const& key) const { return _map.find(key) != _map.end(); }
+    bool full() const { return _map.size() == _max_size; }
+    bool empty() const { return _map.empty(); }
+    size_t size() const { return _map.size(); }
+    size_t max_size() const { return _max_size; }
+    iterator begin() { return _map.begin(); }
+    iterator end() { return _map.end(); }
+    iterator find(key_type const& key) { return _map.find(key); }
 
-    uint32_t size() const { return _pool.size(); }
-
-    uint32_t max_size() const { return _pool.max_size(); }
-
-    iterator begin() { return _pool.being(); }
-
-    iterator end() { return _pool.end(); }
-
-protected:
-    pool_type _pool;
+private:
+    map_type _map;
     key_t _shm_key;
+    size_t _max_size;
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:
