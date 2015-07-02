@@ -5,7 +5,7 @@
 // Revision:    2012-08-01 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/container/pool.hpp"
 #include "node.hpp"
 

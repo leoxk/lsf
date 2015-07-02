@@ -13,7 +13,7 @@ using namespace lsf::asio;
 
 bool AcceptClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket) {
     // close old connection
-    if (_socket.operator!()) ConnectionClose(_socket);
+    if (_socket) ConnectionClose(_socket);
 
     // set new connection
     _socket = socket;

@@ -7,7 +7,7 @@
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/asio/tcp.hpp"
 #include "lsf/util/random.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 using namespace std;
 using namespace lsf::asio;

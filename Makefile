@@ -24,6 +24,7 @@ SVR_MODULE = \
 			  dev/svr/gamesvrd	\
 
 TEST_MODULE = \
+			  dev/lsf_test/basic		\
 			  dev/lsf_test/algorithm	\
 			  dev/lsf_test/asio			\
 			  dev/lsf_test/container	\
@@ -48,6 +49,7 @@ clean :
 ############################################################
 test : 				\
 	test_compile 	\
+	test_basic 		\
 	test_asio 		\
 	test_container 	\
 	test_encrypt 	\
@@ -63,16 +65,17 @@ test_compile:
 		make -C $$dir; \
 	done
 
+test_basic :
+	@./test/bin/test_scope_exit
+	@./test/bin/test_type_cast
+	@./test/bin/test_any
+	@./test/bin/test_variant
+
 test_asio :
 	@./test/bin/test_net
 	@./test/bin/test_tcp
 	@./test/bin/test_udp
 	@./test/bin/test_asio
-
-test_meta :
-	@./test/bin/test_macro
-	@./test/bin/test_type_list
-	@./test/bin/test_type_traits
 
 test_container :
 	@./test/bin/test_array
@@ -99,7 +102,6 @@ test_util :
 	@./test/bin/test_system
 	@./test/bin/test_backtrace
 	@./test/bin/test_string_ext
-	@./test/bin/test_type_cast
 
 .PHONY : all clean test test_clean check
 

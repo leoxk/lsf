@@ -24,8 +24,8 @@ export RM       	= rm -rf
 export CP       	= cp -rf
 export AR       	= ar rcs
 export LD       	= ld
-export CFLAGS   	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
-export CXXFLAGS 	= -std=c++0x -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
+export CFLAGS   	= -std=c++11 -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
+export CXXFLAGS 	= -std=c++11 -Wall -O0 -g -pipe -fno-strict-aliasing -rdynamic
 
 # define dirs
 DEV_DIR 	 := $(PROJECT_DIR)/dev

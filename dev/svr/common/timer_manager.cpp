@@ -31,7 +31,7 @@ bool TimerManager::Init(uint32_t shm_key, uint32_t max_size) {
     _cur_max_id = 0;
     for (auto const & pair : *this) {
         _cur_max_id = std::max(_cur_max_id, pair.second.timer_id());
-        _heap.push(pair.second.ToPair());
+        _timer_heap.push(pair.second.ToPair());
     }
 
     return true;
@@ -57,7 +57,7 @@ Timer * TimerManager::CreateTimer(uint64_t milli_second, data::ENTimerType timer
     timer.set_timer_milli_seconds(IOService::Instance()->GetClockTimeMilli() + milli_second);
 
     // put into heap
-    _heap.push(timer.ToPair());
+    _timer_heap.push(timer.ToPair());
 
     return &timer;
 }
@@ -75,26 +75,27 @@ Timer * TimerManager::GetTimer(uint32_t timer_id) {
 
 void TimerManager::Tick() {
     // get top until found not expire timer
-    while (!_heap.empty()) {
+    while (!_timer_heap.empty()) {
         // check time
-        pair_type const & pair = _heap.top();
+        pair_type const & pair = _timer_heap.top();
         if (pair.first > IOService::Instance()->GetClockTimeMilli()) break;
 
         // get timer
         Timer * ptimer = GetTimer(pair.second);
         if (ptimer == nullptr) {
             LSF_LOG_FATAL("timer not exist but heap say yes, timer_id=%u", pair.second);
-            _heap.pop();
+            _timer_heap.pop();
             continue;
         }
 
-        // if not delete then trigger TODO
-        if (!ptimer->is_delete()) {
-
+        // if delete just pop
+        if (ptimer->is_delete()) {
+            _timer_heap.pop();
+            continue;
         }
 
         // pop
-        _heap.pop();
+        _timer_heap.pop();
     }
 }
 

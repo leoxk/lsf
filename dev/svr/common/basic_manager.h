@@ -14,7 +14,7 @@
 #include "lsf/util/protobuf_log.hpp"
 #include "lsf/util/serialize.hpp"
 #include "lsf/util/log.hpp"
-#include "lsf/basic/time.hpp"
+#include "lsf/util/time.hpp"
 
 template <typename ElemType>
 class BasicManager : public lsf::basic::NonCopyable {

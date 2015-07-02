@@ -37,7 +37,7 @@ public:
 ////////////////////////////////////////////////////////////
 // ProactorSerivce
 ////////////////////////////////////////////////////////////
-class ProactorSerivce : public basic::NonCopyable, public basic::Error {
+class ProactorSerivce : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
     typedef std::function<void()> tick_func_type;
     typedef std::function<void()> exit_func_type;

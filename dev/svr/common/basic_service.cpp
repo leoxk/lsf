@@ -259,7 +259,7 @@ bool BasicConnectService::OnSocketConnect(lsf::asio::AsyncInfo& info, size_t ind
     }
 
     // if already has a connection, close first
-    if (_conn_scok[index].operator!()) {
+    if (_conn_scok[index]) {
         LSF_LOG_FATAL("connect when there is already a connection, sockaddr=%s",
                 _service_config.connect_address(index).c_str());
         ConnectionClose(_conn_scok[index]);
@@ -274,7 +274,7 @@ bool BasicConnectService::OnConnectionCheck() {
     // travers all connection and check
     for (int i = 0; i < _service_config.connect_address_size(); ++i) {
         // check status
-        if (_conn_scok[i].operator!()) continue;
+        if (_conn_scok[i]) continue;
 
         // create socket
         Socket socket = tcp::Socket::CreateSocket();

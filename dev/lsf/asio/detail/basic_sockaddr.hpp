@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/util/string_ext.hpp"
 #include "lsf/asio/detail/basic_address.hpp"
 
@@ -79,7 +79,7 @@ public:
 
     BasicSockAddr(std::string const &str)
         : BasicSockAddr(address_type(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
-                        util::TypeCast<uint16_t>(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 1))) {}
+                        basic::TypeCast<uint16_t>(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 1))) {}
 
     template <typename OtherProtoType>
     BasicSockAddr(BasicSockAddr<OtherProtoType> const &rhs) {
@@ -96,7 +96,7 @@ public:
     ////////////////////////////////////////////////////////////
     // member funcs
     std::string ToString() const {
-        return GetAddress().ToString() + DEF_DELIMIT + util::TypeCast<std::string>(GetPort());
+        return GetAddress().ToString() + DEF_DELIMIT + basic::TypeCast<std::string>(GetPort());
     }
 
     uint16_t GetPort() const {

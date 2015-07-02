@@ -83,7 +83,7 @@ bool AcceptServerMsgTransferService::HandleRegisterRequest(lsf::asio::Socket soc
 
     // if connection already exist, disconn first
     Socket & map_socket = _sock_map[server_type][server_id];
-    if (socket.operator!()) {
+    if (socket) {
         LSF_LOG_ERR("server register when socket already exist, server_type=%u, server_id=%u",
                 server_type, server_id);
         ConnectionClose(map_socket);
@@ -130,7 +130,7 @@ bool AcceptServerMsgTransferService::HandleMessageTransfer(lsf::asio::Socket soc
     // travers all socket in same type, and send
     if (transfer_type == msg::PROXY_TRANSFER_TYPE_BY_BROADCAST) {
         for (uint32_t i = 0; i < sock_list.size(); ++i) {
-            if (sock_list[i].operator!()) {
+            if (sock_list[i]) {
                 TransferMessageByTypeAndId(server_type, i, message);
             }
         }
@@ -141,7 +141,7 @@ bool AcceptServerMsgTransferService::HandleMessageTransfer(lsf::asio::Socket soc
         uint32_t rand = SingleRandom::Instance()->GetRand(0, sock_list.size() - 1);
         for (uint32_t i = 0; i < sock_list.size(); ++i) {
             uint32_t index = (i + rand) % sock_list.size();
-            if (sock_list[index].operator!()) {
+            if (sock_list[index]) {
                 TransferMessageByTypeAndId(server_type, index, message);
                 break;
             }
@@ -164,7 +164,7 @@ bool AcceptServerMsgTransferService::TransferMessageByTypeAndId(conf::ENServerTy
 
     // check socket
     Socket socket = _sock_map[server_type][server_id];
-    if (!socket.operator!()) {
+    if (!socket) {
         LSF_LOG_ERR("transfer server msg when not registered, server_type=%u, server_id=%u", server_type, server_id);
         return false;
     }

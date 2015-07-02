@@ -43,7 +43,7 @@ public:
 ////////////////////////////////////////////////////////////
 // Completion Queue
 ////////////////////////////////////////////////////////////
-class CompletionQueue : public basic::NonCopyable, public basic::Error {
+class CompletionQueue : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
     typedef std::map<int, CompletionFunc> func_map_type;
 

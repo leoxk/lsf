@@ -14,7 +14,7 @@
 namespace lsf {
 namespace util {
 
-class Random : public basic::Error {
+class Random : public lsf::basic::Error {
 public:
     static const size_t MAX_RANDOM_COUNT = 10000;
 
@@ -66,11 +66,11 @@ private:
 
 ////////////////////////////////////////////////////////////
 // Singleton Random
-class SingleRandom : public Random, public basic::Singleton<Random> {
+class SingleRandom : public Random, public lsf::basic::Singleton<Random> {
 public:
-    static uint32_t GetRand(uint32_t end) { return basic::Singleton<Random>::Reference().GetRand(end); }
+    static uint32_t GetRand(uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(end); }
 
-    static uint32_t GetRand(uint32_t start, uint32_t end) { return basic::Singleton<Random>::Reference().GetRand(start, end); }
+    static uint32_t GetRand(uint32_t start, uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(start, end); }
 };
 
 }  // end of namespace util

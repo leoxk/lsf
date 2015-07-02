@@ -12,7 +12,7 @@
 #include <sstream>
 #include <cstring>
 #include "lsf/basic/macro.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/util/string_ext.hpp"
@@ -22,7 +22,7 @@ namespace util {
 
 ////////////////////////////////////////////////////////////
 // Config
-class Config : public basic::Error {
+class Config : public lsf::basic::Error {
 public:
     typedef std::map<std::string, std::string> map_type;
     typedef std::map<std::string, map_type> store_type;
@@ -69,7 +69,7 @@ public:
 
     template <typename OutType>
     OutType Get(std::string const& module, std::string const& key) {
-        return util::TypeCast<OutType>(Get(module, key));
+        return basic::TypeCast<OutType>(Get(module, key));
     }
 
     template <typename OutType>
@@ -151,7 +151,7 @@ inline std::istream& operator>>(std::istream& is, Config& cf) {
 
 ////////////////////////////////////////////////////////////
 // Singleton Config, provide macros for convient access
-class SingleConfig : public Config, public basic::Singleton<SingleConfig> {};
+class SingleConfig : public Config, public lsf::basic::Singleton<SingleConfig> {};
 
 }  // end of namespace util
 }  // end of namespace lsf

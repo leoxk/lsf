@@ -16,7 +16,7 @@
 namespace lsf {
 namespace util {
 
-class FileLock : public basic::Error {
+class FileLock : public lsf::basic::Error {
 public:
     ~FileLock() { UnLock(); }
 

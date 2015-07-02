@@ -7,6 +7,7 @@
 #include "svr/common/session_manager.h"
 #include "svr/common/common_header.h"
 
+using namespace lsf::basic;
 using namespace lsf::util;
 using namespace lsf::asio;
 

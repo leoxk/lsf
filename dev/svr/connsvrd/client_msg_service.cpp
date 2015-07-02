@@ -58,7 +58,7 @@ bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
 
     // get socket from head
     Socket socket = { response.tcp_head().index() };
-    if (socket.operator!()) {
+    if (socket) {
         LSF_LOG_ERR("socket get from tcp head err, fd=%u", socket.GetSockFd());
         return true;
     }

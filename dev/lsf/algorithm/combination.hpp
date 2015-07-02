@@ -10,20 +10,21 @@
 #include <vector>
 #include <algorithm>
 #include "lsf/basic/macro.hpp"
+#include "lsf/basic/scope_exit.hpp"
 
 namespace lsf {
 namespace algorithm {
 
 namespace detail {
 
-bool next_combination(int8_t* vec, size_t count) {
+bool next_combination(std::vector<int8_t> & vec, size_t count) {
     for (size_t i = 0; i < count - 1; ++i) {
         if (vec[i] == 1 && vec[i + 1] == 0) {
             // swap
             std::swap(vec[i], vec[i + 1]);
 
             // move all 1 to the left
-            std::sort(vec, vec + i, std::greater<int>());
+            std::sort(vec.begin(), vec.begin() + i, std::greater<int8_t>());
 
             return true;
         }
@@ -42,9 +43,11 @@ bool for_combination(IterType begin, IterType end, size_t cmb_count, FuncType fu
     // check input
     if (count < cmb_count) return false;
 
-    // init 01 array
-    int8_t* vec = new int8_t[count]{};
-    std::fill_n(vec, cmb_count, 1);
+    // alloc and init array
+    std::vector<int8_t> vec;
+    vec.reserve(count);
+    vec.insert(vec.end(), cmb_count, 1);
+    vec.insert(vec.end(), count - cmb_count, 0);
 
     // traverse all combination
     do {
@@ -61,8 +64,6 @@ bool for_combination(IterType begin, IterType end, size_t cmb_count, FuncType fu
         func(combination);
     } while (detail::next_combination(vec, count));
 
-    // free memory
-    delete[] vec;
     return true;
 }
 

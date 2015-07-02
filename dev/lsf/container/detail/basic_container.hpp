@@ -25,7 +25,7 @@ class EmptyIterator {};
 ////////////////////////////////////////////////////////////
 template <typename ElemType, typename SizeType, typename StoreType, typename StateType,
           typename IteratorType = EmptyIterator>
-class BasicContainer : public basic::Error, public basic::NonCopyable {
+class BasicContainer : public lsf::basic::Error, public lsf::basic::NonCopyable {
 public:
     typedef ElemType value_type;
     typedef SizeType size_type;

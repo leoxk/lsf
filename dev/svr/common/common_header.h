@@ -13,7 +13,7 @@
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/macro.hpp"
 #include "lsf/basic/error.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/util/string_ext.hpp"
 #include "lsf/util/system.hpp"
 #include "lsf/util/log.hpp"

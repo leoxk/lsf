@@ -21,7 +21,7 @@ namespace detail {
 // BasicListenSocket
 ////////////////////////////////////////////////////////////
 template <typename ProtoType = DummyProtoType>
-class BasicListenSocket : public basic::Error {
+class BasicListenSocket : public lsf::basic::Error {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
@@ -125,7 +125,7 @@ public:
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
-    bool operator!() const { return _sockfd >= 0; }
+    explicit operator bool() const { return _sockfd >= 0; }
 
 private:
     int _sockfd = -1;

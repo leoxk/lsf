@@ -17,7 +17,7 @@ namespace container {
 ////////////////////////////////////////////////////////////
 // List
 ////////////////////////////////////////////////////////////
-template <typename ElemType = basic::EmptyType, typename StoreType = SharedMem, typename SizeType = size_t>
+template <typename ElemType = lsf::basic::EmptyType, typename StoreType = SharedMem, typename SizeType = size_t>
 class List : public detail::BasicContainer<ElemType, SizeType, StoreType, detail::ListState<ElemType, SizeType>,
                                            detail::ListIterator<ElemType, SizeType>> {
 public:

@@ -10,7 +10,7 @@
 #include "google/protobuf/stubs/common.h"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/singleton.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 namespace lsf {
 namespace util {
@@ -21,13 +21,13 @@ static void ProtoBufLogHandler(google::protobuf::LogLevel level, char const* fil
 }  // end of namespace detail
 
 // ProtobufLog
-class ProtobufLog : public basic::Singleton<ProtobufLog>, public basic::Error {
+class ProtobufLog : public lsf::basic::Singleton<ProtobufLog>, public lsf::basic::Error {
 public:
     void Init() { google::protobuf::SetLogHandler(detail::ProtoBufLogHandler); }
 
     void LogHandle(google::protobuf::LogLevel level, char const* filename, int line, std::string const& message) {
-        ErrString() = "[[" + lsf::util::TypeCast<std::string>(level) + "|" + filename + ":" +
-                      lsf::util::TypeCast<std::string>(line) + "|" + message + "]]";
+        ErrString() = "[[" + lsf::basic::TypeCast<std::string>(level) + "|" + filename + ":" +
+                      lsf::basic::TypeCast<std::string>(line) + "|" + message + "]]";
     }
 };
 

@@ -23,14 +23,12 @@ namespace util {
 ////////////////////////////////////////////////////////////
 // BasicLogDriver
 ////////////////////////////////////////////////////////////
-class BasicLogDriver : public basic::Error {
+class BasicLogDriver : public lsf::basic::Error {
 public:
     virtual ~BasicLogDriver() {}
 
     virtual size_t Write(char const* str, size_t len) = 0;
-
     virtual void Flush() = 0;
-
     virtual bool IsReady() const = 0;
 };
 
@@ -252,26 +250,26 @@ private:
 
 ////////////////////////////////////////////////////////////
 // Singleton Log, provide macros for convient access
-class SingleLog : public Log, public basic::Singleton<SingleLog> {};
+class SingleLog : public Log, public lsf::basic::Singleton<SingleLog> {};
 
 #define LSF_LOG_INFO(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_INFO, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_INFO, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_DEBUG(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_WARN(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_WARN, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_WARN, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_ERR(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_ERR, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_ERR, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_FATAL(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 }  // end of namespace util

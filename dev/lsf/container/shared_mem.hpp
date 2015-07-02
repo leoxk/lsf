@@ -15,7 +15,7 @@
 namespace lsf {
 namespace container {
 
-class SharedMem : public basic::Error {
+class SharedMem : public lsf::basic::Error {
 public:
     ////////////////////////////////////////////////////////////
     // static funcs, for manipulation

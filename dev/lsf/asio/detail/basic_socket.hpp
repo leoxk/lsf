@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include "lsf/basic/error.hpp"
 #include "lsf/asio/detail/basic_sockaddr.hpp"
-#include "lsf/basic/time.hpp"
+#include "lsf/util/time.hpp"
 
 namespace lsf {
 namespace asio {
@@ -29,7 +29,7 @@ class BasicListenSocket;
 // BasicSocket
 ////////////////////////////////////////////////////////////
 template <typename ProtoType = DummyProtoType>
-class BasicSocket : public basic::Error {
+class BasicSocket : public lsf::basic::Error {
 public:
     typedef BasicSockAddr<ProtoType> sockaddr_type;
     typedef ProtoType proto_type;
@@ -282,7 +282,7 @@ public:
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
-    bool operator!() const { return _sockfd >= 0; }
+    explicit operator bool() const { return _sockfd >= 0; }
 
     template <typename OtherProtoType>
     bool operator==(BasicSocket<OtherProtoType> const &rhs) const {

@@ -16,7 +16,7 @@
 namespace lsf {
 namespace util {
 
-class Backtrace : public basic::Singleton<Backtrace> {
+class Backtrace : public lsf::basic::Singleton<Backtrace> {
 public:
     const static int MAX_STACK_SIZE = 20;
 
