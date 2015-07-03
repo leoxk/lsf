@@ -19,10 +19,10 @@
 template <typename ElemType>
 class BasicManager : public lsf::basic::NonCopyable {
 public:
-    typedef typename ElemType::key_type key_type;
-    typedef ElemType value_type;
-    typedef std::map<key_type,value_type> map_type;
-    typedef typename map_type::iterator iterator;
+    using key_type = typename ElemType::key_type;
+    using value_type = ElemType;
+    using map_type = std::map<key_type,value_type>;
+    using iterator = typename map_type::iterator;
     constexpr static const float DEF_LOAD_FACTOR = 0.9;
 
 public:

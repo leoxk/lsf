@@ -24,8 +24,8 @@ namespace util {
 // Config
 class Config : public lsf::basic::Error {
 public:
-    typedef std::map<std::string, std::string> map_type;
-    typedef std::map<std::string, map_type> store_type;
+    using map_type = std::map<std::string, std::string>;
+    using store_type = std::map<std::string, map_type>;
 
     constexpr static const char * DEF_DELIMIT = " \t=";
     constexpr static const char * DEF_COMMENT = "#";

@@ -39,10 +39,9 @@ private:
 constexpr Protocol V4 = Protocol::V4();
 constexpr Protocol V6 = Protocol::V6();
 
-// typedef
-typedef detail::BasicSockAddr<Protocol> SockAddr;
-typedef detail::BasicSocket<Protocol> Socket;
-typedef detail::BasicListenSocket<Protocol> ListenSocket;
+using SockAddr = detail::BasicSockAddr<Protocol>;
+using Socket = detail::BasicSocket<Protocol>;
+using ListenSocket = detail::BasicListenSocket<Protocol>;
 
 }  // end of namespace tcp
 }  // end of namespace asio

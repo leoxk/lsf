@@ -12,8 +12,8 @@
 // Session
 class Session : public data::Session {
 public:
-    typedef data::Session base_type;
-    typedef decltype(base_type().session_id()) key_type;
+    using base_type = data::Session;
+    using key_type = decltype(base_type().session_id());
 
 public:
     bool Serialize(void *buf, size_t buflen, size_t &uselen);
@@ -27,7 +27,7 @@ public:
 // SessionManager
 class SessionManager : public BasicManager<Session>, public lsf::basic::Singleton<SessionManager> {
 public:
-    typedef BasicManager<Session> base_type;
+    using base_type = BasicManager<Session>;
     static const size_t MAX_SESSION_ID = 0xffffff;
     static const size_t DEF_SESSION_LEAK_TIME = 30*1000; // milli time
 

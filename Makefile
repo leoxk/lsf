@@ -68,8 +68,8 @@ test_compile:
 test_basic :
 	@./test/bin/test_scope_exit
 	@./test/bin/test_type_cast
+	@./test/bin/test_type_traits
 	@./test/bin/test_any
-	@./test/bin/test_variant
 
 test_asio :
 	@./test/bin/test_net

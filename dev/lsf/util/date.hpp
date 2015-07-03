@@ -17,7 +17,7 @@ namespace util {
 
 class Date : public lsf::basic::Error {
 public:
-    typedef tm date_type;
+    using date_type = tm;
 
     const static time_t SECONDS_PER_DAY = 3600 * 24;
     const static time_t SECONDS_PER_MONTH = 30 * SECONDS_PER_DAY;

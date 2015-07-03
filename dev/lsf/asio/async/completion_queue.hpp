@@ -31,7 +31,7 @@ public:
     static const int ACTION_WRITE = 5;
     static const int ACTION_TIMER = 6;
 
-    typedef std::function<bool(AsyncInfo &)> func_type;
+    using func_type = std::function<bool(AsyncInfo &)>;
 
 public:
     int action = 0;
@@ -45,7 +45,7 @@ public:
 ////////////////////////////////////////////////////////////
 class CompletionQueue : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
-    typedef std::map<int, CompletionFunc> func_map_type;
+    using func_map_type = std::map<int, CompletionFunc>;
 
     const static size_t DEL_QUEUE_SIZE = 65536;
 

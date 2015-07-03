@@ -22,12 +22,12 @@ template <typename ElemType, typename StoreType = SharedMem, typename SizeType =
 class Array : public detail::BasicContainer<ElemType, SizeType, StoreType, detail::StaticArrayState<ElemType, SizeType>,
                                             detail::StaticArrayIterator<ElemType, SizeType>> {
 public:
-    typedef detail::BasicContainer<ElemType, SizeType, StoreType, detail::StaticArrayState<ElemType, SizeType>,
-                                   detail::StaticArrayIterator<ElemType, SizeType>> base_type;
-    typedef typename base_type::value_type value_type;
-    typedef typename base_type::size_type size_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::reverse_iterator reverse_iterator;
+    using base_type = detail::BasicContainer<ElemType, SizeType, StoreType, detail::StaticArrayState<ElemType, SizeType>,
+                                   detail::StaticArrayIterator<ElemType, SizeType>>;
+    using value_type = typename base_type::value_type;
+    using size_type = typename base_type::size_type;
+    using iterator = typename base_type::iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
 
 public:
     // access func

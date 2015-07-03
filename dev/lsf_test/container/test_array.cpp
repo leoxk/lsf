@@ -42,7 +42,7 @@ LSF_TEST_CASE(test_common) {
 }
 
 LSF_TEST_CASE(test_iterator) {
-    typedef Array<TestNode, SharedMem> array_type;
+    using array_type = Array<TestNode, SharedMem>;
     array_type array;
 
     if (SharedMem::IsShmExist(SHM_KEY)) LSF_ASSERT(SharedMem::Delete(SHM_KEY));

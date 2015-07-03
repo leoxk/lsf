@@ -27,10 +27,10 @@ class BasicSockAddr;
 
 class BasicAddress {
 public:
-    typedef union {
+    using addr_type = union {
         in_addr v4;
         in6_addr v6;
-    } addr_type;
+    };
 
     template <typename ProtoType>
     friend class BasicSockAddr;

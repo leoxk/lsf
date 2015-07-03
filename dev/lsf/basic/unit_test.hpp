@@ -105,9 +105,9 @@ protected:
 // UnitTest
 class UnitTest : public lsf::basic::Singleton<UnitTest> {
 public:
-    typedef std::vector<std::unique_ptr<TestCase>> container_type;
-    typedef container_type::const_iterator const_iterator;
-    typedef container_type::iterator iterator;
+    using container_type = std::vector<std::unique_ptr<TestCase>>;
+    using const_iterator = container_type::const_iterator;
+    using iterator = container_type::iterator;
 
 public:
     TestCase* RegisterCase(TestCase* ptr_test_case) {

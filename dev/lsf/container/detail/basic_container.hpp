@@ -27,11 +27,11 @@ template <typename ElemType, typename SizeType, typename StoreType, typename Sta
           typename IteratorType = EmptyIterator>
 class BasicContainer : public lsf::basic::Error, public lsf::basic::NonCopyable {
 public:
-    typedef ElemType value_type;
-    typedef SizeType size_type;
-    typedef IteratorType iterator;
-    typedef StateType state_type;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
+    using value_type = ElemType;
+    using size_type = SizeType;
+    using iterator = IteratorType;
+    using state_type = StateType;
+    using reverse_iterator = std::reverse_iterator<iterator>;
 
 public:
     // bind and recover storage

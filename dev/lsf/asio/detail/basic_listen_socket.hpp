@@ -25,9 +25,9 @@ class BasicListenSocket : public lsf::basic::Error {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
-    typedef BasicSocket<ProtoType> socket_type;
-    typedef BasicSockAddr<ProtoType> sockaddr_type;
-    typedef ProtoType proto_type;
+    using socket_type = BasicSocket<ProtoType>;
+    using sockaddr_type = BasicSockAddr<ProtoType>;
+    using proto_type = ProtoType;
 
     template <typename OtherProtoType>
     friend class BasicListenSocket;

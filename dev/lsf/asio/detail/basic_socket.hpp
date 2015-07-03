@@ -31,8 +31,8 @@ class BasicListenSocket;
 template <typename ProtoType = DummyProtoType>
 class BasicSocket : public lsf::basic::Error {
 public:
-    typedef BasicSockAddr<ProtoType> sockaddr_type;
-    typedef ProtoType proto_type;
+    using sockaddr_type = BasicSockAddr<ProtoType>;
+    using proto_type = ProtoType;
 
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
     static const size_t DEF_TIMEOUT = 1000;

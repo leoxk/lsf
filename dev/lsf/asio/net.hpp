@@ -18,10 +18,10 @@ namespace asio {
 using async::AsyncInfo;
 using async::ProactorSerivce;
 
-typedef detail::BasicAddress Address;
-typedef detail::BasicSockAddr<> SockAddr;
-typedef detail::BasicSocket<> Socket;
-typedef detail::BasicListenSocket<> ListenSocket;
+using Address = detail::BasicAddress;
+using SockAddr = detail::BasicSockAddr<>;
+using Socket = detail::BasicSocket<>;
+using ListenSocket = detail::BasicListenSocket<>;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////

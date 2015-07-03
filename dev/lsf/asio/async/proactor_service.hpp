@@ -39,8 +39,8 @@ public:
 ////////////////////////////////////////////////////////////
 class ProactorSerivce : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
-    typedef std::function<void()> tick_func_type;
-    typedef std::function<void()> exit_func_type;
+    using tick_func_type = std::function<void()>;
+    using exit_func_type = std::function<void()>;
 
     static const size_t MAX_WAIT_MILLI_SECONDS = 10;
     static const size_t MAX_BUFFER_LEN = 128 * 1024;

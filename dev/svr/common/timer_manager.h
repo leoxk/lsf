@@ -19,10 +19,10 @@
 class Timer : public data::Timer
 {
 public:
-    typedef data::Timer base_type;
-    typedef decltype(base_type().timer_id()) key_type;
-    typedef decltype(base_type().timer_milli_seconds()) time_type;
-    typedef std::pair<time_type,key_type> pair_type;
+    using base_type = data::Timer;
+    using key_type = decltype(base_type().timer_id());
+    using time_type = decltype(base_type().timer_milli_seconds());
+    using pair_type = std::pair<time_type,key_type>;
 
 public:
     bool Serialize(void * buf, size_t buflen, size_t & uselen);
@@ -37,12 +37,12 @@ public:
 class TimerManager : public BasicManager<Timer>, public lsf::basic::Singleton<TimerManager>
 {
 public:
-    typedef BasicManager<Timer> base_type;
-    typedef Timer::pair_type pair_type;
-    typedef std::priority_queue<pair_type,std::vector<pair_type>,std::greater<pair_type>> heap_type;
+    using base_type = BasicManager<Timer>;
+    using pair_type = Timer::pair_type;
+    using heap_type = std::priority_queue<pair_type,std::vector<pair_type>,std::greater<pair_type>>;
 
-    typedef std::function<void(Timer const &)> func_type;
-    typedef std::map<data::ENTimerType,func_type> func_map_type;
+    using func_type = std::function<void(Timer const &)>;
+    using func_map_type = std::map<data::ENTimerType,func_type>;
     static const size_t MAX_TIMER_ID = 0xffffff;
 
 public:

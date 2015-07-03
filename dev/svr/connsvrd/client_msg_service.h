@@ -13,7 +13,7 @@
 // AcceptClientMsgService
 class AcceptClientMsgService : public BasicAcceptService, public lsf::basic::Singleton<AcceptClientMsgService> {
 public:
-    typedef std::unordered_map<lsf::asio::Socket, msg::TcpHead> sock_map_type;
+    using sock_map_type = std::unordered_map<lsf::asio::Socket, msg::TcpHead>;
 
 public:
     AcceptClientMsgService() : BasicAcceptService(conf::SERVICE_TYPE_CLIENT_MSG) {}

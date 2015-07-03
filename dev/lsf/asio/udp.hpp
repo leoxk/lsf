@@ -38,9 +38,8 @@ private:
 constexpr Protocol V4(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 constexpr Protocol V6(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
-// typedef
-typedef detail::BasicSockAddr<Protocol> SockAddr;
-typedef detail::BasicSocket<Protocol> Socket;
+using SockAddr = detail::BasicSockAddr<Protocol>;
+using Socket = detail::BasicSocket<Protocol>;
 
 }  // end of namespace udp
 }  // end of namespace asio

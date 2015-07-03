@@ -33,10 +33,10 @@ struct RBTreeNode {
 template <typename ElemType, typename SizeType>
 class RBTreeState {
 public:
-    typedef ElemType value_type;
-    typedef SizeType size_type;
-    typedef RBTreeNode<ElemType, SizeType> node_type;
-    typedef RBTreeState<ElemType, SizeType> this_type;
+    using value_type = ElemType;
+    using size_type = SizeType;
+    using node_type = RBTreeNode<ElemType, SizeType>;
+    using this_type = RBTreeState<ElemType, SizeType>;
 
     static const size_type NPOS = 0;
 
@@ -723,14 +723,13 @@ private:
 template <typename ElemType, typename SizeType>
 class RBTreeIterator : public std::iterator<std::bidirectional_iterator_tag, ElemType> {
 public:
-    // typedef
-    typedef std::iterator<std::bidirectional_iterator_tag, ElemType> base_type;
-    typedef typename base_type::value_type value_type;
-    typedef typename base_type::pointer pointer;
-    typedef typename base_type::reference reference;
-    typedef typename base_type::difference_type  difference_type;
-    typedef RBTreeState<ElemType, SizeType> state_type;
-    typedef SizeType size_type;
+    using base_type = std::iterator<std::bidirectional_iterator_tag, ElemType>;
+    using value_type = typename base_type::value_type;
+    using pointer = typename base_type::pointer;
+    using reference = typename base_type::reference;
+    using difference_type = typename base_type::difference_type;
+    using state_type = RBTreeState<ElemType, SizeType>;
+    using size_type = SizeType;
 
 public:
     // constructor

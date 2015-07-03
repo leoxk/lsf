@@ -75,7 +75,7 @@ protected:
 // BasicService
 class BasicConnectService : public BasicService {
 public:
-    typedef std::vector<lsf::asio::Socket> conn_scok_type;
+    using conn_scok_type = std::vector<lsf::asio::Socket>;
     friend class lsf::asio::ProactorSerivce;
 
     static const size_t DEF_CONN_CHECK_INTERVAL = 10*1000; // milli seconds

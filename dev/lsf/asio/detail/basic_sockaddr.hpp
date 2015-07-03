@@ -36,14 +36,14 @@ public:
 template <typename ProtoType = DummyProtoType>
 class BasicSockAddr {
 public:
-    typedef union {
+    using sockaddr_type = union {
         sockaddr base;
         sockaddr_in v4;
         sockaddr_in6 v6;
-    } sockaddr_type;
+    };
 
-    typedef ProtoType proto_type;
-    typedef BasicAddress address_type;
+    using proto_type = ProtoType;
+    using address_type = BasicAddress;
 
     constexpr static const char * DEF_DELIMIT = "|";
 

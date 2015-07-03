@@ -41,18 +41,18 @@ class Map : public detail::BasicContainer<MapData<KeyType, MapType>, SizeType, S
                                           detail::RBTreeState<MapData<KeyType, MapType>, SizeType>,
                                           detail::RBTreeIterator<MapData<KeyType, MapType>, SizeType>> {
 public:
-    typedef detail::BasicContainer<MapData<KeyType, MapType>, SizeType, StoreType,
+    using base_type = detail::BasicContainer<MapData<KeyType, MapType>, SizeType, StoreType,
                                    detail::RBTreeState<MapData<KeyType, MapType>, SizeType>,
-                                   detail::RBTreeIterator<MapData<KeyType, MapType>, SizeType>> base_type;
-    typedef KeyType key_type;
-    typedef MapType map_type;
-    typedef typename base_type::value_type value_type;
-    typedef typename base_type::size_type size_type;
-    typedef typename base_type::state_type state_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::reverse_iterator reverse_iterator;
-    typedef iterator const const_iterator;
-    typedef reverse_iterator const const_reverse_iterator;
+                                   detail::RBTreeIterator<MapData<KeyType, MapType>, SizeType>>;
+    using key_type = KeyType;
+    using map_type = MapType;
+    using value_type = typename base_type::value_type;
+    using size_type = typename base_type::size_type;
+    using state_type = typename base_type::state_type;
+    using iterator = typename base_type::iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
+    using const_iterator = iterator const;
+    using const_reverse_iterator = reverse_iterator const;
 
 public:
     bool Insert(key_type const& key, map_type const& val) {

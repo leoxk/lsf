@@ -13,8 +13,8 @@
 
 class AcceptServerMsgTransferService : public BasicAcceptService, public lsf::basic::Singleton<AcceptServerMsgTransferService> {
 public:
-    typedef std::vector<lsf::asio::Socket>  sock_list_type;
-    typedef std::vector<sock_list_type>     sock_map_type;
+    using sock_list_type = std::vector<lsf::asio::Socket>;
+    using sock_map_type = std::vector<sock_list_type>;
 
 public:
     AcceptServerMsgTransferService() : BasicAcceptService(conf::SERVICE_TYPE_SERVER_MSG_TRANSFER) { }
