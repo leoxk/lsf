@@ -6,6 +6,7 @@
 
 #include "svr/common/session_manager.h"
 #include "svr/common/common_header.h"
+#include "svr/common/timer_manager.h"
 
 using namespace lsf::basic;
 using namespace lsf::util;
@@ -13,7 +14,7 @@ using namespace lsf::asio;
 
 ////////////////////////////////////////////////////////////
 // Session
-bool Session::Serialize(void *buf, size_t buflen, size_t &uselen) {
+bool Session::Serialize(void *buf, size_t buflen, size_t &uselen) const {
     if (!lsf::util::SerializeProtobuf(buf, buflen, uselen, *this)) return false;
     return true;
 }
@@ -77,8 +78,8 @@ void SessionManager::ReleaseSession(uint32_t session_id) {
     // get session
     Session & session = base_type::operator[](session_id);
 
-    // release timer TODO
-    // PokerMsgBasic::ClearSessionTimer(psession);
+    // release timer
+    if (session.has_timer_id()) TimerManager::Instance()->ReleaseTimer(session.timer_id());
 
     // free object
     base_type::erase(session_id);
@@ -91,6 +92,10 @@ Session * SessionManager::GetSession(uint32_t session_id) {
 
 void SessionManager::CheckLeak() {
 #ifdef _DEBUG
+    static uint64_t last_check_leak_time = 0;
+    if (last_check_leak_time + DEF_CHECK_SESSION_LEAK_TIME > IOService::Instance()->GetClockTimeMilli()) return;
+    last_check_leak_time = IOService::Instance()->GetClockTimeMilli();
+
     // find leak session
     std::vector<uint32_t> del_vec;
 

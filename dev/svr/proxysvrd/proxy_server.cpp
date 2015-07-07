@@ -12,6 +12,7 @@ using namespace google::protobuf;
 using namespace lsf::util;
 
 bool ProxyServer::OnRun() {
+    // init service
     if (!AcceptServerMsgTransferService::Instance()->Run(this)) return false;
     if (!AcceptServerMsgTransferService::Instance()->InitSocketMapFromServerConfig()) return false;
     return true;

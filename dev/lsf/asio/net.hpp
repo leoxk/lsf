@@ -15,7 +15,6 @@
 namespace lsf {
 namespace asio {
 
-using async::AsyncInfo;
 using async::ProactorSerivce;
 
 using Address = detail::BasicAddress;

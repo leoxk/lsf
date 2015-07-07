@@ -5,8 +5,6 @@
 // Revision:    2015-06-17 by leoxiang
 
 #pragma once
-
-#include "svr/proto/msg_base.pb.h"
 #include "svr/proto/msg_cs.pb.h"
 #include "svr/proto/msg_ss.pb.h"
 

@@ -87,8 +87,8 @@ public:
     }
 
     template <typename OtherProtoType>
-    BasicSockAddr<ProtoType> &operator=(BasicSockAddr<OtherProtoType> const &rhs) {
-        if (this == &rhs) return *this;
+    BasicSockAddr<ProtoType>& operator=(BasicSockAddr<OtherProtoType> const& rhs) {
+        if (this == (decltype(this))&rhs) return *this;
         ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
         return *this;
     }

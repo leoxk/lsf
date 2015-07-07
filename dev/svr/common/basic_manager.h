@@ -5,7 +5,6 @@
 // Revision:    2015-06-15 by leoxiang
 
 #pragma once
-
 #include <map>
 #include "lsf/container/pool.hpp"
 #include "lsf/container/heap_mem.hpp"
@@ -82,7 +81,7 @@ public:
 
         // count need byte size
         size_t byte_size = 0;
-        for (auto const & elem : _map) byte_size += elem.GetSize();
+        for (auto const & elem : _map) byte_size += elem.second.GetSize();
 
         // create shm mem
         if (!lsf::container::SharedMem::Create(_shm_key, byte_size)) {
@@ -104,7 +103,7 @@ public:
 
         // serialize every elem
         for (auto const & elem : _map) {
-            if (!elem.Serialize(pbase, total, off)) {
+            if (!elem.second.Serialize(pbase, total, off)) {
                 LSF_LOG_ERR("serialize failed, total=%u, off=%u, %s", total, off,
                             lsf::util::ProtobufLog::Instance()->ErrCharStr());
                 return false;

@@ -19,7 +19,7 @@ uint32_t listen_port = SingleRandom::Instance()->GetRand(15000, 16000);
 string content = "this is async message";
 
 ////////////////////////////////////////////////////////////
-bool OnTimerFunc(AsyncInfo &info) {
+bool OnTimerFunc(int timer_fd) {
     static int counter = 0;
     counter++;
 
@@ -30,79 +30,90 @@ bool OnTimerFunc(AsyncInfo &info) {
 }
 
 ////////////////////////////////////////////////////////////
-bool OnPeerCloseFunc(AsyncInfo &info, tcp::Socket client_socket) {
+void OnPeerCloseFunc(Socket socket, Socket client_socket) {
     // test timer
     LSF_ASSERT(IOService::Instance()->AsyncAddTimerSingle(1, OnTimerFunc));
     LSF_ASSERT(IOService::Instance()->AsyncAddTimerMulti(1, 98, OnTimerFunc));
     LSF_ASSERT(IOService::Instance()->AsyncAddTimerSingle(500, OnTimerFunc));
-
-    return true;
 }
 
 ////////////////////////////////////////////////////////////
-bool OnRecvFunc(AsyncInfo &info, tcp::Socket client_socket) {
+bool OnRecvFunc(Socket socket, std::string const& buffer, Socket client_socket) {
     // test msg
-    LSF_ASSERT(info.buffer == content);
+    LSF_ASSERT(buffer == content);
 
     // client close conn
-    client_socket.CloseAsync(*IOService::Instance());
-    client_socket.Close();
+    IOService::Instance()->AsyncClose(client_socket);
 
     return true;
 }
 
 ////////////////////////////////////////////////////////////
-bool OnSendFunc(AsyncInfo &info, tcp::Socket server_socket) {
+bool OnSendFunc(Socket socket, std::string const& buffer, Socket server_socket) {
     // test address
-    LSF_ASSERT(server_socket.RemoteSockAddr() == info.socket.LocalSockAddr());
-    LSF_ASSERT(server_socket.LocalSockAddr() == info.socket.RemoteSockAddr());
+    LSF_ASSERT(server_socket.RemoteSockAddr() == socket.LocalSockAddr());
+    LSF_ASSERT(server_socket.LocalSockAddr() == socket.RemoteSockAddr());
 
     // read data
-    LSF_ASSERT(server_socket.AsyncRead(*IOService::Instance(),
-                                       std::bind(OnRecvFunc, std::placeholders::_1, info.socket),
-                                       std::bind(OnPeerCloseFunc, std::placeholders::_1, info.socket)));
+    LSF_ASSERT(IOService::Instance()->AsyncRead(server_socket,
+                                       std::bind(OnRecvFunc, std::placeholders::_1, std::placeholders::_2, socket),
+                                       std::bind(OnPeerCloseFunc, std::placeholders::_1, socket)));
 
     return true;
 }
 
 ////////////////////////////////////////////////////////////
-bool OnAcceptFunc(AsyncInfo &info, tcp::Socket client_socket) {
-    // test listen address
-    LSF_ASSERT(info.listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
-
-    // test address
-    LSF_ASSERT(info.socket.RemoteSockAddr() == client_socket.LocalSockAddr());
-    LSF_ASSERT(info.socket.LocalSockAddr() == client_socket.RemoteSockAddr());
-
-    // send msg
-    LSF_ASSERT(client_socket.AsyncWrite(*IOService::Instance(), content.c_str(), content.size(),
-                                        std::bind(OnSendFunc, std::placeholders::_1, info.socket)));
-
-    return true;
-}
-
-////////////////////////////////////////////////////////////
-bool OnConnectFunc(AsyncInfo &info, tcp::ListenSocket listen_socket) {
+bool OnAcceptFunc(Socket socket, ListenSocket listen_socket, Socket client_socket) {
     // test listen address
     LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
 
-    // async accept
-    LSF_ASSERT(
-        listen_socket.AsyncAccept(*IOService::Instance(), std::bind(OnAcceptFunc, std::placeholders::_1, info.socket)));
+    // test address
+    LSF_ASSERT(socket.RemoteSockAddr() == client_socket.LocalSockAddr());
+    LSF_ASSERT(socket.LocalSockAddr() == client_socket.RemoteSockAddr());
+
+    // send msg
+    LSF_ASSERT(IOService::Instance()->AsyncWrite(client_socket, content,
+                std::bind(OnSendFunc, std::placeholders::_1, std::placeholders::_2, socket)));
 
     return true;
+}
+
+////////////////////////////////////////////////////////////
+bool OnConnectFunc(Socket socket, SockAddr const& sockaddr, ListenSocket listen_socket) {
+    // test listen address
+    LSF_ASSERT(socket.GetSockError() == 0);
+    LSF_ASSERT(listen_socket.LocalSockAddr() == tcp::SockAddr(Address::Any(), listen_port));
+
+    // async accept
+    LSF_ASSERT(IOService::Instance()->AsyncAccept(listen_socket, std::bind(OnAcceptFunc, std::placeholders::_1, std::placeholders::_2, socket)));
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////
+void OnConnectFailFunc(Socket socket, SockAddr const& sockaddr, ListenSocket listen_socket) {
+    // test error
+    LSF_ASSERT(IOService::Instance()->ErrString() == "Connection refused");
+    // std::cout << IOService::Instance()->ErrString() << std::endl;
+
+    // async connect again
+    Socket new_socket = tcp::Socket::CreateSocket();
+    LSF_ASSERT(IOService::Instance()->AsyncConnect(new_socket, tcp::SockAddr(Address::Any(), listen_port),
+                                   std::bind(OnConnectFunc, std::placeholders::_1, std::placeholders::_2, listen_socket),
+                                   std::bind(OnConnectFailFunc, std::placeholders::_1, std::placeholders::_2, listen_socket)));
 }
 
 LSF_TEST_CASE(test_asio) {
     // listen
-    tcp::ListenSocket listen_socket = tcp::ListenSocket::CreateListenSocket();
+    ListenSocket listen_socket = tcp::ListenSocket::CreateListenSocket();
     LSF_ASSERT(listen_socket.Bind(tcp::SockAddr(Address::Any(), listen_port)));
     LSF_ASSERT(listen_socket.Listen());
 
     // async connect
-    tcp::Socket socket = tcp::Socket::CreateSocket();
-    LSF_ASSERT(socket.AsyncConnect(*IOService::Instance(), tcp::SockAddr(Address::Any(), listen_port),
-                                   std::bind(OnConnectFunc, std::placeholders::_1, listen_socket)));
+    Socket socket = tcp::Socket::CreateSocket();
+    LSF_ASSERT(IOService::Instance()->AsyncConnect(socket, tcp::SockAddr(Address::Any(), 65535),
+                                   std::bind(OnConnectFunc, std::placeholders::_1, std::placeholders::_2, listen_socket),
+                                   std::bind(OnConnectFailFunc, std::placeholders::_1, std::placeholders::_2, listen_socket)));
 
     IOService::Instance()->Run();
 }

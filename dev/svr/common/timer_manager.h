@@ -5,7 +5,6 @@
 // Revision:    2015-06-29 by leoxiang
 
 #pragma once
-
 #include <queue>
 #include <vector>
 #include <map>
@@ -25,7 +24,7 @@ public:
     using pair_type = std::pair<time_type,key_type>;
 
 public:
-    bool Serialize(void * buf, size_t buflen, size_t & uselen);
+    bool Serialize(void * buf, size_t buflen, size_t & uselen) const;
     bool UnSerialize(void * buf, size_t buflen, size_t &uselen);
     size_t GetSize() const { return base_type::ByteSize(); }
     size_t GetKey() const { return base_type::timer_id(); }
@@ -54,7 +53,9 @@ public:
 
 public:
     template<typename HandlerType>
-    void AddTimerHandle(data::ENTimerType timer_type, HandlerType handler) { _func_map[timer_type] = func_type(handler); }
+    void AddTimerHandle(data::ENTimerType timer_type, HandlerType&& handler) {
+        _func_map[timer_type] = std::forward<HandlerType>(handler);
+    }
 
 private:
 	heap_type _timer_heap;

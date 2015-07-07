@@ -59,17 +59,11 @@ public:
 
 } // end namespace detail
 
-////////////////////////////////////////////////////////////
-// Factory Creator
-template<typename FuncType>
-inline detail::ScopeExit<typename std::decay<FuncType>::type> MakeScopeExit(FuncType&& func) {
-    return detail::ScopeExit<typename std::decay<FuncType>::type>(std::forward<FuncType>(func));
-}
-
 } // end namespace basic
 } // end namespace lsf
 
 #define LSF_SCOPE_EXIT() auto LSF_TOKEN_CAT(scope_exit_, __LINE__) = lsf::basic::detail::ScopeExitCreator() << [&]
-#define LSF_SCOPE_EXIT_ARGS(args...) auto LSF_TOKEN_CAT(scope_exit_, __LINE__) = lsf::basic::ScopeExitCreator() << [##args]
+#define LSF_SCOPE_EXIT_ARGS(args...) auto LSF_TOKEN_CAT(scope_exit_, __LINE__) = lsf::basic::detail::ScopeExitCreator() << [##args]
+#define LSF_SCOPE_EXIT_NAME(vname) auto vname = lsf::basic::detail::ScopeExitCreator() << [&]
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -22,7 +22,7 @@ bool AcceptClientMsgTransferService::OnConnectionCreate(lsf::asio::Socket socket
 }
 
 void AcceptClientMsgTransferService::OnConnectionClose(lsf::asio::Socket socket) {
-    if (_socket == socket) _socket.SetSockFd(-1);
+    if (_socket == socket) _socket.Clear();
 }
 
 bool AcceptClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {

@@ -34,7 +34,7 @@ message Session {
     optional ENSessionState     session_state     = 3;
     optional uint64             create_time       = 4;
     optional uint64             player_uid        = 5;
-    optional int32              timer_id          = 6 [default = -1];
+    optional uint32             timer_id          = 6;
     repeated uint64             db_uids           = 7;
     repeated bool               db_uid_flags      = 8;
     optional ENSessionDBState   db_state          = 9;

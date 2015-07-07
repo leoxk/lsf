@@ -5,7 +5,6 @@
 // Revision:    2015-06-08 by leoxiang
 
 #pragma once
-
 #include "lsf/asio/tcp.hpp"
 #include "lsf/asio/net.hpp"
 #include "lsf/basic/noncopyable.hpp"

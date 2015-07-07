@@ -22,6 +22,7 @@ SVR_MODULE = \
 			  dev/svr/proxysvrd	\
 			  dev/svr/connsvrd	\
 			  dev/svr/gamesvrd	\
+			  dev/svr/roomsvrd	\
 
 TEST_MODULE = \
 			  dev/lsf_test/basic		\

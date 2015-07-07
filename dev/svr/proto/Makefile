@@ -8,7 +8,7 @@
 #                Makefile.rule  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude Makefile.rule after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2015-05-28 by leoxiang
 #===============================================================================#
 
@@ -20,21 +20,20 @@ LIB = $(LIB_DIR)/libproto.a
 OBJ = \
 		 $(DEP_DIR)/conf_deploy.o	\
 		 $(DEP_DIR)/conf_game.o		\
-		 $(DEP_DIR)/msg_base.o		\
 		 $(DEP_DIR)/msg_cs.o		\
 		 $(DEP_DIR)/msg_ss.o		\
 		 $(DEP_DIR)/data_player.o	\
 		 $(DEP_DIR)/data_mem.o		\
 
-$(LIB) :  $(OBJ) 
+$(LIB) :  $(OBJ)
 	$(AR) $@ $^
-	
+
 $(OBJ) :$(DEP_DIR)/%.o : %.proto
 	protoc $< --cpp_out=./
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -o $@ $(patsubst %.proto, %.pb.cc, $<)
 
 clean:
-	$(RM) $(LIB) $(DEP_DIR) 
+	$(RM) $(LIB) $(DEP_DIR)
 	$(RM) $(patsubst $(DEP_DIR)/%.o, %.pb.cc, $(OBJ))
 	$(RM) $(patsubst $(DEP_DIR)/%.o, %.pb.h,  $(OBJ))
 

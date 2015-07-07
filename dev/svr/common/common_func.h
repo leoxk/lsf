@@ -5,7 +5,6 @@
 // Revision:    2015-06-08 by leoxiang
 
 #pragma once
-
 #include <string>
 #include "lsf/util/protobuf_log.hpp"
 #include "lsf/util/backtrace.hpp"

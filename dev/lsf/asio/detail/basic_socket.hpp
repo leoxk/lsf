@@ -59,7 +59,7 @@ public:
 
     template <typename OtherProtoType>
     BasicSocket<ProtoType> &operator=(BasicSocket<OtherProtoType> const &rhs) {
-        if (this == &rhs) return *this;
+        if (this == (decltype(this))&rhs) return *this;
         _sockfd = rhs._sockfd;
         return *this;
     }
@@ -173,33 +173,6 @@ public:
         return total == len;
     }
 
-    ////////////////////////////////////////////////////////////
-    // async funcs
-    template <typename ServiceType, typename SockAddrType, typename HandlerType>
-    bool AsyncConnect(ServiceType &io_service, SockAddrType const &sockaddr, HandlerType const &handler) {
-        return io_service.AsyncConnect(*this, sockaddr, handler);
-    }
-
-    template <typename ServiceType, typename HandlerType>
-    bool AsyncWrite(ServiceType &io_service, void const *buffer, size_t buflen, HandlerType const &handler) {
-        return io_service.AsyncWrite(*this, buffer, buflen, handler);
-    }
-
-    template <typename ServiceType, typename HandlerType1, typename HandlerType2>
-    bool AsyncRead(ServiceType &io_service, HandlerType1 const &read_handler, HandlerType2 const &rdhup_handler) {
-        return io_service.AsyncRead(*this, read_handler, rdhup_handler);
-    }
-
-    template <typename ServiceType, typename HandlerType>
-    bool AsyncRead(ServiceType &io_service, HandlerType const &handler) {
-        return io_service.AsyncRead(*this, handler);
-    }
-
-    template <typename ServiceType>
-    void CloseAsync(ServiceType &io_service) {
-        io_service.CloseAsync(_sockfd);
-    }
-
     sockaddr_type LocalSockAddr() {
         sockaddr addr;
         socklen_t addrlen = sizeof(addr);
@@ -278,6 +251,8 @@ public:
 
     void SetSockFd(int sockfd) { _sockfd = sockfd; }
     int GetSockFd() const { return _sockfd; }
+
+    void Clear() { _sockfd = -1; }
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }

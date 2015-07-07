@@ -26,14 +26,22 @@ export var_max_try=30
 declare -a var_index=("conf"
                       "proxy0"
                       "proxy1"
-                      "conn"
-                      "game"
+                      "conn0"
+                      "conn1"
+                      "conn2"
+                      "game0"
+                      "game1"
+                      "room0"
                       )
 declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
                     ["proxy0"]="./bin/proxysvrd 127.0.0.1 60000 0"
                     ["proxy1"]="./bin/proxysvrd 127.0.0.1 60000 1"
-                    ["conn"]="./bin/connsvrd 127.0.0.1 60000"
-                    ["game"]="./bin/gamesvrd 127.0.0.1 60000"
+                    ["conn0"]="./bin/connsvrd 127.0.0.1 60000 0"
+                    ["conn1"]="./bin/connsvrd 127.0.0.1 60000 1"
+                    ["conn2"]="./bin/connsvrd 127.0.0.1 60000 2"
+                    ["game0"]="./bin/gamesvrd 127.0.0.1 60000 0"
+                    ["game1"]="./bin/gamesvrd 127.0.0.1 60000 1"
+                    ["room0"]="./bin/roomsvrd 127.0.0.1 60000 0"
                     )
 
 ############################################################

@@ -48,7 +48,7 @@ public:
 
     template <typename OtherProtoType>
     BasicListenSocket<ProtoType>& operator=(BasicListenSocket<OtherProtoType> const& rhs) {
-        if (this == &rhs) return *this;
+        if (this == (decltype(this))&rhs) return *this;
         _sockfd = rhs._sockfd;
         return *this;
     }
@@ -86,18 +86,6 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
-    // async funcs
-    template <typename ServiceType, typename HandlerType>
-    bool AsyncAccept(ServiceType& io_service, HandlerType const& handler) {
-        return io_service.AsyncAccept(*this, handler);
-    }
-
-    template <typename ServiceType>
-    void CloseAsync(ServiceType& io_service) {
-        io_service.CloseAsync(_sockfd);
-    }
-
-    ////////////////////////////////////////////////////////////
     // SetSockOpt funcs
     bool SetNonBlock() { return ErrWrap(::fcntl(_sockfd, F_SETFL, ::fcntl(_sockfd, F_GETFL) | O_NONBLOCK)) == 0; }
 
@@ -124,6 +112,8 @@ public:
 
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
+
+    void Clear() { _sockfd = -1; }
 
     explicit operator bool() const { return _sockfd >= 0; }
 

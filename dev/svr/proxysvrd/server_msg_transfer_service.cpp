@@ -59,7 +59,7 @@ void AcceptServerMsgTransferService::OnConnectionClose(lsf::asio::Socket socket)
     for (auto & sock_list : _sock_map) {
         for (auto & sock : sock_list) {
             if (sock == socket) {
-                sock.SetSockFd(-1);
+                sock.Clear();
                 return;
             }
         }
@@ -84,7 +84,7 @@ bool AcceptServerMsgTransferService::HandleRegisterRequest(lsf::asio::Socket soc
     // if connection already exist, disconn first
     Socket & map_socket = _sock_map[server_type][server_id];
     if (socket) {
-        LSF_LOG_ERR("server register when socket already exist, server_type=%u, server_id=%u",
+        LSF_LOG_FATAL("server register when socket already exist, server_type=%u, server_id=%u",
                 server_type, server_id);
         ConnectionClose(map_socket);
     }

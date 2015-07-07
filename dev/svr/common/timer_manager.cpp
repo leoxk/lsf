@@ -11,7 +11,7 @@ using namespace lsf::asio;
 
 ////////////////////////////////////////////////////////////
 // Timer
-bool Timer::Serialize(void * buf, size_t buflen, size_t & uselen) {
+bool Timer::Serialize(void * buf, size_t buflen, size_t & uselen) const {
     if (!lsf::util::SerializeProtobuf(buf, buflen, uselen, *this)) return false;
     return true;
 }
@@ -80,22 +80,28 @@ void TimerManager::Tick() {
         pair_type const & pair = _timer_heap.top();
         if (pair.first > IOService::Instance()->GetClockTimeMilli()) break;
 
+        // scope exit logic
+        LSF_SCOPE_EXIT() { _timer_heap.pop(); };
+
         // get timer
         Timer * ptimer = GetTimer(pair.second);
         if (ptimer == nullptr) {
             LSF_LOG_FATAL("timer not exist but heap say yes, timer_id=%u", pair.second);
-            _timer_heap.pop();
             continue;
         }
 
         // if delete just pop
-        if (ptimer->is_delete()) {
-            _timer_heap.pop();
+        if (ptimer->is_delete()) continue;
+
+        // find handler
+        auto iter = _func_map.find(ptimer->timer_type());
+        if (iter == _func_map.end()) {
+            LSF_LOG_ERR("unknown timer type, %u", ptimer->timer_type());
             continue;
         }
 
-        // pop
-        _timer_heap.pop();
+        // call timer handle
+        if (iter->second) iter->second(*ptimer);
     }
 }
 

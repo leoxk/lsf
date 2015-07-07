@@ -4,6 +4,7 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-17 by leoxiang
 
+#pragma once
 #include "lsf/basic/singleton.hpp"
 #include "svr/common/basic_service.h"
 #include "svr/common/common_header.h"

@@ -19,7 +19,7 @@ void ConnectConfigService::SetServiceConfig(std::string const& address) {
 bool ConnectConfigService::GetServerConfig(conf::Server & config) {
     // construct message
     msg::SS message;
-    message.set_msg_id(msg::SS::kGetDeployConfigReqFieldNumber);
+    message. set_msg_id(msg::SS::kGetDeployConfigReqFieldNumber);
     message.mutable_get_deploy_config_req()->set_server_type(_pserver->GetServerType());
     message.mutable_get_deploy_config_req()->set_server_id(_pserver->GetServerId());
 

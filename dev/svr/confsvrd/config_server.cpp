@@ -55,9 +55,8 @@ bool ConfigServer::OnInitDeployConfig() {
 }
 
 bool ConfigServer::OnRun() {
-    // start config service
+    // init service
     if (!AcceptConfigService::Instance()->Run(this)) return false;
-
     return true;
 }
 

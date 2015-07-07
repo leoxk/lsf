@@ -5,14 +5,12 @@
 // Revision:    2015-06-17 by leoxiang
 
 #pragma once
-
 #include <vector>
 #include "lsf/asio/tcp.hpp"
 #include "lsf/asio/net.hpp"
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "svr/proto/conf_deploy.pb.h"
-#include "svr/proto/msg_base.pb.h"
 #include "svr/common/basic_server.h"
 
 ////////////////////////////////////////////////////////////
@@ -27,8 +25,8 @@ public:
     virtual ~BasicService() { }
     bool Run(BasicServer* pserver);
     // most of time you should not mess with these callbacks
-    virtual bool OnSocketRead(lsf::asio::AsyncInfo& info);
-    virtual bool OnSocketPeerClose(lsf::asio::AsyncInfo& info);
+    virtual bool OnSocketRead(lsf::asio::Socket socket, std::string const& buffer);
+    virtual void OnSocketPeerClose(lsf::asio::Socket socket);
     virtual void OnSocketClose(lsf::asio::Socket socket);
     virtual bool OnGetSingleMessageFromStream(std::string const& buffer, size_t& pos, std::string& message);
     virtual bool OnPutSingleMessageIntoStream(std::string & buffer, std::string const& message);
@@ -61,7 +59,7 @@ public:
 public:
     BasicAcceptService(conf::ENServiceType service_type) : BasicService(service_type) {}
     virtual ~BasicAcceptService() {}
-    virtual bool OnSocketAccept(lsf::asio::AsyncInfo& info);
+    virtual bool OnSocketAccept(lsf::asio::Socket socket, lsf::asio::ListenSocket listen_socket);
 
 protected:
     virtual bool OnInitConfig();
@@ -84,7 +82,8 @@ public:
 public:
     BasicConnectService(conf::ENServiceType service_type) : BasicService(service_type) {}
     virtual ~BasicConnectService() {}
-    virtual bool OnSocketConnect(lsf::asio::AsyncInfo& info, size_t index);
+    virtual bool OnSocketConnect(lsf::asio::Socket socket, lsf::asio::SockAddr const& sockaddr, size_t index);
+    virtual void OnSocketConnectFail(lsf::asio::Socket socket, lsf::asio::SockAddr const& sockaddr);
     virtual void OnSocketClose(lsf::asio::Socket socket);
 
 protected:

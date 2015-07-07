@@ -5,43 +5,60 @@
 // Revision:    2015-06-09 by leoxiang
 
 import "conf_deploy.proto";
-import "msg_base.proto";
 package msg;
 
 ////////////////////////////////////////////////////////////
+// proxy head
+enum ENProxyTransferType {
+    PROXY_TRANSFER_TYPE_BY_ID = 1;
+    PROXY_TRANSFER_TYPE_BY_HASH = 2;
+    PROXY_TRANSFER_TYPE_BY_BROADCAST = 3;
+    PROXY_TRANSFER_TYPE_BY_RANDOM = 4;
+}
+
+message ProxyHead {
+    optional ENProxyTransferType transfer_type   = 1;
+    optional conf.ENServerType   src_server_type = 2;
+    optional conf.ENServerType   dst_server_type = 3;
+    optional uint32              src_server_id   = 4;
+    optional uint32              dst_server_id   = 5;
+    optional uint64              dst_hash_id     = 6;
+}
+
+////////////////////////////////////////////////////////////
 // server to server messages
-message GetDeployConfigReq {
+message SSGetDeployConfigReq {
     optional conf.ENServerType  server_type = 1;
     optional uint32             server_id = 2;
 }
 
-message GetDeployConfigRsp {
+message SSGetDeployConfigRsp {
     optional bool result = 1;
     optional conf.Server config = 2;
 }
 
-message GetGameConfigReq {
+message SSGetGameConfigReq {
     optional conf.ENServerType  server_type = 1;
 }
 
-message GetGameConfigRsp {
+message SSGetGameConfigRsp {
     optional bool result = 1;
 }
 
-message ReisterToProxyReq {
+message SSReisterToProxyReq {
     optional conf.ENServerType  server_type = 1;
-    optional uint32             server_id = 2;
+    optional uint32              server_id = 2;
 }
 
-message ReisterToProxyRsp {
+message SSReisterToProxyRsp {
     optional bool result = 1;
 }
 
-message GetAllDeployConfigReq {
+message SSGetAllDeployConfigReq {
 
 }
 
-message GetAllDeployConfigRsp {
+message SSGetAllDeployConfigRsp {
     repeated conf.Server all_config = 1;
 }
 
@@ -49,16 +66,21 @@ message GetAllDeployConfigRsp {
 // server to server message
 message SS
 {
-    optional uint32                 msg_id = 1;
-    optional ProxyHead              proxy_head = 2;
-    optional GetDeployConfigReq     get_deploy_config_req = 10;
-    optional GetDeployConfigRsp     get_deploy_config_rsp = 11;
-    optional GetGameConfigReq       get_game_config_req = 12;
-    optional GetGameConfigRsp       get_game_config_rsp = 13;
-    optional ReisterToProxyReq      register_to_proxy_req = 14;
-    optional ReisterToProxyRsp      register_to_proxy_rsp = 15;
-    optional GetAllDeployConfigReq  get_all_deploy_config_req = 16;
-    optional GetAllDeployConfigRsp  get_all_deploy_config_rsp = 17;
+    // header
+    optional uint32    msg_id     = 1;
+    optional ProxyHead proxy_head = 2;
+
+    // confsvr message
+    optional SSGetDeployConfigReq    get_deploy_config_req     = 10;
+    optional SSGetDeployConfigRsp    get_deploy_config_rsp     = 11;
+    optional SSGetGameConfigReq      get_game_config_req       = 12;
+    optional SSGetGameConfigRsp      get_game_config_rsp       = 13;
+    optional SSGetAllDeployConfigReq get_all_deploy_config_req = 16;
+    optional SSGetAllDeployConfigRsp get_all_deploy_config_rsp = 17;
+
+    // proxysvr message
+    optional SSReisterToProxyReq register_to_proxy_req = 14;
+    optional SSReisterToProxyRsp register_to_proxy_rsp = 15;
 }
 
 
