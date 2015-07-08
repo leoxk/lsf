@@ -16,6 +16,7 @@
 class BasicServer : public lsf::basic::NonCopyable {
 public:
     BasicServer(conf::ENServerType server_type) : _server_type(server_type) {}
+    virtual ~BasicServer() {}
     void Run(int argc, char** argv);
 
     // signal handle

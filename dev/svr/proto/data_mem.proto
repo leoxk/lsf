@@ -11,16 +11,22 @@ package data;
 ////////////////////////////////////////////////////////////
 // Session
 enum ENSessionState {
-    SESSION_STATE_ON_CLIENT_MSG         = 1;   // get client message
-    SESSION_STATE_ON_ROOMSVR_MSG        = 2;   // get roomsvrd message
-    SESSION_STATE_ON_DBSVR_QUERY_MSG    = 3;   // get db query message
-    SESSION_STATE_ON_DBSVR_UPDATE_MSG   = 4;   // get db update message
-    SESSION_STATE_ON_DBSVR_DELETE_MSG   = 5;   // get db delete message
-    SESSION_STATE_WAIT_ROOMSVR_MSG      = 101; // wait roomsvr timeout
-    SESSION_STATE_WAIT_DBSVR_QUERY_MSG  = 102; // wait dbsvr query timeout
-    SESSION_STATE_WAIT_DBSVR_UPDATE_MSG = 103; // wait dbsvr update timeout
-    SESSION_STATE_WAIT_DBSVR_DELETE_MSG = 104; // wait dbsvr delete timeout
-    SESSION_STATE_FINISH                = 1000; // session end
+    SESSION_STATE_NONE                    = 0;    // none state
+    SESSION_STATE_ON_CLIENT_REQ           = 1;    // get client request
+    SESSION_STATE_ON_SERVER_REQ           = 2;    // get server request
+    SESSION_STATE_ON_ROOMSVR_WAIT         = 3;    // wait roomsvr timeout
+    SESSION_STATE_ON_ROOMSVR_RSP          = 4;    // get roomsvrd message
+    SESSION_STATE_ON_ROOMSVR_TIMEOUT      = 5;    // get roomsvrd message
+    SESSION_STATE_ON_DBSVR_QUERY_WAIT     = 6;    // wait dbsvr query timeout
+    SESSION_STATE_ON_DBSVR_QUERY_RSP      = 7;    // get db query message
+    SESSION_STATE_ON_DBSVR_QUERY_TIMEOUT  = 8;    // get db query message
+    SESSION_STATE_ON_DBSVR_UPDATE_WAIT    = 9;    // wait dbsvr update timeout
+    SESSION_STATE_ON_DBSVR_UPDATE_RSP     = 10;   // get db update message
+    SESSION_STATE_ON_DBSVR_UPDATE_TIMEOUT = 11;   // get db update message
+    SESSION_STATE_ON_DBSVR_DELETE_WAIT    = 12;   // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_RSP     = 13;   // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_TIMEOUT = 14;   // get db delete message
+    SESSION_STATE_FINISH                  = 1000; // session end
 }
 
 enum ENSessionDBState {
@@ -33,19 +39,20 @@ message Session {
     optional uint32             session_type      = 2;
     optional ENSessionState     session_state     = 3;
     optional uint64             create_time       = 4;
-    optional uint64             player_uid        = 5;
-    optional uint32             timer_id          = 6;
-    repeated uint64             db_uids           = 7;
-    repeated bool               db_uid_flags      = 8;
-    optional ENSessionDBState   db_state          = 9;
-    optional uint32             db_cur_index      = 10;
-    optional uint32             db_process_index  = 11;
-    optional uint32             redo_count        = 19;
-    optional msg.CS				cs_msg            = 51;
-    optional msg.CS				cs_response       = 52;
-    optional msg.SS				ss_msg            = 53;
-    optional msg.SS             ss_response       = 54;
-    optional msg.SS             ss_inter_response = 55;
+    // optional uint64             player_uid        = 5;
+    // optional uint32             connection_id     = 6;
+    optional uint32             timer_id          = 7;
+    repeated uint64             db_uids           = 8;
+    repeated bool               db_uid_flags      = 9;
+    optional ENSessionDBState   db_state          = 10;
+    optional uint32             db_cur_index      = 11;
+    optional uint32             db_process_index  = 12;
+    optional uint32             redo_count        = 13;
+    optional msg.CS				cs_request        = 14;
+    optional msg.CS				cs_response       = 15;
+    optional msg.SS				ss_request        = 16;
+    optional msg.SS             ss_response       = 17;
+    optional msg.SS             ss_inter_response = 18;
     /*repeated KVDBMsg 	        multi_db_msg = 56;*/
 }
 

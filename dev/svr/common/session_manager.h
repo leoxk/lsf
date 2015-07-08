@@ -35,8 +35,8 @@ public:
 
 public:
     bool Init(key_t shm_key, uint32_t max_size);
-    Session *CreateSession(uint32_t session_type);
-    Session *GetSession(uint32_t session_id);
+    Session* CreateSession();
+    Session* GetSession(uint32_t session_id);
     void ReleaseSession(uint32_t session_id);
     void CheckLeak();
 

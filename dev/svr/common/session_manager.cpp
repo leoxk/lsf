@@ -7,6 +7,7 @@
 #include "svr/common/session_manager.h"
 #include "svr/common/common_header.h"
 #include "svr/common/timer_manager.h"
+#include "svr/common/basic_handler.h"
 
 using namespace lsf::basic;
 using namespace lsf::util;
@@ -26,10 +27,11 @@ bool Session::UnSerialize(void *buf, size_t buflen, size_t &uselen) {
 
 std::string Session::ToString() const {
     static std::string tmp;
-    tmp = "sess_id=" + TypeCast<std::string>(base_type::session_id()) + ", sess_type=" +
-          TypeCast<std::string>(base_type::session_type()) + ", sess_state=" +
-          TypeCast<std::string>(base_type::session_state()) + ", player_uid=" +
-          TypeCast<std::string>(base_type::player_uid());
+    tmp = "sess_id=" + TypeCast<std::string>(base_type::session_id()) +
+          ", sess_type=" + TypeCast<std::string>(base_type::session_type()) +
+          ", sess_state=" + TypeCast<std::string>(base_type::session_state());
+    if (base_type::has_cs_request())
+        tmp += ", player_uid=" + TypeCast<std::string>(base_type::cs_request().cs_head().uid());
     return tmp.c_str();
 }
 
@@ -43,10 +45,26 @@ bool SessionManager::Init(key_t shm_key, uint32_t max_size) {
     _cur_max_id = 0;
     for (auto const & pair : *this) { _cur_max_id = std::max(_cur_max_id, pair.second.session_id()); }
 
+    // register session timeout
+    TimerManager::Instance()->AddTimerHandle(data::TIMER_TYPE_SESSION_TIMEOUT, [](Timer const& timer) {
+        if (!timer.has_session_id()) {
+            LSF_LOG_FATAL("session timeout when no session_id, %s", timer.ToCharStr());
+            return;
+        }
+
+        Session* psession = SessionManager::Instance()->GetSession(timer.session_id());
+        if (!psession) {
+            LSF_LOG_FATAL("get session failed, session_id=%u", timer.session_id());
+            return;
+        }
+
+        // psession
+        HandlerManager::Instance()->ProcessSessionTimeout(*psession);
+    });
     return true;
 }
 
-Session * SessionManager::CreateSession(uint32_t session_type) {
+Session* SessionManager::CreateSession() {
     // check full
     if (base_type::full()) {
         LSF_LOG_ERR("session is full, size=%u, max_size=%u", base_type::size(), base_type::max_size());
@@ -62,7 +80,6 @@ Session * SessionManager::CreateSession(uint32_t session_type) {
 
     // init
     session.set_session_id(session_id);
-    session.set_session_type(session_type);
     session.set_create_time(IOService::Instance()->GetClockTimeMilli());
 
     return &session;
@@ -85,7 +102,7 @@ void SessionManager::ReleaseSession(uint32_t session_id) {
     base_type::erase(session_id);
 }
 
-Session * SessionManager::GetSession(uint32_t session_id) {
+Session* SessionManager::GetSession(uint32_t session_id) {
     auto iter = base_type::find(session_id);
     return iter == base_type::end() ? nullptr : &iter->second;
 }

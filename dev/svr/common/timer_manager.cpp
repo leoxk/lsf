@@ -8,6 +8,8 @@
 #include "svr/common/common_header.h"
 
 using namespace lsf::asio;
+using namespace lsf::basic;
+using namespace lsf::util;
 
 ////////////////////////////////////////////////////////////
 // Timer
@@ -19,6 +21,13 @@ bool Timer::Serialize(void * buf, size_t buflen, size_t & uselen) const {
 bool Timer::UnSerialize(void * buf, size_t buflen, size_t &uselen) {
     if (!lsf::util::UnSerializeProtobuf(buf, buflen, uselen, *this)) return false;
     return true;
+}
+
+std::string Timer::ToString() const {
+    static std::string tmp;
+    tmp = "timer_id=" + TypeCast<std::string>(base_type::timer_id()) +
+          ", timer_type=" + TypeCast<std::string>(base_type::timer_type());
+    return tmp.c_str();
 }
 
 ////////////////////////////////////////////////////////////

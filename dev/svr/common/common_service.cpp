@@ -8,6 +8,8 @@
 #include "svr/common/common_header.h"
 #include "svr/common/common_func.h"
 #include "svr/common/common_proto.h"
+#include "svr/common/session_manager.h"
+#include "svr/common/basic_handler.h"
 
 ////////////////////////////////////////////////////////////
 // ConnectConfigService
@@ -63,13 +65,75 @@ bool ConnectConfigService::GetAllConfig(google::protobuf::RepeatedPtrField<conf:
 // ConnectClientMsgTransferService
 bool ConnectClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message) {
     // unpack message
-    msg::CS request;
-    if (!common::UnPackProtoMsg(message, request)) return true;
+    msg::CS cs_msg;
+    if (!common::UnPackProtoMsg(message, cs_msg)) return true;
 
-    // create session
-    return true;
-    // TODO
+    // check new connection
+    if (cs_msg.conn_head().is_new_conn()) {
+        if (!OnClientConnectionCreate(cs_msg)) return false;
+    }
+
+    // check close connection
+    if (cs_msg.conn_head().is_close_conn()) {
+        OnClientConnectionPeerClose(cs_msg);
+    }
+
+    // just ignore empty message
+    if (!cs_msg.has_msg_id()) return true;
+
+    // create session and process
+    Session* psession = SessionManager::Instance()->CreateSession();
+    if (psession) {
+        psession->set_session_type(cs_msg.msg_id());
+        psession->set_session_state(data::SESSION_STATE_ON_CLIENT_REQ);
+        psession->mutable_cs_request()->CopyFrom(cs_msg);
+        HandlerManager::Instance()->ProcessSession(*psession);
+    }
+
     return true;
 }
+
+////////////////////////////////////////////////////////////
+// ConnectServerMsgTransferService
+bool ConnectServerMsgTransferService::OnConnectionMessage(lsf::asio::Socket socket, std::string & message) {
+    // unpack message
+    msg::SS ss_msg;
+    if (!common::UnPackProtoMsg(message, ss_msg)) return true;
+
+    // just ignore empty message
+    if (!ss_msg.has_msg_id()) return true;
+
+    // check proxy transfer
+    if (ss_msg.proxy_head().dst_server_type() != _pserver->GetServerType()) {
+        LSF_LOG_FATAL("server type not match, type1=%u, type2=%u",
+                ss_msg.proxy_head().dst_server_type(), _pserver->GetServerType());
+        return true;
+    }
+
+    if (HandlerManager::Instance()->IsRequest(ss_msg.msg_id())) {
+        // create session and process
+        Session* psession = SessionManager::Instance()->CreateSession();
+        if (psession) {
+            psession->set_session_type(ss_msg.msg_id());
+            psession->set_session_state(data::SESSION_STATE_ON_SERVER_REQ);
+            psession->mutable_ss_request()->CopyFrom(ss_msg);
+            HandlerManager::Instance()->ProcessSession(*psession);
+        }
+    }
+    else {
+        // restore session and process
+        Session* psession = SessionManager::Instance()->GetSession(ss_msg.proxy_head().session_id());
+        if (!psession) {
+            LSF_LOG_FATAL("get session failed, session_id=%u", ss_msg.proxy_head().session_id());
+            return true;
+        }
+
+        psession->mutable_ss_response()->CopyFrom(ss_msg);
+        HandlerManager::Instance()->ProcessSessionResponse(*psession);
+    }
+
+    return true;
+}
+
 
 // vim:ts=4:sw=4:et:ft=cpp:

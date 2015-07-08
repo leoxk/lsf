@@ -12,9 +12,9 @@ namespace basic {
 template <typename ObjectType>
 class Singleton {
 public:
-    static ObjectType *Instance() { return &Reference(); }
+    static ObjectType* Instance() { return &Reference(); }
 
-    static ObjectType &Reference() {
+    static ObjectType& Reference() {
         static ObjectType _Instance;
         return _Instance;
     }

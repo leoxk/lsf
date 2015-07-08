@@ -8,13 +8,12 @@ package msg;
 
 ////////////////////////////////////////////////////////////
 // network headers
-message TcpHead {
-    optional int32  index               = 1;
-    optional string client_ip           = 2;
-    optional uint32 client_port         = 3;
-    optional bool   is_new_connection   = 4;
-    optional bool   is_close_connection = 5;
-    optional uint32 connect_time        = 6;
+message ConnHead {
+    optional uint32 conn_id       = 1;
+    optional string conn_ip       = 2;
+    optional uint32 conn_port     = 3;
+    optional bool   is_new_conn   = 4;
+    optional bool   is_close_conn = 5;
 }
 
 enum ENPlatformType {
@@ -97,9 +96,9 @@ message CSSetPlayerStatusRsp {
 // client to server messages
 message CS {
     // headers
-    optional uint32  msg_id   = 1;
-    optional CSHead  cs_head  = 2;
-    optional TcpHead tcp_head = 3;
+    optional uint32   msg_id    = 1;
+    optional CSHead   cs_head   = 2;
+    optional ConnHead conn_head = 3;
 
     // roomsvrd message
     optional CSQuickStartReq quick_start_req = 10;

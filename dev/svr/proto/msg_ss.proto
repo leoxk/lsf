@@ -23,6 +23,7 @@ message ProxyHead {
     optional uint32              src_server_id   = 4;
     optional uint32              dst_server_id   = 5;
     optional uint64              dst_hash_id     = 6;
+    optional uint32              session_id      = 7;
 }
 
 ////////////////////////////////////////////////////////////

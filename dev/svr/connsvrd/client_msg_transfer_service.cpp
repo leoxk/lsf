@@ -31,7 +31,9 @@ bool AcceptClientMsgTransferService::OnConnectionMessage(lsf::asio::Socket socke
     return true;
 }
 
-bool AcceptClientMsgTransferService::TransferMessage(std::string const & message) {
+bool AcceptClientMsgTransferService::TransferMessage(google::protobuf::MessageLite const& proto_msg) {
+    std::string message;
+    if (!common::PackProtoMsg(message, proto_msg)) return false;
     return ConnectionSend(_socket, message);
 }
 

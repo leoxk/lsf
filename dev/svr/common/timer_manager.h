@@ -29,6 +29,7 @@ public:
     size_t GetSize() const { return base_type::ByteSize(); }
     size_t GetKey() const { return base_type::timer_id(); }
     pair_type ToPair() const { return pair_type(base_type::timer_milli_seconds(), base_type::timer_id()); }
+    std::string ToString() const;
 };
 
 ////////////////////////////////////////////////////////////

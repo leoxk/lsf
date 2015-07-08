@@ -13,61 +13,62 @@ using namespace lsf::asio;
 
 bool AcceptClientMsgService::OnConnectionCreate(lsf::asio::Socket socket) {
     // add map entery
-    msg::TcpHead & tcp_head = _sock_map[socket];
-    tcp_head.set_index(socket.GetSockFd());
-    tcp_head.set_client_ip(socket.RemoteSockAddr().GetAddress().ToString());
-    tcp_head.set_client_port(socket.RemoteSockAddr().GetPort());
-    tcp_head.set_is_new_connection(true);
-    tcp_head.set_is_close_connection(false);
-    tcp_head.set_connect_time(IOService::Instance()->GetClockTime());
+    msg::ConnHead & conn_head = _sock_map[socket];
+    conn_head.set_conn_id(socket.GetSockFd());
+    conn_head.set_conn_ip(socket.RemoteSockAddr().GetAddress().ToString());
+    conn_head.set_conn_port(socket.RemoteSockAddr().GetPort());
+
+    // send new connection notify
+    msg::CS message;
+    message.mutable_conn_head()->CopyFrom(conn_head);
+    message.mutable_conn_head()->set_is_new_conn(true);
+    AcceptClientMsgTransferService::Instance()->TransferMessage(message);
 
     return true;
 }
 
 bool AcceptClientMsgService::OnConnectionMessage(lsf::asio::Socket socket, std::string& message) {
     // unpack msg
-    msg::CS request;
-    if (!common::UnPackProtoMsg(message, request)) return true;
+    msg::CS cs_msg;
+    if (!common::UnPackProtoMsg(message, cs_msg)) return true;
 
-    // copy tcp head
-    msg::TcpHead & head = _sock_map[socket];
-    request.mutable_tcp_head()->CopyFrom(head);
-
-    // clear new connection mark
-    if (head.is_new_connection()) head.clear_is_new_connection();
-
-    // pack msg
-    std::string buffer;
-    if (!common::PackProtoMsg(buffer, request)) return true;
+    // copy conn head
+    cs_msg.mutable_conn_head()->CopyFrom(_sock_map[socket]);
 
     // transfer
-    AcceptClientMsgTransferService::Instance()->TransferMessage(buffer);
+    AcceptClientMsgTransferService::Instance()->TransferMessage(cs_msg);
 
     return true;
 }
 
 void AcceptClientMsgService::OnConnectionClose(lsf::asio::Socket socket) {
+    // send close connnection notify
+    msg::CS message;
+    message.mutable_conn_head()->CopyFrom(_sock_map[socket]);
+    message.mutable_conn_head()->set_is_close_conn(true);
+    AcceptClientMsgTransferService::Instance()->TransferMessage(message);
+
     // erase map entry
     _sock_map.erase(socket);
 }
 
 bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
     // unpack
-    msg::CS response;
-    if (!common::UnPackProtoMsg(message, response)) return true;
+    msg::CS cs_msg;
+    if (!common::UnPackProtoMsg(message, cs_msg)) return true;
 
     // get socket from head
-    Socket socket = { response.tcp_head().index() };
+    Socket socket = { (int)cs_msg.conn_head().conn_id() };
     if (socket) {
-        LSF_LOG_ERR("socket get from tcp head err, fd=%u", socket.GetSockFd());
+        LSF_LOG_ERR("socket get from conn head err, fd=%u", socket.GetSockFd());
         return true;
     }
-    bool close_connection = response.tcp_head().is_close_connection();
+    bool close_connection = cs_msg.conn_head().is_close_conn();
 
     // pack new message
     std::string buffer;
-    response.clear_tcp_head();
-    if (!common::PackProtoMsg(buffer, response)) return true;
+    cs_msg.clear_conn_head();
+    if (!common::PackProtoMsg(buffer, cs_msg)) return true;
 
     // send
     ConnectionSend(socket, buffer);

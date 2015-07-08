@@ -30,9 +30,11 @@ public:
 class ConnectClientMsgTransferService : public BasicConnectService, public lsf::basic::Singleton<ConnectClientMsgTransferService> {
 public:
     ConnectClientMsgTransferService() : BasicConnectService(conf::SERVICE_TYPE_CLIENT_MSG_TRANSFER) {}
-
-protected:
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
+
+    virtual bool OnClientConnectionCreate(msg::CS& request) { return true; }
+    virtual void OnClientConnectionPeerClose(msg::CS& request) {}
+    // virtual void OnClientConnectionMessage(msg::CS& request);
 };
 
 ////////////////////////////////////////////////////////////
@@ -40,9 +42,7 @@ protected:
 class ConnectServerMsgTransferService : public BasicConnectService, public lsf::basic::Singleton<ConnectServerMsgTransferService> {
 public:
     ConnectServerMsgTransferService() : BasicConnectService(conf::SERVICE_TYPE_SERVER_MSG_TRANSFER) {}
-
-protected:
-    // virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
+    virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
 
 };
 

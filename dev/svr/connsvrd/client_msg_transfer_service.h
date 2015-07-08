@@ -14,7 +14,7 @@ class AcceptClientMsgTransferService : public BasicAcceptService, public lsf::ba
 public:
     AcceptClientMsgTransferService() : BasicAcceptService(conf::SERVICE_TYPE_CLIENT_MSG_TRANSFER) { }
 
-    bool TransferMessage(std::string const & message);
+    bool TransferMessage(google::protobuf::MessageLite const& proto_msg);
 
 protected:
     virtual bool OnConnectionCreate(lsf::asio::Socket socket);
