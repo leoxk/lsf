@@ -261,7 +261,7 @@ public:
 
                 // error handle
                 if (flag & BasicEventDriver::FLAG_ERR) {
-                    AsyncClose(fd);
+                    OnErrorEvent(fd);
                 }
             }
 
@@ -456,6 +456,22 @@ public:
             return;
         }
         if (expire == 0) AsyncClose(fd);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Error Event
+    void OnErrorEvent(int fd) {
+        // check connect fail action
+        WriteCompletionFunc* pfunc = _queue.GetWriteCompletionFunc(fd);
+        if (pfunc != nullptr && pfunc->action == WriteCompletionFunc::ACTION_CONNECT) {
+            detail::BasicSocket<> socket(fd);
+            int ret = socket.GetSockError();
+            SetErrorNo(ret);
+            if (pfunc->connect_fail_func) pfunc->connect_fail_func(socket, pfunc->sockaddr);
+        }
+
+        // close
+        AsyncClose(fd);
     }
 
     ////////////////////////////////////////////////////////////
