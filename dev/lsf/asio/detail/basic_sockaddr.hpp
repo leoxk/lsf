@@ -23,11 +23,14 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 class DummyProtoType {
 public:
-    static DummyProtoType V4() { return DummyProtoType(); }
-    static DummyProtoType V6() { return DummyProtoType(); }
-    int domain() const { return 0; }
+    DummyProtoType(int domain) : _domain(domain) {}
+    static DummyProtoType V4() { return DummyProtoType(AF_INET); }
+    static DummyProtoType V6() { return DummyProtoType(AF_INET6); }
+    int domain() const { return _domain; }
     int type() const { return 0; }
     int protocol() const { return 0; }
+private:
+    int _domain = AF_INET;
 };
 
 ////////////////////////////////////////////////////////////

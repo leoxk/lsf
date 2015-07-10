@@ -16,7 +16,7 @@ bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::str
     if (!common::UnPackProtoMsg(message, request)) return true;
 
     // choose handler
-    switch (request.msg_id()) {
+    switch (request.msg_type()) {
         case msg::SS::kGetDeployConfigReqFieldNumber:
             HandleGetDeployConfig(socket, request);
             break;
@@ -26,7 +26,7 @@ bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::str
             break;
 
         default:
-            LSF_LOG_ERR("unknow message id, %u", request.msg_id());
+            LSF_LOG_ERR("unknow message id, %u", request.msg_type());
     }
 
     return true;
@@ -35,21 +35,21 @@ bool AcceptConfigService::OnConnectionMessage(lsf::asio::Socket socket, std::str
 
 bool AcceptConfigService::HandleGetDeployConfig(lsf::asio::Socket socket, msg::SS const & request) {
     msg::SS response;
-    response.set_msg_id(msg::SS::kGetDeployConfigRspFieldNumber);
-    response.mutable_get_deploy_config_rsp()->set_result(false);
+    response.set_msg_type(msg::SS_TYPE_GET_DEPLOY_CONFIG_RSP);
 
     // get config
     conf::ENServerType server_type = request.get_deploy_config_req().server_type();
     uint32_t server_id = request.get_deploy_config_req().server_id();
     conf::Server const* pconf = DeployConfigManager::Instance()->GetServerConfig(server_type, server_id);
     if (!pconf) {
+        response.mutable_get_deploy_config_rsp()->set_result(msg::INTERNAL_ERROR_CANT_FIND_CONFIG);
         ConnectionSend(socket, response);
         LSF_LOG_ERR("cant find deploy config, server_type=%u, server_id=%u", server_type, server_id);
         return true;
     }
 
     // send response
-    response.mutable_get_deploy_config_rsp()->set_result(true);
+    response.mutable_get_deploy_config_rsp()->set_result(msg::INTERNAL_ERROR_OK);
     response.mutable_get_deploy_config_rsp()->mutable_config()->CopyFrom(*pconf);
     ConnectionSend(socket, response);
 
@@ -58,7 +58,7 @@ bool AcceptConfigService::HandleGetDeployConfig(lsf::asio::Socket socket, msg::S
 
 bool AcceptConfigService::HandleGetAllDeployConfig(lsf::asio::Socket socket, msg::SS const & request) {
     msg::SS response;
-    response.set_msg_id(msg::SS::kGetAllDeployConfigRspFieldNumber);
+   response.set_msg_type(msg::SS_TYPE_GET_ALL_DEPLOY_CONFIG_RSP);
 
     // get config
     response.mutable_get_all_deploy_config_rsp()->mutable_all_config()->CopyFrom(

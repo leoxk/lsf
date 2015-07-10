@@ -18,7 +18,7 @@ bool GetSingleMessageFromStream(std::string const &buffer, size_t &pos, std::str
     if (pos == buffer.length()) return false;
 
     // clac begin and length
-    char const *begin = buffer.data() + pos;
+    char const* begin = buffer.data() + pos;
     size_t length = buffer.length() - pos;
 
     // check length
@@ -28,7 +28,7 @@ bool GetSingleMessageFromStream(std::string const &buffer, size_t &pos, std::str
     }
 
     // get header
-    msg::Header header = *((msg::Header const *)begin);
+    msg::Header header = *((msg::Header const*)begin);
     header.ntoh();
 
     // check header

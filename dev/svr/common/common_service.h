@@ -9,6 +9,7 @@
 #include "svr/common/basic_service.h"
 #include "svr/common/common_header.h"
 #include "svr/common/common_proto.h"
+#include "svr/common/session_manager.h"
 
 ////////////////////////////////////////////////////////////
 // ConnectConfigService
@@ -32,9 +33,11 @@ public:
     ConnectClientMsgTransferService() : BasicConnectService(conf::SERVICE_TYPE_CLIENT_MSG_TRANSFER) {}
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
 
+    // TODO
     virtual bool OnClientConnectionCreate(msg::CS& request) { return true; }
     virtual void OnClientConnectionPeerClose(msg::CS& request) {}
-    // virtual void OnClientConnectionMessage(msg::CS& request);
+
+    bool SendMessage(Session& session);
 };
 
 ////////////////////////////////////////////////////////////
@@ -44,6 +47,7 @@ public:
     ConnectServerMsgTransferService() : BasicConnectService(conf::SERVICE_TYPE_SERVER_MSG_TRANSFER) {}
     virtual bool OnConnectionMessage(lsf::asio::Socket socket, std::string& message);
 
+    bool SendMessage(Session& session);
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -17,15 +17,19 @@ enum ENSessionState {
     SESSION_STATE_ON_ROOMSVR_WAIT         = 3;    // wait roomsvr timeout
     SESSION_STATE_ON_ROOMSVR_RSP          = 4;    // get roomsvrd message
     SESSION_STATE_ON_ROOMSVR_TIMEOUT      = 5;    // get roomsvrd message
-    SESSION_STATE_ON_DBSVR_QUERY_WAIT     = 6;    // wait dbsvr query timeout
-    SESSION_STATE_ON_DBSVR_QUERY_RSP      = 7;    // get db query message
-    SESSION_STATE_ON_DBSVR_QUERY_TIMEOUT  = 8;    // get db query message
-    SESSION_STATE_ON_DBSVR_UPDATE_WAIT    = 9;    // wait dbsvr update timeout
-    SESSION_STATE_ON_DBSVR_UPDATE_RSP     = 10;   // get db update message
-    SESSION_STATE_ON_DBSVR_UPDATE_TIMEOUT = 11;   // get db update message
-    SESSION_STATE_ON_DBSVR_DELETE_WAIT    = 12;   // wait dbsvr delete timeout
-    SESSION_STATE_ON_DBSVR_DELETE_RSP     = 13;   // wait dbsvr delete timeout
-    SESSION_STATE_ON_DBSVR_DELETE_TIMEOUT = 14;   // get db delete message
+    SESSION_STATE_ON_DBSVR_WAIT           = 6;    // wait dbsvr query timeout
+    SESSION_STATE_ON_DBSVR_RSP            = 7;    // get db query message
+    SESSION_STATE_ON_DBSVR_TIMEOUT        = 8;    // get db query message
+
+    SESSION_STATE_ON_DBSVR_QUERY_WAIT     = 101;  // wait dbsvr query timeout
+    SESSION_STATE_ON_DBSVR_QUERY_RSP      = 102;  // get db query message
+    SESSION_STATE_ON_DBSVR_QUERY_TIMEOUT  = 103;  // get db query message
+    SESSION_STATE_ON_DBSVR_UPDATE_WAIT    = 104;  // wait dbsvr update timeout
+    SESSION_STATE_ON_DBSVR_UPDATE_RSP     = 105;  // get db update message
+    SESSION_STATE_ON_DBSVR_UPDATE_TIMEOUT = 106;  // get db update message
+    SESSION_STATE_ON_DBSVR_DELETE_WAIT    = 107;  // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_RSP     = 108;  // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_TIMEOUT = 109;  // get db delete message
     SESSION_STATE_FINISH                  = 1000; // session end
 }
 
@@ -35,25 +39,27 @@ enum ENSessionDBState {
 }
 
 message Session {
-    optional uint32             session_id        = 1;
-    optional uint32             session_type      = 2;
-    optional ENSessionState     session_state     = 3;
-    optional uint64             create_time       = 4;
-    // optional uint64             player_uid        = 5;
-    // optional uint32             connection_id     = 6;
-    optional uint32             timer_id          = 7;
-    repeated uint64             db_uids           = 8;
-    repeated bool               db_uid_flags      = 9;
-    optional ENSessionDBState   db_state          = 10;
-    optional uint32             db_cur_index      = 11;
-    optional uint32             db_process_index  = 12;
-    optional uint32             redo_count        = 13;
-    optional msg.CS				cs_request        = 14;
-    optional msg.CS				cs_response       = 15;
-    optional msg.SS				ss_request        = 16;
-    optional msg.SS             ss_response       = 17;
-    optional msg.SS             ss_inter_response = 18;
-    /*repeated KVDBMsg 	        multi_db_msg = 56;*/
+    // base
+    optional uint32         session_id    = 1;
+    optional uint32         session_type  = 2;
+    optional ENSessionState session_state = 3;
+    optional uint64         create_time   = 4;
+    optional uint32         timer_id      = 7;
+
+    // db handle
+    optional bool   db_query_finish  = 10;
+    repeated uint64 db_uids          = 8;
+    repeated bool   db_uid_flags     = 9;
+    optional uint32 db_cur_index     = 11;
+    optional uint32 db_process_index = 12;
+    optional uint32 redo_count       = 13;
+
+    // message and data
+    optional msg.CS	cs_request    = 14;
+    optional msg.CS	cs_response   = 15;
+    optional msg.SS	ss_request    = 16;
+    optional msg.SS ss_response   = 17;
+    repeated msg.SS svr_responses = 18;
 }
 
 ////////////////////////////////////////////////////////////

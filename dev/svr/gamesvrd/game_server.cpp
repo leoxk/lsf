@@ -15,10 +15,14 @@ using namespace lsf::util;
 
 bool GameServer::OnRun() {
     // init session manager
-    if (!SessionManager::Instance()->Init(_server_config.session_key(), _server_config.session_size())) return false;
+    if (!SessionManager::Instance()->Init(
+                _server_config.session_key(),
+                _server_config.session_size())) return false;
 
     // init timer manager
-    if (!TimerManager::Instance()->Init(_server_config.timer_key(), _server_config.timer_size())) return false;
+    if (!TimerManager::Instance()->Init(
+                _server_config.timer_key(),
+                _server_config.timer_size())) return false;
 
     // init service
     if (!ConnectClientMsgTransferService::Instance()->Run(this)) return false;

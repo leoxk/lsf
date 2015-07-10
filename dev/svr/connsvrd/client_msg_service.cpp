@@ -34,6 +34,7 @@ bool AcceptClientMsgService::OnConnectionMessage(lsf::asio::Socket socket, std::
 
     // copy conn head
     cs_msg.mutable_conn_head()->CopyFrom(_sock_map[socket]);
+    // TODO if verify sig only used in connsvrd, here should clear it
 
     // transfer
     AcceptClientMsgTransferService::Instance()->TransferMessage(cs_msg);
@@ -59,7 +60,7 @@ bool AcceptClientMsgService::SendResposeToClient(std::string &message) {
 
     // get socket from head
     Socket socket = { (int)cs_msg.conn_head().conn_id() };
-    if (socket) {
+    if (!socket) {
         LSF_LOG_ERR("socket get from conn head err, fd=%u", socket.GetSockFd());
         return true;
     }

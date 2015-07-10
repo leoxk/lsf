@@ -176,19 +176,13 @@ public:
     sockaddr_type LocalSockAddr() {
         sockaddr addr;
         socklen_t addrlen = sizeof(addr);
-        ErrWrap(::getsockname(_sockfd, &addr, &addrlen));
-        return sockaddr_type(&addr);
+        return ErrWrap(::getsockname(_sockfd, &addr, &addrlen)) < 0 ? sockaddr_type() : sockaddr_type(&addr);
     }
 
     sockaddr_type RemoteSockAddr() {
         sockaddr addr;
         socklen_t addrlen = sizeof(addr);
-        if (ErrWrap(::getpeername(_sockfd, &addr, &addrlen)) == 0)
-            return sockaddr_type(&addr);
-        else if (IsV4())
-            return sockaddr_type(proto_type::V4());
-        else
-            return sockaddr_type(proto_type::V6());
+        return ErrWrap(::getpeername(_sockfd, &addr, &addrlen)) < 0 ? sockaddr_type() : sockaddr_type(&addr);
     }
 
     ////////////////////////////////////////////////////////////

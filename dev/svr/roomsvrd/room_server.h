@@ -11,7 +11,7 @@
 // RoomServer
 class RoomServer : public BasicServer, public lsf::basic::Singleton<RoomServer> {
 public:
-    RoomServer() : BasicServer(conf::SERVER_TYPE_GAME_SERVER) {}
+    RoomServer() : BasicServer(conf::SERVER_TYPE_ROOM_SERVER) {}
 
 public:
     virtual bool OnRun();

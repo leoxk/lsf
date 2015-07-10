@@ -8,11 +8,6 @@ package conf;
 
 ////////////////////////////////////////////////////////////
 // Enum define
-// enum EN
-// {
-//     option allow_alias = true;
-// }
-//
 enum ENServerType {
     SERVER_TYPE_CONFIG_CENTER = 1;
     SERVER_TYPE_PROXY_SERVER  = 2;

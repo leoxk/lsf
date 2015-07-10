@@ -41,7 +41,7 @@ bool AcceptServerMsgTransferService::OnConnectionMessage(lsf::asio::Socket socke
     if (!common::UnPackProtoMsg(message, request)) return true;
 
     // choose handler
-    switch (request.msg_id()) {
+    switch (request.msg_type()) {
         case msg::SS::kRegisterToProxyReqFieldNumber:
             HandleRegisterRequest(socket, request);
             break;
@@ -100,7 +100,7 @@ bool AcceptServerMsgTransferService::HandleRegisterRequest(lsf::asio::Socket soc
 bool AcceptServerMsgTransferService::HandleMessageTransfer(lsf::asio::Socket socket, msg::SS const & request, std::string const & message) {
     // check proxy head
     if (!request.has_proxy_head()) {
-        LSF_LOG_ERR("transfer not contain proxy head, msg_id=%u", request.msg_id());
+        LSF_LOG_ERR("transfer not contain proxy head, msg_type=%u", request.msg_type());
         return false;
     }
     conf::ENServerType server_type         = request.proxy_head().dst_server_type();

@@ -8,6 +8,7 @@
 #include "svr/common/common_header.h"
 #include "svr/common/timer_manager.h"
 #include "svr/common/basic_handler.h"
+#include "svr/common/handler_manager.h"
 
 using namespace lsf::basic;
 using namespace lsf::util;
@@ -81,6 +82,7 @@ Session* SessionManager::CreateSession() {
     // init
     session.set_session_id(session_id);
     session.set_create_time(IOService::Instance()->GetClockTimeMilli());
+    session.set_session_state(data::SESSION_STATE_NONE);
 
     return &session;
 }

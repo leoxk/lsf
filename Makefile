@@ -23,6 +23,7 @@ SVR_MODULE = \
 			  dev/svr/connsvrd	\
 			  dev/svr/gamesvrd	\
 			  dev/svr/roomsvrd	\
+			  dev/svr/test 		\
 
 TEST_MODULE = \
 			  dev/lsf_test/basic		\

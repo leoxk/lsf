@@ -49,18 +49,18 @@ public:
     ~FileLogDriver() { _Shift(); }
 
 public:
-    virtual size_t Write(char const* str, size_t len) {
+    virtual size_t Write(char const* str, size_t len) override {
         if (_Shift()) _Open();
         _ofs.write(str, len);
         return len;
     }
 
-    virtual void Flush() {
+    virtual void Flush() override {
         if (!IsReady()) return;
         _ofs.flush();
     }
 
-    virtual bool IsReady() const { return _ofs.is_open(); }
+    virtual bool IsReady() const override { return _ofs.is_open(); }
 
 private:
     bool _Open() {
@@ -146,14 +146,14 @@ private:
 ////////////////////////////////////////////////////////////
 class TermLogDriver : public BasicLogDriver {
 public:
-    virtual size_t Write(char const* str, size_t len) {
+    virtual size_t Write(char const* str, size_t len) override {
         std::cerr.write(str, len);
         return len;
     }
 
-    virtual void Flush() { std::cerr.flush(); }
+    virtual void Flush() override { std::cerr.flush(); }
 
-    virtual bool IsReady() const { return std::cerr.good(); }
+    virtual bool IsReady() const override { return std::cerr.good(); }
 };
 
 ////////////////////////////////////////////////////////////

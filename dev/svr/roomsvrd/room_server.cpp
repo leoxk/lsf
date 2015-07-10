@@ -6,15 +6,33 @@
 
 #include "svr/common/common_header.h"
 #include "svr/common/common_service.h"
+#include "svr/common/session_manager.h"
+#include "svr/common/timer_manager.h"
+#include "svr/common/handler_manager.h"
 #include "svr/roomsvrd/room_server.h"
+#include "svr/roomsvrd/handler_common.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;
 
 bool RoomServer::OnRun() {
+    // init session manager
+    if (!SessionManager::Instance()->Init(
+                _server_config.session_key(),
+                _server_config.session_size())) return false;
+
+    // init timer manager
+    if (!TimerManager::Instance()->Init(
+                _server_config.timer_key(),
+                _server_config.timer_size())) return false;
+
     // init service
     if (!ConnectClientMsgTransferService::Instance()->Run(this)) return false;
     if (!ConnectServerMsgTransferService::Instance()->Run(this)) return false;
+
+    // register handler
+    HandlerManager::Instance()->AddHandler(msg::CS::kQuickStartReqFieldNumber, new QuickStartHandler());
+
     return true;
 }
 

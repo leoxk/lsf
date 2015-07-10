@@ -23,19 +23,19 @@ LSF_TEST_CASE(scope_exit) {
     LSF_ASSERT(pint == nullptr);
 
     pint = new int;
-    { auto scope_exit = MakeScopeExit([&] { delete pint; pint = nullptr; }); }
+    { auto scope_exit = detail::ScopeExitCreator() << [&] { delete pint; pint = nullptr; }; }
     LSF_ASSERT(pint == nullptr);
 
     pint = new int;
     {
         auto lambda = [&] { delete pint; pint = nullptr; };
-        auto scope_exit = MakeScopeExit(lambda);
+        auto scope_exit = detail::ScopeExitCreator() << lambda;
     }
     LSF_ASSERT(pint == nullptr);
 
     pint = new int;
     {
-        auto scope_exit = MakeScopeExit(std::bind(func, std::ref(pint)));
+        auto scope_exit = detail::ScopeExitCreator() << std::bind(func, std::ref(pint));
     }
     LSF_ASSERT(pint == nullptr);
 }

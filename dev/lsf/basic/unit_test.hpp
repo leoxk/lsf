@@ -30,7 +30,7 @@
     class LSF_TEST_##arg_case_name : public lsf::basic::TestCase {                                      \
     public:                                                                                             \
         LSF_TEST_##arg_case_name(std::string const& case_name) : TestCase(case_name) {}                 \
-        virtual void Run();                                                                             \
+        virtual void Run() override final;                                                              \
     private:                                                                                            \
         static lsf::basic::TestCase* const _helper;                                                     \
     };                                                                                                  \

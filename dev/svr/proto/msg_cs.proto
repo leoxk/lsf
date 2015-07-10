@@ -30,89 +30,102 @@ message CSHead {
 
 ////////////////////////////////////////////////////////////
 // common data
-enum ENCSError {
-    CS_ERROR_OK = 0; // success
+enum ENError {
+    ERROR_OK = 0; // success
 }
 
-message CSNetAddress {
+message NetAddress {
     optional string ip = 1;
     optional uint32 port = 2;
 }
 
-message CSTableInfo {
+message TableInfo {
 
 }
 
 ////////////////////////////////////////////////////////////
 // roomsvr message
-message CSQuickStartReq {
+message QuickStartReq {
 
 }
 
-message CSQuickStartRsp {
-    optional CSNetAddress address = 1;
+message QuickStartRsp {
+    optional NetAddress address = 1;
     optional uint32 table_id = 2;
     optional uint32 seat_index = 3;
 }
 
 ////////////////////////////////////////////////////////////
 // gamesvr message
-message CSEnterTableAndSitDownReq {
+message EnterTableAndSitDownReq {
     optional uint32 table_id = 1;
     optional uint32 seat_index = 2;
 }
 
-message CSEnterTableAndSitDownRsp {
-    optional ENCSError result = 1;
-    optional CSTableInfo table_info = 2;
+message EnterTableAndSitDownRsp {
+    optional ENError result = 1;
+    optional TableInfo table_info = 2;
 }
 
-message CSEnterTableReq {
+message EnterTableReq {
     optional uint32 table_id = 1;
 }
 
-message CSEnterTableRsp {
-    optional ENCSError result = 1;
-    optional CSTableInfo table_info = 2;
+message EnterTableRsp {
+    optional ENError result = 1;
+    optional TableInfo table_info = 2;
 }
 
-message CSSitDownReq {
+message SitDownReq {
     optional uint32 seat_index = 1;
 }
 
-message CSSitDownRsp {
-    optional ENCSError result = 1;
+message SitDownRsp {
+    optional ENError result = 1;
 }
 
-message CSSetPlayerStatusReq {
+message SetPlayerStatusReq {
     optional bool join_game_until_next_big_blind = 1;
 }
 
-message CSSetPlayerStatusRsp {
-    optional ENCSError result = 1;
+message SetPlayerStatusRsp {
+    optional ENError result = 1;
 }
 
 ////////////////////////////////////////////////////////////
 // client to server messages
+enum CSType {
+    CS_TYPE_QUICK_START_REQ             = 10;
+    CS_TYPE_QUICK_START_RSP             = 11;
+    CS_TYPE_ENTER_TABLE_AND_SITDOWN_REQ = 12;
+    CS_TYPE_ENTER_TABLE_AND_SITDOWN_RSP = 13;
+    CS_TYPE_ENTER_TABLE_REQ             = 14;
+    CS_TYPE_ENTER_TABLE_RSP             = 15;
+    CS_TYPE_SIT_DOWN_REQ                = 16;
+    CS_TYPE_SIT_DOWN_RSP                = 17;
+    CS_TYPE_SET_PLAYER_STATUS_REQ       = 18;
+    CS_TYPE_SET_PLAYER_STATUS_RSP       = 19;
+}
+
 message CS {
     // headers
-    optional uint32   msg_id    = 1;
+    optional CSType   msg_type  = 1;
     optional CSHead   cs_head   = 2;
     optional ConnHead conn_head = 3;
 
     // roomsvrd message
-    optional CSQuickStartReq quick_start_req = 10;
-    optional CSQuickStartRsp quick_start_rsp = 11;
+    optional QuickStartReq quick_start_req = 10;
+    optional QuickStartRsp quick_start_rsp = 11;
 
     // gamesvrd message
-    optional CSEnterTableAndSitDownReq enter_table_and_sitdown_req = 12;
-    optional CSEnterTableAndSitDownRsp enter_table_and_sitdown_rsp = 13;
-    optional CSEnterTableReq           enter_table_req             = 14;
-    optional CSEnterTableRsp           enter_table_rsp             = 15;
-    optional CSSitDownReq              sit_down_req                = 16;
-    optional CSSitDownRsp              sit_down_rsp                = 17;
-    optional CSSetPlayerStatusReq      set_player_status_req       = 18;
-    optional CSSetPlayerStatusRsp      set_player_status_rsp       = 19;
+    optional EnterTableAndSitDownReq enter_table_and_sitdown_req = 12;
+    optional EnterTableAndSitDownRsp enter_table_and_sitdown_rsp = 13;
+    optional EnterTableReq           enter_table_req             = 14;
+    optional EnterTableRsp           enter_table_rsp             = 15;
+    optional SitDownReq              sit_down_req                = 16;
+    optional SitDownRsp              sit_down_rsp                = 17;
+    optional SetPlayerStatusReq      set_player_status_req       = 18;
+    optional SetPlayerStatusRsp      set_player_status_rsp       = 19;
 }
 
 // vim:ts=4:sw=4:et:ft=proto:

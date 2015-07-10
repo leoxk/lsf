@@ -97,8 +97,8 @@ bool BasicService::ConnectionSend(lsf::asio::Socket socket, std::string const &m
 
     // sync send
     if (!socket.Send(buffer, DEF_SEND_TIMEOUT)) {
-        LSF_LOG_ERR("send message failed, length=%u, from=%s, to=%s", message.length(),
-                socket.LocalSockAddr().ToCharStr(), socket.LocalSockAddr().ToCharStr());
+        LSF_LOG_ERR("send message failed, length=%u, from=%s, to=%s, %s", message.length(),
+                socket.LocalSockAddr().ToCharStr(), socket.LocalSockAddr().ToCharStr(), socket.ErrCharStr());
         return false;
     }
     return true;
@@ -122,6 +122,12 @@ bool BasicAcceptService::OnInitConfig() {
             _service_config.CopyFrom(conf);
             return true;
         }
+    }
+
+    // check address
+    if (_service_config.listen_address_size() == 0) {
+        LSF_LOG_ERR_WITH_STACK("accept service with empty listen address");
+        return false;
     }
 
     LSF_LOG_ERR("init config failed, type=%u", _service_type);
@@ -164,8 +170,8 @@ bool BasicAcceptService::OnInitSocket() {
 
 bool BasicAcceptService::OnSocketAccept(lsf::asio::Socket socket, lsf::asio::ListenSocket listen_socket) {
     // print info
-    LSF_LOG_INFO("accept new connection, local=%s, remote=%s", socket.LocalSockAddr().ToCharStr(),
-                 socket.RemoteSockAddr().ToCharStr());
+    LSF_LOG_INFO("accept new connection, local=%s, remote=%s, fd=%d",
+            socket.LocalSockAddr().ToCharStr(), socket.RemoteSockAddr().ToCharStr(), socket.GetSockFd());
 
     // async read
     if (!IOService::Instance()->AsyncRead(socket,
@@ -191,6 +197,12 @@ bool BasicConnectService::OnInitConfig() {
 
             return true;
         }
+    }
+
+    // check address
+    if (_service_config.connect_address_size() == 0) {
+        LSF_LOG_ERR_WITH_STACK("connect service with empty connect address");
+        return false;
     }
 
     LSF_LOG_ERR("init config failed, type=%u", _service_type);
@@ -234,8 +246,8 @@ bool BasicConnectService::OnInitSocket() {
 
 bool BasicConnectService::OnSocketConnect(lsf::asio::Socket socket, lsf::asio::SockAddr const& sockaddr, size_t index) {
     // print info
-    LSF_LOG_INFO("make new connection, local=%s, remote=%s", socket.LocalSockAddr().ToCharStr(),
-                 socket.RemoteSockAddr().ToCharStr());
+    LSF_LOG_INFO("make new connection, local=%s, remote=%s, fd=%d",
+            socket.LocalSockAddr().ToCharStr(), socket.RemoteSockAddr().ToCharStr(), socket.GetSockFd());
 
     // async read
     if (!IOService::Instance()->AsyncRead(socket,
