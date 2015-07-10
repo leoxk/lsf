@@ -9,9 +9,11 @@
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <string>
+#include <utility>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/macro.hpp"
+#include "lsf/util/log.hpp"
 #include "lsf/asio/detail/basic_socket.hpp"
 #include "lsf/asio/detail/basic_listen_socket.hpp"
 #include "lsf/asio/async/completion_queue.hpp"
@@ -25,10 +27,10 @@ namespace async {
 ////////////////////////////////////////////////////////////
 // ProactorSerivce
 ////////////////////////////////////////////////////////////
-class ProactorSerivce : public basic::NonCopyable, public basic::Error {
+class ProactorSerivce : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
-    typedef std::function<void()> tick_func_type;
-    typedef std::function<void()> exit_func_type;
+    using tick_func_type = std::function<void()>;
+    using exit_func_type = std::function<void()>;
 
     static const size_t MAX_WAIT_MILLI_SECONDS = 10;
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
@@ -39,7 +41,7 @@ public:
     ////////////////////////////////////////////////////////////
     // Async Accept
     template <typename SocketType, typename HandlerType>
-    bool AsyncAccept(SocketType& socket, HandlerType const& handler) {
+    bool AsyncAccept(SocketType& socket, HandlerType&& handler) {
         // register event
         if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_READ)) {
             ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
@@ -47,21 +49,20 @@ public:
         }
 
         // add completion task
-        if (!_queue.AddCompletionTask(socket.GetSockFd(), CompletionFunc::ACTION_ACCEPT, handler)) {
-            _pdriver->CancelEvent(socket.GetSockFd());
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
-            return false;
-        }
+        ReadCompletionFunc& read_func = _queue.GetAndCreateReadCompletionFunc(socket.GetSockFd());
+        read_func.action = ReadCompletionFunc::ACTION_ACCEPT;
+        read_func.accept_func = std::forward<HandlerType>(handler);
 
         return true;
     }
 
     ////////////////////////////////////////////////////////////
     // Async Connect
-    template <typename SocketType, typename SockAddrType, typename HandlerType>
-    bool AsyncConnect(SocketType& socket, SockAddrType const& sockaddr, HandlerType const& handler) {
+    template <typename SocketType, typename SockAddrType, typename HandlerType1, typename HandlerType2 = std::nullptr_t>
+    bool AsyncConnect(SocketType& socket, SockAddrType&& sockaddr, HandlerType1&& handler, HandlerType2&& fail_handler = nullptr) {
         // try connect
-        if (!socket.Connect(sockaddr) && errno != EINPROGRESS) {
+        int ret = ::connect(socket.GetSockFd(), sockaddr.data(), sockaddr.size());
+        if (ret != 0 && errno != EINPROGRESS) {
             ErrString() = LSF_DEBUG_INFO + socket.ErrString();
             return false;
         }
@@ -73,59 +74,21 @@ public:
         }
 
         // add completion task
-        if (!_queue.AddCompletionTask(socket.GetSockFd(), CompletionFunc::ACTION_CONNECT, handler)) {
-            _pdriver->CancelEvent(socket.GetSockFd());
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
-            return false;
-        }
+        WriteCompletionFunc& write_func = _queue.GetAndCreateWriteCompletionFunc(socket.GetSockFd());
+        write_func.action = WriteCompletionFunc::ACTION_CONNECT;
+        write_func.connect_func = std::forward<HandlerType1>(handler);
+        write_func.connect_fail_func = std::forward<HandlerType2>(fail_handler);
+        write_func.sockaddr = std::forward<SockAddrType>(sockaddr);
 
         return true;
     }
 
     ////////////////////////////////////////////////////////////
-    // Async Read
-    template <typename SocketType, typename HandlerType1, typename HandlerType2>
-    bool AsyncRead(SocketType& socket, HandlerType1 const& handler, HandlerType2 const& peer_close_handler) {
-        // call same routine
-        if (!AsyncRead(socket, handler)) return false;
+    // Async Send
+    LSF_FUNC_ALIAS(AsyncWrite, AsyncSend)
 
-        // add peer close handler
-        if (!_queue.AddCompletionTask(socket.GetSockFd(), CompletionFunc::ACTION_PEER_CLOSE, peer_close_handler)) {
-            _pdriver->CancelEvent(socket.GetSockFd());
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
-            return false;
-        }
-
-        return true;
-    }
-
-    template <typename SocketType, typename HandlerType>
-    bool AsyncRead(SocketType& socket, HandlerType const& handler) {
-        // register event
-        if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_READ)) {
-            ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
-            return false;
-        }
-
-        // add completion task
-        if (!_queue.AddCompletionTask(socket.GetSockFd(), CompletionFunc::ACTION_READ, handler)) {
-            _pdriver->CancelEvent(socket.GetSockFd());
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
-            return false;
-        }
-
-        return true;
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Async Write
-    template <typename SocketType, typename HandlerType>
-    bool AsyncWrite(SocketType& socket, std::string const& buffer, HandlerType const& handler) {
-        return AsyncWrite(socket, buffer.c_str(), buffer.length(), handler);
-    }
-
-    template <typename SocketType, typename HandlerType>
-    bool AsyncWrite(SocketType& socket, void const* buffer, size_t buflen, HandlerType const& handler) {
+    template <typename SocketType, typename StringType, typename HandlerType>
+    bool AsyncWrite(SocketType& socket, StringType&& buffer, HandlerType&& handler) {
         // register event
         if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_WRITE)) {
             ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
@@ -133,11 +96,31 @@ public:
         }
 
         // add completion task
-        if (!_queue.AddCompletionTask(socket.GetSockFd(), CompletionFunc::ACTION_WRITE, handler, buffer, buflen)) {
-            _pdriver->CancelEvent(socket.GetSockFd());
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
+        WriteCompletionFunc& write_func = _queue.GetAndCreateWriteCompletionFunc(socket.GetSockFd());
+        write_func.action = WriteCompletionFunc::ACTION_WRITE;
+        write_func.write_func = std::forward<HandlerType>(handler);
+        write_func.buffer = std::forward<StringType>(buffer);
+
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Async  Recv
+    LSF_FUNC_ALIAS(AsyncRead, AsycRecv)
+
+    template <typename SocketType, typename HandlerType1, typename HandlerType2 = std::nullptr_t>
+    bool AsyncRead(SocketType& socket, HandlerType1&& handler, HandlerType2&& peer_close_handler = nullptr) {
+        // register event
+        if (!_pdriver->RegisterEvent(socket.GetSockFd(), BasicEventDriver::FLAG_READ)) {
+            ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
             return false;
         }
+
+        // add completion task
+        ReadCompletionFunc& read_func = _queue.GetAndCreateReadCompletionFunc(socket.GetSockFd());
+        read_func.action = ReadCompletionFunc::ACTION_READ;
+        read_func.read_func = std::forward<HandlerType1>(handler);
+        read_func.read_peer_close_func = std::forward<HandlerType2>(peer_close_handler);
 
         return true;
     }
@@ -145,7 +128,22 @@ public:
     ////////////////////////////////////////////////////////////
     // Async Timer
     template <typename HandlerType>
-    bool AsyncAddTimer(uint64_t milli_expire, uint64_t milli_interval, HandlerType const& handler, int* pfd = nullptr) {
+    bool AsyncAddTimerSingle(uint64_t milli_expire, HandlerType&& handler) {
+        return AsyncAddTimer(milli_expire, 0, 1, std::forward<HandlerType>(handler));
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimerForever(uint64_t milli_expire, HandlerType&& handler) {
+        return AsyncAddTimer(milli_expire, milli_expire, 0, std::forward<HandlerType>(handler));
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimerMulti(uint64_t milli_expire, size_t trigger_count, HandlerType&& handler) {
+        return AsyncAddTimer(milli_expire, milli_expire, trigger_count, std::forward<HandlerType>(handler));
+    }
+
+    template <typename HandlerType>
+    bool AsyncAddTimer(uint64_t milli_expire, uint64_t milli_interval, size_t trigger_count, HandlerType&& handler) {
         // check input
         if (milli_expire == 0) milli_expire = 1;
 
@@ -172,26 +170,12 @@ public:
         }
 
         // add completion task
-        if (!_queue.AddCompletionTask(fd, CompletionFunc::ACTION_TIMER, handler)) {
-            _pdriver->CancelEvent(fd);
-            ::close(fd);
-            ErrString() = LSF_DEBUG_INFO + _queue.ErrString();
-            return false;
-        }
+        ReadCompletionFunc& read_func = _queue.GetAndCreateReadCompletionFunc(fd);
+        read_func.action = WriteCompletionFunc::ACTION_TIMER;
+        read_func.timer_func = std::forward<HandlerType>(handler);
+        read_func.timer_count = trigger_count;
 
-        if (pfd != nullptr) *pfd = fd;
         return true;
-    }
-
-    void AsyncDelTimer(int fd) {
-        // clear timer
-        itimerspec timer_info;
-        memset(&timer_info, 0, sizeof(timer_info));
-        ::timerfd_settime(fd, 0, &timer_info, nullptr);
-
-        // clear async
-        CloseAsync(fd);
-        ::close(fd);
     }
 
     bool AsyncGetTimer(int fd, uint64_t* p_expire, uint64_t* p_interval = nullptr) {
@@ -206,12 +190,26 @@ public:
 
     ////////////////////////////////////////////////////////////
     // Close Async
-    void CloseAsync(int fd) {
+    template<typename SocketType>
+    void AsyncClose(SocketType&& socket) { AsyncClose(socket.GetSockFd()); }
+
+    void AsyncClose(int fd) {
+        // cancel async
+        AsyncCancel(fd);
+
+        // close fd
+        ::close(fd);
+    }
+
+    void AsyncCancel(int fd) {
+        // check input
+        if (fd < 0) return;
+
         // cancel registration
         _pdriver->CancelEvent(fd);
 
         // cancel completion task
-        _queue.CancelCompletionTask(fd);
+        _queue.CancelCompletionFunc(fd);
     }
 
     ////////////////////////////////////////////////////////////
@@ -230,45 +228,40 @@ public:
             while (_pdriver->GetReadyEvent(&fd, &flag)) {
                 // read action
                 if (flag & BasicEventDriver::FLAG_READ) {
-                    CompletionFunc* pfunc = nullptr;
-                    if (!_queue.GetReadCompletionTask(fd, &pfunc)) continue;
-
-                    switch (pfunc->action) {
-                        case CompletionFunc::ACTION_ACCEPT:
-                            OnAcceptEvent(fd);
-                            break;
-                        case CompletionFunc::ACTION_READ:
-                            OnReadEvent(fd);
-                            break;
-                        case CompletionFunc::ACTION_TIMER:
-                            OnTimerEvent(fd);
-                            break;
-                        default:
-                            continue;
+                    ReadCompletionFunc* pfunc = _queue.GetReadCompletionFunc(fd);
+                    if (pfunc) {
+                        switch (pfunc->action) {
+                            case ReadCompletionFunc::ACTION_ACCEPT: OnAcceptEvent(fd, pfunc); break;
+                            case ReadCompletionFunc::ACTION_READ: OnReadEvent(fd, pfunc); break;
+                            case ReadCompletionFunc::ACTION_TIMER: OnTimerEvent(fd, pfunc); break;
+                            default: break;
+                        }
+                    }
+                    else {
+                        LSF_LOG_FATAL("cant get read handler but event triggers, fd=%u", fd);
+                        AsyncClose(fd);
                     }
                 }
 
                 // write action
                 if (flag & BasicEventDriver::FLAG_WRITE) {
-                    CompletionFunc* pfunc = nullptr;
-                    if (!_queue.GetWriteCompletionTask(fd, &pfunc)) continue;
-
-                    switch (pfunc->action) {
-                        case CompletionFunc::ACTION_WRITE:
-                            OnWriteEvent(fd);
-                            break;
-                        case CompletionFunc::ACTION_CONNECT:
-                            OnConnectEvent(fd);
-                            break;
-                        default:
-                            continue;
+                    WriteCompletionFunc* pfunc = _queue.GetWriteCompletionFunc(fd);
+                    if (pfunc) {
+                        switch (pfunc->action) {
+                            case WriteCompletionFunc::ACTION_WRITE: OnWriteEvent(fd, pfunc); break;
+                            case WriteCompletionFunc::ACTION_CONNECT: OnConnectEvent(fd, pfunc); break;
+                            default: break;
+                        }
+                    }
+                    else {
+                        LSF_LOG_FATAL("cant get write handler buf event triggers, fd=%u", fd);
+                        AsyncClose(fd);
                     }
                 }
 
                 // error handle
                 if (flag & BasicEventDriver::FLAG_ERR) {
-                    CloseAsync(fd);
-                    ::close(fd);
+                    AsyncClose(fd);
                 }
             }
 
@@ -285,11 +278,8 @@ public:
 
     ////////////////////////////////////////////////////////////
     // Accept Event
-    void OnAcceptEvent(int fd) {
+    void OnAcceptEvent(int fd, ReadCompletionFunc* pfunc) {
         detail::BasicListenSocket<> listen_socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
 
         // accept
         detail::BasicSocket<> accept_socket(-1);
@@ -297,45 +287,99 @@ public:
             ErrString() = LSF_DEBUG_INFO + listen_socket.ErrString();
             return;
         }
-        info.accept_fd = accept_socket.GetSockFd();
 
         // call accept handler
-        CompletionFunc* pfunc = nullptr;
-        if (!_queue.GetReadCompletionTask(fd, &pfunc)) {
-            accept_socket.Close();
-            return;
-        }
-        if (!pfunc->func(info)) {
-            accept_socket.Close();
+        if (pfunc->accept_func && !pfunc->accept_func(accept_socket, listen_socket)) {
+            AsyncClose(accept_socket.GetSockFd());
         }
     }
 
     ////////////////////////////////////////////////////////////
-    // Read Event
-    void OnReadEvent(int fd) {
+    // Connect Event
+    void OnConnectEvent(int fd, WriteCompletionFunc* pfunc) {
         detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
-        info.buffer.reserve(MAX_BUFFER_LEN);  // avoid copy
+
+        // check ret
+        int ret = socket.GetSockError();
+        if (ret != 0) {
+            SetErrorNo(ret);
+            if (pfunc->connect_fail_func) pfunc->connect_fail_func(socket, pfunc->sockaddr);
+            AsyncClose(fd);
+            return;
+        }
+
+        // call write handler
+        if (pfunc->connect_func && !pfunc->connect_func(socket, pfunc->sockaddr)) {
+            AsyncClose(fd);
+            return;
+        }
+
+        // always cancel write registration after event
+        AsyncCancel(fd);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Write Event
+    void OnWriteEvent(int fd, WriteCompletionFunc* pfunc) {
+        detail::BasicSocket<> socket(fd);
+
+        // write data
+        size_t total = 0;
+        bool close_connection = false;
+        while (total < pfunc->buffer.length()) {
+            int ret = ::send(socket.GetSockFd(), pfunc->buffer.data() + total, pfunc->buffer.length() - total, 0);
+
+            // handle error
+            if (ret < 0) {
+                if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) { // signal interrupt or not ready
+                    continue;
+                }
+                else { // error
+                    close_connection = true;
+                    break;
+                }
+            }
+
+            // handle send data
+            total += ret;
+        }
+
+        // if send wrong
+        if (close_connection) {
+            AsyncClose(fd);
+            return;
+        }
+
+        // call write handler
+        if (pfunc->write_func && !pfunc->write_func(socket, pfunc->buffer)) {
+            AsyncClose(fd);
+            return;
+        }
+
+        // always cancel write registration after event
+        AsyncCancel(fd);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Read Event
+    void OnReadEvent(int fd, ReadCompletionFunc* pfunc) {
+        detail::BasicSocket<> socket(fd);
+        std::string buffer;
 
         // read loop
         bool close_connection = false;
         bool peer_close = false;
         while (true) {
-            static char buffer[MAX_BUFFER_LEN];
-            ssize_t ret = ::recv(socket.GetSockFd(), buffer, sizeof(buffer), 0);
+            char tmp[MAX_BUFFER_LEN];
+            ssize_t ret = ::recv(socket.GetSockFd(), tmp, sizeof(tmp), 0);
 
             // handle error
             if (ret < 0) {
-                if (errno == EINTR)  // signal interrupt
-                {
+                if (errno == EINTR) { // signal interrupt
                     continue;
-                } else if (errno == EAGAIN || errno == EWOULDBLOCK)  // no data
-                {
+                } else if (errno == EAGAIN || errno == EWOULDBLOCK) { // no data
                     break;
-                } else  // error
-                {
+                } else { // error
                     close_connection = true;
                     break;
                 }
@@ -349,157 +393,69 @@ public:
             }
 
             // handle read data
-            info.buffer.append(buffer, ret);
+            buffer.append(tmp, ret);
         }
 
-        // call read handler first
-        if (!info.buffer.empty()) {
-            CompletionFunc* pfunc = nullptr;
-            if (_queue.GetReadCompletionTask(fd, &pfunc)) {
-                // set close if necessary
-                if (!pfunc->func(info)) {
-                    close_connection = true;
-                }
-            }
+        // handle read first
+        if (!buffer.empty() && pfunc->read_func && !pfunc->read_func(socket, buffer)) {
+            close_connection = true;
         }
 
-        // call peer close handler
+        // handle peer close
         if (peer_close) {
-            CompletionFunc* pfunc = nullptr;
-            if (_queue.GetPeerCloseCompletionTask(fd, &pfunc)) {
-                pfunc->func(info);
-            }
-            CloseAsync(fd);
-            ::close(fd);
+            if (pfunc->read_peer_close_func) pfunc->read_peer_close_func(socket);
+            AsyncClose(fd);
             return;
         }
 
-        // check close connection
+        // handle close connection
         if (close_connection) {
-            CloseAsync(fd);
-            ::close(fd);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Write Event
-    void OnWriteEvent(int fd) {
-        detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
-
-        // get completion func
-        CompletionFunc* pfunc = nullptr;
-        if (!_queue.GetWriteCompletionTask(fd, &pfunc)) {
-            CloseAsync(fd);
-            ::close(fd);
+            AsyncClose(fd);
             return;
-        }
-
-        // write data
-        size_t total = 0;
-        bool close_connection = false;
-        while (total < pfunc->buffer.length()) {
-            int ret = ::send(socket.GetSockFd(), pfunc->buffer.data() + total, pfunc->buffer.length() - total, 0);
-
-            // handle error
-            if (ret < 0) {
-                if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)  // signal interrupt or not ready
-                {
-                    continue;
-                } else  // error
-                {
-                    close_connection = true;
-                    break;
-                }
-            }
-
-            // handle send data
-            total += ret;
-        }
-
-        // if send wrong
-        if (close_connection) {
-            CloseAsync(fd);
-            ::close(fd);
-        }
-        // call write handler
-        else if (!pfunc->func(info)) {
-            CloseAsync(fd);
-            ::close(fd);
-        } else {
-            // always cancel write registration after event
-            _pdriver->CancelEvent(fd);
-            _queue.CancelCompletionTask(fd);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Connect Event
-    void OnConnectEvent(int fd) {
-        detail::BasicSocket<> socket(fd);
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
-
-        // get completion func
-        CompletionFunc* pfunc = nullptr;
-        if (!_queue.GetWriteCompletionTask(fd, &pfunc)) {
-            CloseAsync(fd);
-            ::close(fd);
-            return;
-        }
-
-        // call write handler
-        if (!pfunc->func(info)) {
-            CloseAsync(fd);
-            ::close(fd);
-        } else {
-            // always cancel write registration after event
-            CloseAsync(fd);
         }
     }
 
     ////////////////////////////////////////////////////////////
     // Timer Event
-    void OnTimerEvent(int fd) {
-        static AsyncInfo info;
-        info.Clear();
-        info.fd = fd;
-
+    void OnTimerEvent(int fd, ReadCompletionFunc* pfunc) {
         // read data
         uint64_t count;
         int ret = ::read(fd, &count, sizeof(count));
-        if (ret != sizeof(count)) {
-            if (ret != EAGAIN) AsyncDelTimer(fd);
-            return;
-        }
-
-        // get completion func
-        CompletionFunc* pfunc = nullptr;
-        if (!_queue.GetReadCompletionTask(fd, &pfunc)) {
-            AsyncDelTimer(fd);
+        if (ret != sizeof(count)) { // return error
+            // not block reason then close
+            if (ret != EAGAIN) AsyncClose(fd);
             return;
         }
 
         // call write handler as many as it triggers
+        bool should_delete = false;
         for (uint64_t i = 0; i < count; ++i) {
-            if (!pfunc->func(info)) {
-                AsyncDelTimer(fd);
+            // callback
+            if (pfunc->timer_func && !pfunc->timer_func(fd)) {
+                AsyncClose(fd);
                 return;
+            }
+            // check remain count
+            if (pfunc->timer_count == 1) {
+                should_delete = true;
+                break;
+            }
+            else if (pfunc->timer_count != 0) {
+                pfunc->timer_count--;
             }
         }
 
         // check if need delete
-        uint64_t expire;
-        if (!AsyncGetTimer(fd, &expire)) {
-            AsyncDelTimer(fd);
+        if (should_delete) {
+            AsyncClose(fd);
             return;
         }
-        if (expire == 0) {
-            AsyncDelTimer(fd);
+        uint64_t expire;
+        if (!AsyncGetTimer(fd, &expire)) {
+            AsyncClose(fd);
+            return;
         }
+        if (expire == 0) AsyncClose(fd);
     }
 
     ////////////////////////////////////////////////////////////
@@ -526,11 +482,11 @@ private:
 
 private:
     BasicEventDriver* _pdriver = nullptr;
-    bool _is_exit = false;
-    CompletionQueue _queue;
-    tick_func_type _tick_func;
-    exit_func_type _exit_func;
-    timespec _ts = { 0, 0 };
+    bool              _is_exit = false;
+    timespec          _ts      = {0,0};
+    CompletionQueue   _queue;
+    tick_func_type    _tick_func;
+    exit_func_type    _exit_func;
 };
 
 }  // end of namespace async

@@ -15,47 +15,39 @@
 namespace lsf {
 namespace container {
 
-class SharedMem : public basic::Error {
+class SharedMem : public lsf::basic::Error {
 public:
     ////////////////////////////////////////////////////////////
     // static funcs, for manipulation
     static bool Create(key_t key, size_t size, int modflag = 0666) {
         if (::shmget(key, size, modflag | IPC_CREAT) < 0) return false;
-
         return true;
     }
 
     static bool Delete(key_t key) {
         int shmid;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0) return false;
         if (::shmctl(shmid, IPC_RMID, nullptr) < 0) return false;
-
         return true;
     }
 
     static bool Lock(key_t key) {
         int shmid;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0) return false;
         if (::shmctl(shmid, SHM_LOCK, 0) < 0) return false;
-
         return true;
     }
 
     static bool UnLock(key_t key) {
         int shmid;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0) return false;
         if (::shmctl(shmid, SHM_UNLOCK, 0) < 0) return false;
-
         return true;
     }
 
     static size_t QueryAttachedNum(key_t key) {
         int shmid;
         shmid_ds shmds;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0) return 0;
         if (::shmctl(shmid, IPC_STAT, &shmds) < 0) return 0;
 
@@ -65,7 +57,6 @@ public:
     static size_t QueryShmSize(key_t key) {
         int shmid;
         shmid_ds shmds;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0) return 0;
         if (::shmctl(shmid, IPC_STAT, &shmds) < 0) return 0;
 
@@ -74,7 +65,6 @@ public:
 
     static bool IsShmExist(key_t key) {
         int shmid;
-
         if ((shmid = ::shmget(key, 0, 0)) < 0)
             return false;
         else
@@ -84,13 +74,10 @@ public:
 public:
     ////////////////////////////////////////////////////////////
     // constructor
-    explicit SharedMem() : _key(0), _ptr_mem(nullptr) {}
+    SharedMem() { }
+    SharedMem(key_t key) { Attach(key); }
 
-    explicit SharedMem(key_t key) : _key(0), _ptr_mem(nullptr) { Attach(key); }
-
-    SharedMem(SharedMem const &rhs) : _key(0), _ptr_mem(nullptr) {
-        if (rhs.IsAttached()) Attach(rhs._key);
-    }
+    SharedMem(SharedMem const &rhs) { if (rhs.IsAttached()) Attach(rhs._key); }
 
     ~SharedMem() { Detach(); }
 
@@ -134,8 +121,8 @@ public:
     bool IsAttached() const { return _ptr_mem != nullptr && _key != 0; }
 
 private:
-    key_t _key;
-    void *_ptr_mem;
+    key_t _key = 0;
+    void *_ptr_mem = nullptr;
 };
 
 }  // end of namespace container

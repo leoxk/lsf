@@ -7,7 +7,7 @@
 #include <set>
 #include <fstream>
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/util/random.hpp"
 #include "lsf/container/set.hpp"
 #include "lsf/container/heap_mem.hpp"

@@ -13,7 +13,7 @@
 #include <sstream>
 
 namespace lsf {
-namespace util {
+namespace basic {
 
 ////////////////////////////////////////////////////////////
 // support all input type
@@ -124,7 +124,7 @@ inline std::string TypeCast<std::string>(char const *input) {
 
 #undef _LSF_TYPE_CAST_ALL_TO_STR
 
-}  // end of namespace util
+}  // end of namespace basic
 }  // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

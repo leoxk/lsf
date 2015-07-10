@@ -17,16 +17,16 @@ namespace container {
 ////////////////////////////////////////////////////////////
 // List
 ////////////////////////////////////////////////////////////
-template <typename ElemType = basic::EmptyType, typename StoreType = SharedMem, typename SizeType = size_t>
+template <typename ElemType = lsf::basic::EmptyType, typename StoreType = SharedMem, typename SizeType = size_t>
 class List : public detail::BasicContainer<ElemType, SizeType, StoreType, detail::ListState<ElemType, SizeType>,
                                            detail::ListIterator<ElemType, SizeType>> {
 public:
-    typedef detail::BasicContainer<ElemType, SizeType, StoreType, detail::ListState<ElemType, SizeType>,
-                                   detail::ListIterator<ElemType, SizeType>> base_type;
-    typedef typename base_type::value_type value_type;
-    typedef typename base_type::size_type size_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::reverse_iterator reverse_iterator;
+    using base_type = detail::BasicContainer<ElemType, SizeType, StoreType, detail::ListState<ElemType, SizeType>,
+                                   detail::ListIterator<ElemType, SizeType>>;
+    using value_type = typename base_type::value_type;
+    using size_type = typename base_type::size_type;
+    using iterator = typename base_type::iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
 
 public:
     // common list funcs

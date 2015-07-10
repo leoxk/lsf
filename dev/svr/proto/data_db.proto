@@ -1,0 +1,29 @@
+// File:        data_db.proto
+// Description: ---
+// Notes:       ---
+// Author:      leoxiang <leoxiang727@qq.com>
+// Revision:    2015-06-09 by leoxiang
+
+package data;
+
+////////////////////////////////////////////////////////////
+// db data
+enum ENDataType {
+    DATA_TYPE_USER = 1;
+    DATA_TYPE_PLAYBACK = 2;
+    DATA_TYPE_GLOBAL = 3;
+}
+
+/* message Data { */
+/*     // user data */
+/*     optional UserBase user_base = 2; */
+/*     optional UserProp user_prop = 3; */
+/*  */
+/*     // history data */
+/*     optional PlaybackNormal playback_normal =  */
+/*     optional PlaybackMatch  */
+/*  */
+/*     // global data */
+/* } */
+
+// vim:ts=4:sw=4:et:ft=proto:

@@ -322,9 +322,7 @@ public:
     }
 
     static std::string BinToString(std::string const &input) { return BinToString(input.data(), input.size()); }
-
     static std::string BinToHexString(std::string const &input) { return BinToHexString(input.data(), input.size()); }
-
     static std::string HexStringToBin(std::string const &input) { return HexStringToBin(input.data(), input.size()); }
 
     ////////////////////////////////////////////////////////////

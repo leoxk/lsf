@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include "lsf/basic/singleton.hpp"
 #include "lsf/asio/async/proactor_service.hpp"
 #include "lsf/asio/async/epoll_event_driver.hpp"
@@ -14,50 +15,47 @@
 namespace lsf {
 namespace asio {
 
-using async::AsyncInfo;
 using async::ProactorSerivce;
 
-typedef detail::BasicAddress Address;
-typedef detail::BasicSockAddr<> SockAddr;
-typedef detail::BasicSocket<> Socket;
-typedef detail::BasicListenSocket<> ListenSocket;
+using Address = detail::BasicAddress;
+using SockAddr = detail::BasicSockAddr<>;
+using Socket = detail::BasicSocket<>;
+using ListenSocket = detail::BasicListenSocket<>;
 
 ////////////////////////////////////////////////////////////
-// IOService Content
-namespace detail {
-
-class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
-public:
-    IOServiceContent() : use_epoll(false), epoll_service(nullptr), poll_service(nullptr) {}
-
-public:
-    bool use_epoll;
-    ProactorSerivce *epoll_service;
-    ProactorSerivce *poll_service;
-};
-
-}  // end of namespace detail
-
 ////////////////////////////////////////////////////////////
 // IOService
 class IOService {
 public:
     static ProactorSerivce *Instance() {
-        if (detail::IOServiceContent::Instance()->use_epoll) {
-            if (detail::IOServiceContent::Instance()->epoll_service == nullptr)
-                detail::IOServiceContent::Instance()->epoll_service = new ProactorSerivce(new async::EpollEventDriver);
-            return detail::IOServiceContent::Instance()->epoll_service;
+        if (IOServiceContent::Instance()->use_epoll) {
+            if (IOServiceContent::Instance()->epoll_service == nullptr)
+                IOServiceContent::Instance()->epoll_service = new ProactorSerivce(new async::EpollEventDriver);
+            return IOServiceContent::Instance()->epoll_service;
         } else {
-            if (detail::IOServiceContent::Instance()->poll_service == nullptr)
-                detail::IOServiceContent::Instance()->poll_service = new ProactorSerivce(new async::PollEventDriver);
-            return detail::IOServiceContent::Instance()->poll_service;
+            if (IOServiceContent::Instance()->poll_service == nullptr)
+                IOServiceContent::Instance()->poll_service = new ProactorSerivce(new async::PollEventDriver);
+            return IOServiceContent::Instance()->poll_service;
         }
     }
 
     static ProactorSerivce &Reference() { return *Instance(); }
 
-    static void UseEpoll() { detail::IOServiceContent::Instance()->use_epoll = true; }
-    static void UsePoll() { detail::IOServiceContent::Instance()->use_epoll = false; }
+    static void UseEpoll() { IOServiceContent::Instance()->use_epoll = true; }
+    static void UsePoll() { IOServiceContent::Instance()->use_epoll = false; }
+
+protected:
+    ////////////////////////////////////////////////////////////
+    // IOService Content
+    class IOServiceContent : public lsf::basic::Singleton<IOServiceContent> {
+    public:
+        IOServiceContent() {}
+
+    public:
+        bool use_epoll = false;
+        ProactorSerivce *epoll_service = nullptr;
+        ProactorSerivce *poll_service = nullptr;
+    };
 
 protected:
     IOService() {}                            // construtor is hidden
@@ -67,5 +65,17 @@ protected:
 
 }  // end of namespace asio
 }  // end of namespace lsf
+
+////////////////////////////////////////////////////////////
+// define hash function
+namespace std {
+template<>
+struct hash<lsf::asio::Socket> {
+public:
+    size_t operator()(lsf::asio::Socket const &sock) const {
+        return std::hash<int>()(sock.GetSockFd());
+    }
+};
+} // end namespace std
 
 // vim:ts=4:sw=4:et:

@@ -14,12 +14,12 @@
 namespace lsf {
 namespace util {
 
-class Random : public basic::Error {
+class Random : public lsf::basic::Error {
 public:
     static const size_t MAX_RANDOM_COUNT = 10000;
 
 public:
-    Random(size_t max_cnt = MAX_RANDOM_COUNT) : _max_cnt(max_cnt), _use_cnt(0) { InitSeed(); }
+    Random(size_t max_cnt = MAX_RANDOM_COUNT) : _max_cnt(max_cnt) { InitSeed(); }
 
     void InitSeed() {
         timeval tv;
@@ -60,19 +60,17 @@ public:
     size_t GetUseCount() const { return _use_cnt; }
 
 private:
-    size_t _max_cnt;
-    size_t _use_cnt;
+    size_t _max_cnt = 0;
+    size_t _use_cnt = 0;
 };
 
 ////////////////////////////////////////////////////////////
 // Singleton Random
-class SingleRandom : public Random, public basic::Singleton<Random> {
+class SingleRandom : public Random, public lsf::basic::Singleton<Random> {
 public:
-    static uint32_t GetRand(uint32_t end) { return basic::Singleton<Random>::Reference().GetRand(end); }
+    static uint32_t GetRand(uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(end); }
 
-    static uint32_t GetRand(uint32_t start, uint32_t end) {
-        return basic::Singleton<Random>::Reference().GetRand(start, end);
-    }
+    static uint32_t GetRand(uint32_t start, uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(start, end); }
 };
 
 }  // end of namespace util

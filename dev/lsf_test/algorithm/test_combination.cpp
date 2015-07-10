@@ -6,11 +6,11 @@
 
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/algorithm/combination.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 using namespace std;
 using namespace lsf::algorithm;
-using namespace lsf::util;
+using namespace lsf::basic;
 
 LSF_TEST_CASE(test_combination) {
     vector<int> vec;

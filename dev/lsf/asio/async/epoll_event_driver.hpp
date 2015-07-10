@@ -21,7 +21,7 @@ public:
     static const size_t MAX_EV_NUM = 128;
 
 public:
-    EpollEventDriver() { _epfd = ErrWrap(::epoll_create(0)); } // this size is not used nowadays, see man 
+    EpollEventDriver() { _epfd = ErrWrap(::epoll_create(128000)); } // this size is not used nowadays, see man
 
     bool RegisterEvent(int fd, int flag) {
         if (!(flag & FLAG_READ) && !(flag & FLAG_WRITE)) return false;
@@ -40,10 +40,7 @@ public:
         return false;
     }
 
-    bool CancelEvent(int fd) {
-        epoll_event ev = {0, {0}};
-        return ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, &ev));
-    }
+    void CancelEvent(int fd) { ::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL); }
 
     bool WaitEvent(int timeout) {
         _cur_pos = 0;

@@ -12,7 +12,7 @@
 #include <sstream>
 #include <cstring>
 #include "lsf/basic/macro.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/basic/singleton.hpp"
 #include "lsf/basic/error.hpp"
 #include "lsf/util/string_ext.hpp"
@@ -20,21 +20,20 @@
 namespace lsf {
 namespace util {
 
-const static std::string DEF_DELIMIT = " \t=";
-const static std::string DEF_COMMENT = "#";
-const static std::string DEF_MODULE_NAME = "__anonymous__";
-
 ////////////////////////////////////////////////////////////
 // Config
-class Config : public basic::Error {
+class Config : public lsf::basic::Error {
 public:
-    typedef std::map<std::string, std::string> map_type;
-    typedef std::map<std::string, map_type> store_type;
+    using map_type = std::map<std::string, std::string>;
+    using store_type = std::map<std::string, map_type>;
+
+    constexpr static const char * DEF_DELIMIT = " \t=";
+    constexpr static const char * DEF_COMMENT = "#";
+    constexpr static const char * DEF_MODULE_NAME = "__anonymous__";
 
 public:
-    explicit Config(std::string const& filename = "", std::string const& delimit = DEF_DELIMIT,
-                    std::string const& comment = DEF_COMMENT)
-        : _size(0), _delimit(delimit), _comment(comment) {
+    Config(std::string const& filename = "", char const * delimit = DEF_DELIMIT, char const * comment = DEF_COMMENT)
+        : _delimit(delimit), _comment(comment) {
         if (!filename.empty()) ParseFromFile(filename);
     }
 
@@ -70,7 +69,7 @@ public:
 
     template <typename OutType>
     OutType Get(std::string const& module, std::string const& key) {
-        return util::TypeCast<OutType>(Get(module, key));
+        return basic::TypeCast<OutType>(Get(module, key));
     }
 
     template <typename OutType>
@@ -105,16 +104,17 @@ public:
 
 private:
     // internal variables
-    size_t _size;
-    std::string _delimit;
-    std::string _comment;
+    size_t _size = 0;
+    std::string _delimit = DEF_DELIMIT;
+    std::string _comment = DEF_COMMENT;
     store_type _data;
 };
 
+////////////////////////////////////////////////////////////
 // parse config from is
 inline std::istream& operator>>(std::istream& is, Config& cf) {
     std::string line;
-    std::string module = DEF_MODULE_NAME;
+    std::string module = Config::DEF_MODULE_NAME;
 
     for (; !is.eof(); std::getline(is, line)) {
         size_t pos1, pos2;
@@ -151,7 +151,7 @@ inline std::istream& operator>>(std::istream& is, Config& cf) {
 
 ////////////////////////////////////////////////////////////
 // Singleton Config, provide macros for convient access
-class SingleConfig : public Config, public basic::Singleton<SingleConfig> {};
+class SingleConfig : public Config, public lsf::basic::Singleton<SingleConfig> {};
 
 }  // end of namespace util
 }  // end of namespace lsf

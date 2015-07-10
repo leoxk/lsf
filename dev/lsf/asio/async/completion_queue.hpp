@@ -6,10 +6,12 @@
 
 #pragma once
 
-#include <functional>
 #include <map>
+#include <functional>
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
+#include "lsf/asio/detail/basic_socket.hpp"
+#include "lsf/asio/detail/basic_listen_socket.hpp"
 
 namespace lsf {
 namespace asio {
@@ -18,109 +20,77 @@ namespace async {
 ////////////////////////////////////////////////////////////
 // Function Closure
 ////////////////////////////////////////////////////////////
-class AsyncInfo {
+class BasicCompletionFunc {
 public:
-    void Clear() {
-        fd = 0;
-        accept_fd = 0;
-        buffer.clear();
-    }
-
-public:
-    int fd = 0;
-    int accept_fd = 0;
-    std::string buffer;
+    static const short ACTION_ACCEPT          = 1;
+    static const short ACTION_CONNECT         = 2;
+    static const short ACTION_WRITE           = 4;
+    static const short ACTION_READ            = 5;
+    static const short ACTION_TIMER           = 7;
+    using Socket = detail::BasicSocket<>;
+    using ListenSocket = detail::BasicListenSocket<>;
+    using SockAddr = detail::BasicSockAddr<>;
+    using accept_func_type          = std::function<bool(Socket, ListenSocket)>;
+    using connect_func_type         = std::function<bool(Socket, SockAddr const&)>;
+    using connect_fail_func_type    = std::function<void(Socket, SockAddr const&)>;
+    using write_func_type           = std::function<bool(Socket, std::string const&)>;
+    using read_func_type            = std::function<bool(Socket, std::string const&)>;
+    using read_peer_close_func_type = std::function<void(Socket)>;
+    using timer_func_type           = std::function<bool(int)>;
 };
 
-class CompletionFunc {
+class ReadCompletionFunc : public BasicCompletionFunc {
 public:
-    static const int ACTION_ACCEPT = 1;
-    static const int ACTION_READ = 2;
-    static const int ACTION_PEER_CLOSE = 3;
-    static const int ACTION_CONNECT = 4;
-    static const int ACTION_WRITE = 5;
-    static const int ACTION_TIMER = 6;
+    accept_func_type          accept_func;
+    read_func_type            read_func;
+    read_peer_close_func_type read_peer_close_func;
+    timer_func_type           timer_func;
 
-    typedef std::function<bool(AsyncInfo &)> func_type;
+    short action = 0;
+    size_t timer_count = 0;
+};
 
+class WriteCompletionFunc : public BasicCompletionFunc {
 public:
-    int action = 0;
-    func_type func = nullptr;
+    connect_func_type         connect_func;
+    connect_fail_func_type    connect_fail_func;
+    write_func_type           write_func;
+
+    short action = 0;
+    SockAddr sockaddr;
     std::string buffer;
 };
 
 ////////////////////////////////////////////////////////////
 // Completion Queue
 ////////////////////////////////////////////////////////////
-class CompletionQueue : public basic::NonCopyable, public basic::Error {
+class CompletionQueue : public lsf::basic::NonCopyable, public lsf::basic::Error {
 public:
-    typedef std::map<int, CompletionFunc> func_map_type;
-
-    const static size_t DEL_QUEUE_SIZE = 65536;
+    using read_func_map_type  = std::map<int, ReadCompletionFunc>;
+    using write_func_map_type = std::map<int, WriteCompletionFunc>;
 
 public:
-    template <typename HandlerType>
-    bool AddCompletionTask(int fd, int action, HandlerType func, void const *buffer = nullptr, size_t buflen = 0) {
-        CompletionFunc *pfunc = nullptr;
-        switch (action) {
-            case CompletionFunc::ACTION_ACCEPT:
-            case CompletionFunc::ACTION_READ:
-            case CompletionFunc::ACTION_TIMER:
-                pfunc = &_read_func[fd];
-                break;
-
-            case CompletionFunc::ACTION_WRITE:
-            case CompletionFunc::ACTION_CONNECT:
-                pfunc = &_write_func[fd];
-                break;
-
-            case CompletionFunc::ACTION_PEER_CLOSE:
-                pfunc = &_peer_close_func[fd];
-                break;
-
-            default:
-                break;
-        }
-        if (pfunc == nullptr) return false;
-
-        pfunc->action = action;
-        pfunc->func = CompletionFunc::func_type(func);
-        pfunc->buffer.assign((char *)buffer, buflen);
-        return true;
+    ReadCompletionFunc* GetReadCompletionFunc(int fd) {
+        auto iter = _read_func_map.find(fd);
+        return iter == _read_func_map.end() ? nullptr : &iter->second;
     }
 
-    void CancelCompletionTask(int fd) {
-        _read_func.erase(fd);
-        _write_func.erase(fd);
-        _peer_close_func.erase(fd);
+    WriteCompletionFunc* GetWriteCompletionFunc(int fd) {
+        auto iter = _write_func_map.find(fd);
+        return iter == _write_func_map.end() ? nullptr : &iter->second;
     }
 
-    bool GetReadCompletionTask(int fd, CompletionFunc **pfunc) {
-        func_map_type::iterator iter = _read_func.find(fd);
-        if (iter == _read_func.end()) return false;
-        *pfunc = &iter->second;
-        return true;
-    }
+    ReadCompletionFunc&  GetAndCreateReadCompletionFunc(int fd)  { return _read_func_map[fd]; }
+    WriteCompletionFunc& GetAndCreateWriteCompletionFunc(int fd) { return _write_func_map[fd]; }
 
-    bool GetPeerCloseCompletionTask(int fd, CompletionFunc **pfunc) {
-        func_map_type::iterator iter = _peer_close_func.find(fd);
-        if (iter == _peer_close_func.end()) return false;
-        *pfunc = &iter->second;
-        return true;
-    }
-
-    bool GetWriteCompletionTask(int fd, CompletionFunc **pfunc) {
-        func_map_type::iterator iter = _write_func.find(fd);
-        if (iter == _write_func.end()) return false;
-        *pfunc = &iter->second;
-        return true;
+    void CancelCompletionFunc(int fd)  {
+        _read_func_map.erase(fd);
+        _write_func_map.erase(fd);
     }
 
 private:
-    func_map_type _read_func;
-    func_map_type _write_func;
-    func_map_type _peer_close_func;
-    ;
+    read_func_map_type  _read_func_map;
+    write_func_map_type _write_func_map;
 };
 
 }  // end of namespace async

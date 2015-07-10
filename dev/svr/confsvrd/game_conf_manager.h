@@ -1,4 +1,4 @@
-// File:        game_conf_mng.h
+// File:        game_conf_manager.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>

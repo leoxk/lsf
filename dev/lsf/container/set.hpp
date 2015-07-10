@@ -9,7 +9,7 @@
 #include "lsf/container/detail/basic_container.hpp"
 #include "lsf/container/detail/impl_red_black_tree.hpp"
 #include "lsf/container/shared_mem.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 namespace lsf {
 namespace container {
@@ -21,15 +21,15 @@ template <typename ElemType, typename StoreType = SharedMem, typename SizeType =
 class Set : public detail::BasicContainer<ElemType, SizeType, StoreType, detail::RBTreeState<ElemType, SizeType>,
                                           detail::RBTreeIterator<ElemType, SizeType>> {
 public:
-    typedef detail::BasicContainer<ElemType, SizeType, StoreType, detail::RBTreeState<ElemType, SizeType>,
-                                   detail::RBTreeIterator<ElemType, SizeType>> base_type;
-    typedef typename base_type::value_type value_type;
-    typedef typename base_type::size_type size_type;
-    typedef typename base_type::state_type state_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::reverse_iterator reverse_iterator;
-    typedef iterator const const_iterator;
-    typedef reverse_iterator const const_reverse_iterator;
+    using base_type = detail::BasicContainer<ElemType, SizeType, StoreType, detail::RBTreeState<ElemType, SizeType>,
+                                   detail::RBTreeIterator<ElemType, SizeType>>;
+    using value_type = typename base_type::value_type;
+    using size_type = typename base_type::size_type;
+    using state_type = typename base_type::state_type;
+    using iterator = typename base_type::iterator;
+    using reverse_iterator = typename base_type::reverse_iterator;
+    using const_iterator = iterator const;
+    using const_reverse_iterator = reverse_iterator const;
 
 public:
     bool Insert(value_type const& val) {
@@ -105,7 +105,7 @@ public:
     std::string _ToString(size_type pos) {
         std::string out;
 
-        out = "[" + lsf::util::TypeCast<std::string>(pos) + "]";
+        out = "[" + lsf::basic::TypeCast<std::string>(pos) + "]";
         if (base_type::_ptr_state->GetColor(pos) == state_type::RED) {
             out += "[*]";
         } else {

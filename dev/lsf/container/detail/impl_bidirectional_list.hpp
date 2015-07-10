@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iterator>
+
 namespace lsf {
 namespace container {
 namespace detail {
@@ -27,10 +30,10 @@ struct ListNode {
 template <typename ElemType, typename SizeType>
 class ListState {
 public:
-    typedef ElemType value_type;
-    typedef SizeType size_type;
-    typedef ListNode<ElemType, SizeType> node_type;
-    typedef ListState<ElemType, SizeType> this_type;
+    using value_type = ElemType;
+    using size_type = SizeType;
+    using node_type = ListNode<ElemType, SizeType>;
+    using this_type = ListState<ElemType, SizeType>;
 
     static const size_type ENDPOS = 0;
 
@@ -146,15 +149,15 @@ private:
 // ListIterator
 ////////////////////////////////////////////////////////////
 template <typename ElemType, typename SizeType>
-class ListIterator {
+class ListIterator : public std::iterator<std::bidirectional_iterator_tag, ElemType> {
 public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef ElemType value_type;
-    typedef ElemType *pointer;
-    typedef ElemType &reference;
-    typedef int difference_type;
-    typedef ListState<ElemType, SizeType> state_type;
-    typedef SizeType size_type;
+    using base_type = std::iterator<std::bidirectional_iterator_tag, ElemType>;
+    using value_type = typename base_type::value_type;
+    using pointer = typename base_type::pointer;
+    using reference = typename base_type::reference;
+    using difference_type = typename base_type::difference_type;
+    using state_type = ListState<ElemType, SizeType>;
+    using size_type = SizeType;
 
 public:
     // constructor

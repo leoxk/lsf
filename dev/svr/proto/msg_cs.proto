@@ -4,21 +4,128 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-09 by leoxiang
 
-import "msg_base.proto";
 package msg;
 
 ////////////////////////////////////////////////////////////
+// network headers
+message ConnHead {
+    optional uint32 conn_id       = 1;
+    optional string conn_ip       = 2;
+    optional uint32 conn_port     = 3;
+    optional bool   is_new_conn   = 4;
+    optional bool   is_close_conn = 5;
+}
+
+enum ENPlatformType {
+    PLATFORM_TYPE_WEB = 1;
+    PLATFORM_TYPE_MOBILE = 2;
+}
+
+message CSHead {
+    optional uint64         uid            = 1;
+    optional uint64         client_version = 2;
+    optional string         verify_sig     = 3;
+    optional ENPlatformType platform       = 4;
+}
+
+////////////////////////////////////////////////////////////
+// common data
+enum ENError {
+    ERROR_OK = 0; // success
+}
+
+message NetAddress {
+    optional string ip = 1;
+    optional uint32 port = 2;
+}
+
+message TableInfo {
+
+}
+
+////////////////////////////////////////////////////////////
+// roomsvr message
+message QuickStartReq {
+
+}
+
+message QuickStartRsp {
+    optional NetAddress address = 1;
+    optional uint32 table_id = 2;
+    optional uint32 seat_index = 3;
+}
+
+////////////////////////////////////////////////////////////
+// gamesvr message
+message EnterTableAndSitDownReq {
+    optional uint32 table_id = 1;
+    optional uint32 seat_index = 2;
+}
+
+message EnterTableAndSitDownRsp {
+    optional ENError result = 1;
+    optional TableInfo table_info = 2;
+}
+
+message EnterTableReq {
+    optional uint32 table_id = 1;
+}
+
+message EnterTableRsp {
+    optional ENError result = 1;
+    optional TableInfo table_info = 2;
+}
+
+message SitDownReq {
+    optional uint32 seat_index = 1;
+}
+
+message SitDownRsp {
+    optional ENError result = 1;
+}
+
+message SetPlayerStatusReq {
+    optional bool join_game_until_next_big_blind = 1;
+}
+
+message SetPlayerStatusRsp {
+    optional ENError result = 1;
+}
+
+////////////////////////////////////////////////////////////
 // client to server messages
-enum ENCS {
-   CS_GET_CONFIG_REQ = 1;
-   CS_GET_CONFIG_RSP = 2;
-   CS_REGISTER_TO_RPOXY_REQ = 3;
-   CS_REGISTER_TO_RPOXY_RSP = 4;
+enum CSType {
+    CS_TYPE_QUICK_START_REQ             = 10;
+    CS_TYPE_QUICK_START_RSP             = 11;
+    CS_TYPE_ENTER_TABLE_AND_SITDOWN_REQ = 12;
+    CS_TYPE_ENTER_TABLE_AND_SITDOWN_RSP = 13;
+    CS_TYPE_ENTER_TABLE_REQ             = 14;
+    CS_TYPE_ENTER_TABLE_RSP             = 15;
+    CS_TYPE_SIT_DOWN_REQ                = 16;
+    CS_TYPE_SIT_DOWN_RSP                = 17;
+    CS_TYPE_SET_PLAYER_STATUS_REQ       = 18;
+    CS_TYPE_SET_PLAYER_STATUS_RSP       = 19;
 }
 
 message CS {
-    optional ENCS       type = 1;
-    optional TcpHead    proxy_head = 2;
+    // headers
+    optional CSType   msg_type  = 1;
+    optional CSHead   cs_head   = 2;
+    optional ConnHead conn_head = 3;
+
+    // roomsvrd message
+    optional QuickStartReq quick_start_req = 10;
+    optional QuickStartRsp quick_start_rsp = 11;
+
+    // gamesvrd message
+    optional EnterTableAndSitDownReq enter_table_and_sitdown_req = 12;
+    optional EnterTableAndSitDownRsp enter_table_and_sitdown_rsp = 13;
+    optional EnterTableReq           enter_table_req             = 14;
+    optional EnterTableRsp           enter_table_rsp             = 15;
+    optional SitDownReq              sit_down_req                = 16;
+    optional SitDownRsp              sit_down_rsp                = 17;
+    optional SetPlayerStatusReq      set_player_status_req       = 18;
+    optional SetPlayerStatusRsp      set_player_status_rsp       = 19;
 }
 
 // vim:ts=4:sw=4:et:ft=proto:

@@ -5,10 +5,10 @@
 // Revision:    2012-01-31 by leoxiang
 
 #include "lsf/basic/unit_test.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 using namespace std;
-using namespace lsf::util;
+using namespace lsf::basic;
 
 LSF_TEST_CASE(cast_string_to_number) {
     // string to int

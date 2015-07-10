@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iterator>
+
 namespace lsf {
 namespace container {
 namespace detail {
@@ -16,9 +19,9 @@ namespace detail {
 template <typename ElemType, typename SizeType>
 class StaticArrayState {
 public:
-    typedef ElemType value_type;
-    typedef SizeType size_type;
-    typedef StaticArrayState this_type;
+    using value_type = ElemType;
+    using size_type = SizeType;
+    using this_type = StaticArrayState;
 
 public:
     void Init(size_t byte_size) {
@@ -53,16 +56,15 @@ private:
 ////////////////////////////////////////////////////////////
 // forward
 template <typename ElemType, typename SizeType>
-class StaticArrayIterator {
+class StaticArrayIterator : public std::iterator<std::bidirectional_iterator_tag, ElemType> {
 public:
-    // typedef
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef ElemType value_type;
-    typedef int difference_type;
-    typedef ElemType *pointer;
-    typedef ElemType &reference;
-    typedef StaticArrayState<ElemType, SizeType> state_type;
-    typedef SizeType size_type;
+    using base_type = std::iterator<std::bidirectional_iterator_tag, ElemType>;
+    using value_type = typename base_type::value_type;
+    using pointer = typename base_type::pointer;
+    using reference = typename base_type::reference;
+    using difference_type = typename base_type::difference_type;
+    using state_type = StaticArrayState<ElemType, SizeType>;
+    using size_type = SizeType;
 
 public:
     // constructor

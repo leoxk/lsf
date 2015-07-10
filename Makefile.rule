@@ -8,7 +8,7 @@
 #                build.mk  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude build.mk after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2012-05-15 by leoxiang
 #===============================================================================#
 
@@ -20,7 +20,7 @@
 -include $(patsubst %.cpp, $(DEP_DIR)/%.d, $(wildcard *.cpp))
 
 # default rules
-$(DEP_DIR)/%.o : %.c 
+$(DEP_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $(INC_FLAGS) -c -o $@ $<
 
 $(DEP_DIR)/%.o : %.cpp

@@ -18,26 +18,26 @@ bool GetSingleMessageFromStream(std::string const &buffer, size_t &pos, std::str
     if (pos == buffer.length()) return false;
 
     // clac begin and length
-    char const *begin = buffer.data() + pos;
+    char const* begin = buffer.data() + pos;
     size_t length = buffer.length() - pos;
 
     // check length
     if (length < sizeof(msg::Header)) {
-        LSF_LOG_ERR("incomplete message, length=%u, %s", length, StringExt::BinToHexString(begin, length).c_str());
+        LSF_LOG_ERR_WITH_STACK("incomplete message, length=%u, %s", length, StringExt::BinToHexString(begin, length).c_str());
         return false;
     }
 
     // get header
-    msg::Header header = *((msg::Header const *)begin);
+    msg::Header header = *((msg::Header const*)begin);
     header.ntoh();
 
     // check header
     if (header.magic[0] != msg::MAGIC[0] || header.magic[1] != msg::MAGIC[1] || header.length <= sizeof(msg::Header)) {
-        LSF_LOG_ERR("invalid header, magic=%x%x, length=%u", header.magic[0], header.magic[1], header.length);
+        LSF_LOG_ERR_WITH_STACK("invalid header, magic=%x%x, length=%u", header.magic[0], header.magic[1], header.length);
         return false;
     }
     if (length < header.length) {
-        LSF_LOG_ERR("incomplete message, buffer_length=%u, header_length=%u, %s", length, header.length,
+        LSF_LOG_ERR_WITH_STACK("incomplete message, buffer_length=%u, header_length=%u, %s", length, header.length,
                     StringExt::BinToHexString(begin, length).c_str());
         return false;
     }
@@ -50,7 +50,7 @@ bool GetSingleMessageFromStream(std::string const &buffer, size_t &pos, std::str
 
     return true;
 }
-bool PutSingleMessageIntoStream(std::string &message) {
+bool PutSingleMessageIntoStream(std::string & buffer, std::string const &message) {
     // set header
     msg::Header header;
     header.magic[0] = msg::MAGIC[0];
@@ -59,7 +59,9 @@ bool PutSingleMessageIntoStream(std::string &message) {
     header.hton();
 
     // insert header
-    message.insert(0, (char const *)&header, sizeof(header));
+    buffer.clear();
+    buffer.append((char const *)&header, sizeof(header));
+    buffer.append(message);
 
     return true;
 }
@@ -67,8 +69,7 @@ bool PutSingleMessageIntoStream(std::string &message) {
 bool PackProtoMsg(std::string &message, google::protobuf::MessageLite const &proto_msg) {
     // pack protobuf
     if (!proto_msg.SerializeToString(&message)) {
-        LSF_LOG_ERR("pack msg failed, %s", lsf::util::ProtobufLog::Instance()->ErrCharStr());
-        LSF_LOG_STACK();
+        LSF_LOG_ERR_WITH_STACK("pack msg failed, %s", lsf::util::ProtobufLog::Instance()->ErrCharStr());
         return false;
     }
 
@@ -78,22 +79,7 @@ bool PackProtoMsg(std::string &message, google::protobuf::MessageLite const &pro
 bool UnPackProtoMsg(std::string const &message, google::protobuf::MessageLite &proto_msg) {
     // parse message
     if (!proto_msg.ParseFromString(message)) {
-        LSF_LOG_ERR("pasre msg failed, %s", lsf::util::ProtobufLog::Instance()->ErrCharStr());
-        LSF_LOG_STACK();
-        return false;
-    }
-
-    return true;
-}
-
-bool SendMessage(lsf::asio::Socket socket, google::protobuf::MessageLite const &proto_msg) {
-    std::string message;
-    if (!PackProtoMsg(message, proto_msg)) return false;
-    if (!PutSingleMessageIntoStream(message)) return false;
-
-    if (!socket.Send(message)) {
-        LSF_LOG_ERR("send msg failed, size=%u, %s", message.size(), socket.ErrCharStr());
-        LSF_LOG_STACK();
+        LSF_LOG_ERR_WITH_STACK("pasre msg failed, %s", lsf::util::ProtobufLog::Instance()->ErrCharStr());
         return false;
     }
 
@@ -103,23 +89,23 @@ bool SendMessage(lsf::asio::Socket socket, google::protobuf::MessageLite const &
 bool SendAndRecv(lsf::asio::Socket socket, google::protobuf::MessageLite &proto_msg) {
     // send request
     std::string message;
+    std::string buffer;
     if (!PackProtoMsg(message, proto_msg)) return false;
-    if (!PutSingleMessageIntoStream(message)) return false;
-    if (!socket.Send(message)) {
-        LSF_LOG_ERR("send msg failed, size=%u, %s", message.size(), socket.ErrCharStr());
+    if (!PutSingleMessageIntoStream(buffer, message)) return false;
+    if (!socket.Send(buffer)) {
+        LSF_LOG_ERR_WITH_STACK("send msg failed, size=%u, %s", buffer.size(), socket.ErrCharStr());
         return false;
     }
 
     // recv buffer
-    std::string stream;
-    if (!socket.Recv(stream)) {
-        LSF_LOG_ERR("recv msg failed, %s", socket.ErrCharStr());
+    if (!socket.Recv(buffer)) {
+        LSF_LOG_ERR_WITH_STACK("recv msg failed, %s", socket.ErrCharStr());
         return false;
     }
 
     // parse config
     size_t pos = 0;
-    if (!GetSingleMessageFromStream(stream, pos, message)) return false;
+    if (!GetSingleMessageFromStream(buffer, pos, message)) return false;
     if (!UnPackProtoMsg(message, proto_msg)) return false;
 
     return true;

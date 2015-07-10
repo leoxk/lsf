@@ -23,14 +23,12 @@ namespace util {
 ////////////////////////////////////////////////////////////
 // BasicLogDriver
 ////////////////////////////////////////////////////////////
-class BasicLogDriver : public basic::Error {
+class BasicLogDriver : public lsf::basic::Error {
 public:
     virtual ~BasicLogDriver() {}
 
     virtual size_t Write(char const* str, size_t len) = 0;
-
     virtual void Flush() = 0;
-
     virtual bool IsReady() const = 0;
 };
 
@@ -44,25 +42,25 @@ public:
     const static uint16_t SHIFT_MONTH = 2;
 
 public:
-    FileLogDriver() : _shift(), _last_shift(0) {}
+    FileLogDriver() {}
 
     FileLogDriver(std::string const& prefix, uint16_t shift = SHIFT_DAY) : _shift(shift), _prefix(prefix) { _Open(); }
 
     ~FileLogDriver() { _Shift(); }
 
 public:
-    virtual size_t Write(char const* str, size_t len) {
+    virtual size_t Write(char const* str, size_t len) override {
         if (_Shift()) _Open();
         _ofs.write(str, len);
         return len;
     }
 
-    virtual void Flush() {
+    virtual void Flush() override {
         if (!IsReady()) return;
         _ofs.flush();
     }
 
-    virtual bool IsReady() const { return _ofs.is_open(); }
+    virtual bool IsReady() const override { return _ofs.is_open(); }
 
 private:
     bool _Open() {
@@ -136,8 +134,8 @@ private:
     }
 
 private:
-    uint16_t _shift;
-    size_t _last_shift;
+    uint16_t _shift = 0;
+    size_t _last_shift = 0;
     std::string _prefix;
     std::string _log_path;
     std::ofstream _ofs;
@@ -148,14 +146,14 @@ private:
 ////////////////////////////////////////////////////////////
 class TermLogDriver : public BasicLogDriver {
 public:
-    virtual size_t Write(char const* str, size_t len) {
+    virtual size_t Write(char const* str, size_t len) override {
         std::cerr.write(str, len);
         return len;
     }
 
-    virtual void Flush() { std::cerr.flush(); }
+    virtual void Flush() override { std::cerr.flush(); }
 
-    virtual bool IsReady() const { return std::cerr.good(); }
+    virtual bool IsReady() const override { return std::cerr.good(); }
 };
 
 ////////////////////////////////////////////////////////////
@@ -173,11 +171,9 @@ public:
 
 public:
     // constructor
-    Log(uint16_t mask = TYPE_ALL) : _pdriver(nullptr), _mask(mask) {}
+    Log(uint16_t mask = TYPE_ALL) : _mask(mask) {}
 
-    ~Log() {
-        if (_pdriver) delete _pdriver;
-    }
+    ~Log() { if (_pdriver) delete _pdriver; }
 
     // membet funcs
     bool BindOutput(BasicLogDriver* pdriver) {
@@ -248,32 +244,32 @@ public:
     bool IsBindOuput() const { return _pdriver && _pdriver->IsReady(); }
 
 private:
-    BasicLogDriver* _pdriver;
-    uint16_t _mask;
+    BasicLogDriver* _pdriver = nullptr;
+    uint16_t _mask = 0;
 };
 
 ////////////////////////////////////////////////////////////
 // Singleton Log, provide macros for convient access
-class SingleLog : public Log, public basic::Singleton<SingleLog> {};
+class SingleLog : public Log, public lsf::basic::Singleton<SingleLog> {};
 
 #define LSF_LOG_INFO(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_INFO, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_INFO, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_DEBUG(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_WARN(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_WARN, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_WARN, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_ERR(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_ERR, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_ERR, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 #define LSF_LOG_FATAL(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(::lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, \
+    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, \
                                                __FUNCTION__, ##args)
 
 }  // end of namespace util

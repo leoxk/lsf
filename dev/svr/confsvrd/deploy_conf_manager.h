@@ -1,4 +1,4 @@
-// File:        deploy_conf_mng.h
+// File:        deploy_conf_manager.h
 // Description: ---
 // Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
@@ -12,8 +12,9 @@
 class DeployConfigManager : public lsf::basic::Singleton<DeployConfigManager> {
 public:
     bool Init(char const* path);
+    conf::Server const* GetServerConfig(conf::ENServerType server_type, uint32_t server_id) const;
 
-    conf::Server const* GetServerConfig(conf::ENServerType server_type, uint32_t server_id);
+    google::protobuf::RepeatedPtrField<conf::Server> const &  GetAllServerConfig() const { return _deploy_config.server_config(); }
 
 private:
     conf::Deploy _deploy_config;

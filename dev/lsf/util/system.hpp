@@ -23,12 +23,12 @@
 namespace lsf {
 namespace util {
 
-class System : public basic::ErrorStatic {
+class System : public lsf::basic::ErrorStatic {
 public:
     static const int DEF_MAX_NOFILE = 1024;
     static const int DEF_MAX_CORE_SIZE = 1 << 26;  // 64MB
 
-    typedef void (*handler_type)(int);
+    using handler_type = void(int);
 
 public:
     // static funcs

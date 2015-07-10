@@ -8,7 +8,7 @@
 #                Makefile.rule  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude Makefile.rule after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2011-09-13 by leoxiang
 #===============================================================================#
 
@@ -25,7 +25,6 @@ BIN = \
 	  $(TEST_BIN_DIR)/test_file_lock 		\
 	  $(TEST_BIN_DIR)/test_backtrace 		\
 	  $(TEST_BIN_DIR)/test_string_ext 		\
-	  $(TEST_BIN_DIR)/test_type_cast 		\
 
 # main targets
 all: $(BIN)

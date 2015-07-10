@@ -7,7 +7,7 @@
 #include <iostream>
 #include "svr/common/common_header.h"
 #include "svr/confsvrd/config_server.h"
-#include "svr/confsvrd/deploy_conf_mng.h"
+#include "svr/confsvrd/deploy_conf_manager.h"
 #include "svr/confsvrd/config_service.h"
 
 using namespace google::protobuf;
@@ -55,9 +55,8 @@ bool ConfigServer::OnInitDeployConfig() {
 }
 
 bool ConfigServer::OnRun() {
-    // start config service
+    // init service
     if (!AcceptConfigService::Instance()->Run(this)) return false;
-
     return true;
 }
 

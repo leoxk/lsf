@@ -7,7 +7,7 @@
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/asio/tcp.hpp"
 #include "lsf/util/random.hpp"
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 
 using namespace std;
 using namespace lsf::asio;
@@ -70,7 +70,7 @@ LSF_TEST_CASE(test_sock_op_v4) {
     LSF_ASSERT(accept_socket.LocalSockAddr() == socket.RemoteSockAddr());
     LSF_ASSERT(accept_socket.RemoteSockAddr() == socket.LocalSockAddr());
     LSF_ASSERT(accept_socket.GetSockFd() != socket.GetSockFd());
-    LSF_ASSERT(socket.Close());
+    socket.Close();
 
     // test connect wrong addr
     LSF_ASSERT(!socket.Connect(tcp::SockAddr(Address(AF_INET, "127.0.0.1"), wrong_port)));

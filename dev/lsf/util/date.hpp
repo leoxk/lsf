@@ -9,15 +9,15 @@
 #include <ctime>
 #include <cstring>
 #include "lsf/basic/error.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/util/string_ext.hpp"
-#include "lsf/util/type_cast.hpp"
 
 namespace lsf {
 namespace util {
 
-class Date : public basic::Error {
+class Date : public lsf::basic::Error {
 public:
-    typedef tm date_type;
+    using date_type = tm;
 
     const static time_t SECONDS_PER_DAY = 3600 * 24;
     const static time_t SECONDS_PER_MONTH = 30 * SECONDS_PER_DAY;
@@ -32,12 +32,12 @@ public:
         std::string tmp = date_string;
         util::StringExt::RemoveHeadWhitespace(tmp);
         util::StringExt::RemoveTailWhitespace(tmp);
-        size_t year = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 0));
-        size_t month = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 1));
-        size_t day = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 2));
-        size_t hour = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 3));
-        size_t minute = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 4));
-        size_t second = util::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 5));
+        size_t year = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 0));
+        size_t month = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 1));
+        size_t day = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 2));
+        size_t hour = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 3));
+        size_t minute = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 4));
+        size_t second = basic::TypeCast<size_t>(util::StringExt::SplitAndGet(tmp, "- :", 5));
         new (this) Date(year, month, day, hour, minute, second);
     }
 

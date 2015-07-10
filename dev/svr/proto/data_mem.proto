@@ -10,48 +10,72 @@ package data;
 
 ////////////////////////////////////////////////////////////
 // Session
-enum ENSessionState
-{
-    SESSION_STATE_ON_CLIENT_MSG           = 1;   // 收到客户端消息
-    SESSION_STATE_ON_ROOMSVR_MSG          = 2;   // 收到roomsvr消息
-    SESSION_STATE_ON_KVDBSVR_SELECT_MSG   = 3;   // 收到private_dbsvrd消息
-    SESSION_STATE_ON_KVDBSVR_UPDATE_MSG   = 4;   //
-    SESSION_STATE_ON_KVDBSVR_DELETE_MSG   = 5;   //
+enum ENSessionState {
+    SESSION_STATE_NONE                    = 0;    // none state
+    SESSION_STATE_ON_CLIENT_REQ           = 1;    // get client request
+    SESSION_STATE_ON_SERVER_REQ           = 2;    // get server request
+    SESSION_STATE_ON_ROOMSVR_WAIT         = 3;    // wait roomsvr timeout
+    SESSION_STATE_ON_ROOMSVR_RSP          = 4;    // get roomsvrd message
+    SESSION_STATE_ON_ROOMSVR_TIMEOUT      = 5;    // get roomsvrd message
+    SESSION_STATE_ON_DBSVR_WAIT           = 6;    // wait dbsvr query timeout
+    SESSION_STATE_ON_DBSVR_RSP            = 7;    // get db query message
+    SESSION_STATE_ON_DBSVR_TIMEOUT        = 8;    // get db query message
 
-    SESSION_STATE_WAIT_ROOMSVR_MSG        = 101; // 等待roomsvr超时
-    SESSION_STATE_WAIT_KVDBSVR_SELECT_MSG = 102; // 等待private_dbsvrd超时
-    SESSION_STATE_WAIT_KVDBSVR_UPDATE_MSG = 103; // 等待private_dbsvrd超时
-    SESSION_STATE_WAIT_KVDBSVR_DELETE_MSG = 104; // 等待private_dbsvrd超时
-
-    SESSION_STATE_FINISH                  = 1000; // 会话结束
+    SESSION_STATE_ON_DBSVR_QUERY_WAIT     = 101;  // wait dbsvr query timeout
+    SESSION_STATE_ON_DBSVR_QUERY_RSP      = 102;  // get db query message
+    SESSION_STATE_ON_DBSVR_QUERY_TIMEOUT  = 103;  // get db query message
+    SESSION_STATE_ON_DBSVR_UPDATE_WAIT    = 104;  // wait dbsvr update timeout
+    SESSION_STATE_ON_DBSVR_UPDATE_RSP     = 105;  // get db update message
+    SESSION_STATE_ON_DBSVR_UPDATE_TIMEOUT = 106;  // get db update message
+    SESSION_STATE_ON_DBSVR_DELETE_WAIT    = 107;  // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_RSP     = 108;  // wait dbsvr delete timeout
+    SESSION_STATE_ON_DBSVR_DELETE_TIMEOUT = 109;  // get db delete message
+    SESSION_STATE_FINISH                  = 1000; // session end
 }
 
-enum ENSessionDBState
-{
-    SESSION_DB_STATE_SELECT = 1; // 拉取数据
-    SESSION_DB_STATE_UPDATE = 2; // 更新数据
+enum ENSessionDBState {
+    SESSION_DB_STATE_QUERY  = 1; // query data
+    SESSION_DB_STATE_UPDATE = 2; // update data
 }
 
-message Session
-{
-    optional uint32             sess_id           = 1;                // 会话ID
-    optional uint32             sess_type         = 2;                // 会话类型
-    optional ENSessionState     sess_state        = 3;                // 会话状态
-    optional uint64             player_uid        = 4;                // 玩家id
-    optional int32              timer_id          = 5 [default = -1]; // 定时器
-    repeated uint64             db_uids           = 7;                // KVDB操作的玩家uid
-    repeated bool               db_uid_flags      = 8;                // KVDB玩家的数据标志
-    optional ENSessionDBState   db_state          = 9;                // KVDB操作类型
-    optional uint32             db_cur_index      = 10;               // KVDB当前操作的玩家数据位置
-    optional uint32             db_process_index  = 11;               // KVDB的玩家处理数据的玩家位置
-    optional uint32             create_time       = 18;               // 创建时间
-    optional uint32             redo_count        = 19;               // 重做次数
-    optional msg.CS				cs_msg            = 51;
-    optional msg.CS				cs_response       = 52;
-    optional msg.SS				ss_msg            = 53;
-    optional msg.SS             ss_response       = 54;
-    optional msg.SS             ss_inter_response = 55;
-    /*repeated KVDBMsg 	        multi_db_msg = 56;*/
+message Session {
+    // base
+    optional uint32         session_id    = 1;
+    optional uint32         session_type  = 2;
+    optional ENSessionState session_state = 3;
+    optional uint64         create_time   = 4;
+    optional uint32         timer_id      = 7;
+
+    // db handle
+    optional bool   db_query_finish  = 10;
+    repeated uint64 db_uids          = 8;
+    repeated bool   db_uid_flags     = 9;
+    optional uint32 db_cur_index     = 11;
+    optional uint32 db_process_index = 12;
+    optional uint32 redo_count       = 13;
+
+    // message and data
+    optional msg.CS	cs_request    = 14;
+    optional msg.CS	cs_response   = 15;
+    optional msg.SS	ss_request    = 16;
+    optional msg.SS ss_response   = 17;
+    repeated msg.SS svr_responses = 18;
 }
+
+////////////////////////////////////////////////////////////
+// Timer
+enum ENTimerType {
+    TIMER_TYPE_SESSION_TIMEOUT = 1;
+}
+
+message Timer {
+    optional uint32      timer_id            = 1;
+    optional uint64      timer_milli_seconds = 2;
+    optional ENTimerType timer_type          = 3;
+    optional bool        is_delete           = 4;
+    // info data
+    optional uint32      session_id          = 20;
+}
+
 
 // vim:ts=4:sw=4:et:ft=proto:

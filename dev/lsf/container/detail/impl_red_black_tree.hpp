@@ -8,6 +8,8 @@
 
 #include <set>
 #include <utility>
+#include <cstddef>
+#include <iterator>
 
 namespace lsf {
 namespace container {
@@ -31,10 +33,10 @@ struct RBTreeNode {
 template <typename ElemType, typename SizeType>
 class RBTreeState {
 public:
-    typedef ElemType value_type;
-    typedef SizeType size_type;
-    typedef RBTreeNode<ElemType, SizeType> node_type;
-    typedef RBTreeState<ElemType, SizeType> this_type;
+    using value_type = ElemType;
+    using size_type = SizeType;
+    using node_type = RBTreeNode<ElemType, SizeType>;
+    using this_type = RBTreeState<ElemType, SizeType>;
 
     static const size_type NPOS = 0;
 
@@ -719,15 +721,15 @@ private:
 // RBTreeIterator
 ////////////////////////////////////////////////////////////
 template <typename ElemType, typename SizeType>
-class RBTreeIterator {
+class RBTreeIterator : public std::iterator<std::bidirectional_iterator_tag, ElemType> {
 public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef ElemType value_type;
-    typedef ElemType *pointer;
-    typedef ElemType &reference;
-    typedef int difference_type;
-    typedef RBTreeState<ElemType, SizeType> state_type;
-    typedef SizeType size_type;
+    using base_type = std::iterator<std::bidirectional_iterator_tag, ElemType>;
+    using value_type = typename base_type::value_type;
+    using pointer = typename base_type::pointer;
+    using reference = typename base_type::reference;
+    using difference_type = typename base_type::difference_type;
+    using state_type = RBTreeState<ElemType, SizeType>;
+    using size_type = SizeType;
 
 public:
     // constructor

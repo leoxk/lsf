@@ -21,13 +21,13 @@ namespace detail {
 // BasicListenSocket
 ////////////////////////////////////////////////////////////
 template <typename ProtoType = DummyProtoType>
-class BasicListenSocket : public basic::Error {
+class BasicListenSocket : public lsf::basic::Error {
 public:
     const static int DEF_LISTEN_QUEUE_SIZE = 128;
 
-    typedef BasicSocket<ProtoType> socket_type;
-    typedef BasicSockAddr<ProtoType> sockaddr_type;
-    typedef ProtoType proto_type;
+    using socket_type = BasicSocket<ProtoType>;
+    using sockaddr_type = BasicSockAddr<ProtoType>;
+    using proto_type = ProtoType;
 
     template <typename OtherProtoType>
     friend class BasicListenSocket;
@@ -39,6 +39,7 @@ public:
     }
 
     ////////////////////////////////////////////////////////////
+    BasicListenSocket() {}
     BasicListenSocket(int sockfd) : _sockfd(sockfd) {}
 
     template <typename OtherProtoType>
@@ -47,7 +48,7 @@ public:
 
     template <typename OtherProtoType>
     BasicListenSocket<ProtoType>& operator=(BasicListenSocket<OtherProtoType> const& rhs) {
-        if (this == &rhs) return *this;
+        if (this == (decltype(this))&rhs) return *this;
         _sockfd = rhs._sockfd;
         return *this;
     }
@@ -64,7 +65,7 @@ public:
         return true;
     }
 
-    bool Close() { return ErrWrap(::close(_sockfd)) == 0; }
+    void Close() { if (_sockfd < 0) return; ::close(_sockfd); }
 
     sockaddr_type LocalSockAddr() {
         sockaddr addr;
@@ -82,18 +83,6 @@ public:
             return sockaddr_type(proto_type::V4());
         else
             return sockaddr_type(proto_type::V6());
-    }
-
-    ////////////////////////////////////////////////////////////
-    // async funcs
-    template <typename ServiceType, typename HandlerType>
-    bool AsyncAccept(ServiceType& io_service, HandlerType const& handler) {
-        return io_service.AsyncAccept(*this, handler);
-    }
-
-    template <typename ServiceType>
-    void CloseAsync(ServiceType& io_service) {
-        io_service.CloseAsync(_sockfd);
     }
 
     ////////////////////////////////////////////////////////////
@@ -124,10 +113,12 @@ public:
     bool IsV4() { return LocalSockAddr().IsV4(); }
     bool IsV6() { return LocalSockAddr().IsV6(); }
 
-    bool operator!() const { return _sockfd >= 0; }
+    void Clear() { _sockfd = -1; }
+
+    explicit operator bool() const { return _sockfd >= 0; }
 
 private:
-    int _sockfd;
+    int _sockfd = -1;
 };
 
 }  // end of namespace detail

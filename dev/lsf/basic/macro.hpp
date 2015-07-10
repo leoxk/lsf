@@ -20,4 +20,8 @@
 #define ErrCharStr() ErrString().c_str()
 #define SysErrCharStr() SysErrString().c_str()
 
+// alias func
+#define LSF_FUNC_ALIAS(name, aname) template<typename... Args> \
+auto name(Args&&... args) -> decltype(f(std::forward<Args>(args)...)) { return aname(std::forward<Args>(args)...); }
+
 // vim:ts=4:sw=4:et:ft=cpp:

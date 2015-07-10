@@ -13,6 +13,7 @@ class NonCopyable {
 public:
     NonCopyable() = default;
     ~NonCopyable() = default;
+    NonCopyable(NonCopyable&&) = default; // allow move constructor
 
 private:
     NonCopyable(NonCopyable const &) = delete;             // copy constructor is hidden

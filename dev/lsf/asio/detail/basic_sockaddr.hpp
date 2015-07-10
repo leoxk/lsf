@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "lsf/util/type_cast.hpp"
+#include "lsf/basic/type_cast.hpp"
 #include "lsf/util/string_ext.hpp"
 #include "lsf/asio/detail/basic_address.hpp"
 
@@ -23,11 +23,14 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 class DummyProtoType {
 public:
-    static DummyProtoType V4() { return DummyProtoType(); }
-    static DummyProtoType V6() { return DummyProtoType(); }
-    int domain() const { return 0; }
+    DummyProtoType(int domain) : _domain(domain) {}
+    static DummyProtoType V4() { return DummyProtoType(AF_INET); }
+    static DummyProtoType V6() { return DummyProtoType(AF_INET6); }
+    int domain() const { return _domain; }
     int type() const { return 0; }
     int protocol() const { return 0; }
+private:
+    int _domain = AF_INET;
 };
 
 ////////////////////////////////////////////////////////////
@@ -36,14 +39,14 @@ public:
 template <typename ProtoType = DummyProtoType>
 class BasicSockAddr {
 public:
-    typedef union {
+    using sockaddr_type = union {
         sockaddr base;
         sockaddr_in v4;
         sockaddr_in6 v6;
-    } sockaddr_type;
+    };
 
-    typedef ProtoType proto_type;
-    typedef BasicAddress address_type;
+    using proto_type = ProtoType;
+    using address_type = BasicAddress;
 
     constexpr static const char * DEF_DELIMIT = "|";
 
@@ -79,7 +82,7 @@ public:
 
     BasicSockAddr(std::string const &str)
         : BasicSockAddr(address_type(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 0)),
-                        util::TypeCast<uint16_t>(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 1))) {}
+                        basic::TypeCast<uint16_t>(util::StringExt::SplitAndGet(str, DEF_DELIMIT, 1))) {}
 
     template <typename OtherProtoType>
     BasicSockAddr(BasicSockAddr<OtherProtoType> const &rhs) {
@@ -87,8 +90,8 @@ public:
     }
 
     template <typename OtherProtoType>
-    BasicSockAddr<ProtoType> &operator=(BasicSockAddr<OtherProtoType> const &rhs) {
-        if (this == &rhs) return *this;
+    BasicSockAddr<ProtoType>& operator=(BasicSockAddr<OtherProtoType> const& rhs) {
+        if (this == (decltype(this))&rhs) return *this;
         ::memcpy(&_sockaddr, &rhs._sockaddr, sizeof(rhs._sockaddr));
         return *this;
     }
@@ -96,7 +99,7 @@ public:
     ////////////////////////////////////////////////////////////
     // member funcs
     std::string ToString() const {
-        return GetAddress().ToString() + DEF_DELIMIT + util::TypeCast<std::string>(GetPort());
+        return GetAddress().ToString() + DEF_DELIMIT + basic::TypeCast<std::string>(GetPort());
     }
 
     uint16_t GetPort() const {

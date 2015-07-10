@@ -5,7 +5,6 @@
 // Revision:    2015-06-08 by leoxiang
 
 #pragma once
-
 #include "lsf/asio/tcp.hpp"
 #include "lsf/asio/net.hpp"
 #include "lsf/basic/noncopyable.hpp"
@@ -16,7 +15,8 @@
 // BasicServer
 class BasicServer : public lsf::basic::NonCopyable {
 public:
-    BasicServer(conf::ENServerType server_type) : _server_type(server_type), _server_id(0) {}
+    BasicServer(conf::ENServerType server_type) : _server_type(server_type) {}
+    virtual ~BasicServer() {}
     void Run(int argc, char** argv);
 
     // signal handle
@@ -50,7 +50,7 @@ public:
 protected:
     std::string _server_name;
     conf::ENServerType _server_type;
-    uint32_t _server_id;
+    uint32_t _server_id = 0;
     std::string _confsvrd_addrss;
     conf::Server _server_config;
 };

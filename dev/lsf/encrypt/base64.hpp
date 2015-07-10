@@ -34,7 +34,7 @@ bool Base64Encode(void *output, size_t *ret_length, void const *input, size_t le
     unsigned char *current = (unsigned char *)input;
     unsigned char *p;
 
-    if ((length + 2) < 0 || ((length + 2) / 3) >= (1 << (sizeof(int) * 8 - 2))) return false;
+    if (((length + 2) / 3) >= (1 << (sizeof(int) * 8 - 2))) return false;
     if (*ret_length < (((length + 2) / 3) * 4)) return false;
 
     p = (unsigned char *)output;

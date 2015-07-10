@@ -11,11 +11,12 @@
 #include <exception>
 #include <string>
 #include "lsf/basic/singleton.hpp"
+#include "lsf/util/log.hpp"
 
 namespace lsf {
 namespace util {
 
-class Backtrace : public basic::Singleton<Backtrace> {
+class Backtrace : public lsf::basic::Singleton<Backtrace> {
 public:
     const static int MAX_STACK_SIZE = 20;
 
@@ -23,13 +24,15 @@ public:
     std::string const& ToString(int count = MAX_STACK_SIZE) {
         static std::string content;
         content.clear();
+        count++;
 
         // check input
         if (count > MAX_STACK_SIZE) count = MAX_STACK_SIZE;
 
         // get stack
-        size = ::backtrace(array, count);
-        messages = ::backtrace_symbols(array, size);
+        void* array[MAX_STACK_SIZE];
+        int size = ::backtrace(array, count);
+        char ** messages = ::backtrace_symbols(array, size);
 
         // compose string
         for (int i = 1; i < size; ++i) {
@@ -60,16 +63,21 @@ public:
     }
 
 private:
-    void* array[MAX_STACK_SIZE];
-    char** messages;
-    int size;
 };
 
 ////////////////////////////////////////////////////////////
 // macro
-#define LSF_BACKTRACE(count) lsf::util::Backtrace::Instance()->ToString((count) + 1)
+#define LSF_BACKTRACE() lsf::util::Backtrace::Instance()->ToString(5)
 
-#define LSF_LOG_STACK() LSF_LOG_ERR("print stack\n%s", LSF_BACKTRACE(10).c_str())
+#define LSF_LOG_INFO_WITH_STACK(fmt,args...)  LSF_LOG_INFO(fmt,##args);  LSF_LOG_INFO("%s",  LSF_BACKTRACE().c_str())
+
+#define LSF_LOG_DEBUG_WITH_STACK(fmt,args...) LSF_LOG_DEBUG(fmt,##args); LSF_LOG_DEBUG("%s", LSF_BACKTRACE().c_str())
+
+#define LSF_LOG_WARN_WITH_STACK(fmt,args...)  LSF_LOG_WARN(fmt,##args);  LSF_LOG_WARN("%s",  LSF_BACKTRACE().c_str())
+
+#define LSF_LOG_ERR_WITH_STACK(fmt,args...)   LSF_LOG_ERR(fmt,##args);   LSF_LOG_ERR("%s",   LSF_BACKTRACE().c_str())
+
+#define LSF_LOG_FATAL_WITH_STACK(fmt,args...) LSF_LOG_FATAL(fmt,##args); LSF_LOG_FATAL("%s", LSF_BACKTRACE().c_str())
 
 }  // end of namespace util
 }  // end of namespace lsf
