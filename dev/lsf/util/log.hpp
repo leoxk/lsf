@@ -1,278 +1,251 @@
 // File:        log.hpp
 // Description: ---
-// Notes:
+// Notes:       ---
 // Author:      leoxiang <leoxiang727@qq.com>
-// Revision:    2011-09-19 by leoxiang
+// Revision:    2015-09-08 by leoxiang
 
 #pragma once
-
-#include <stdint.h>
-#include <stdarg.h>
+#include <initializer_list>
 #include <iostream>
 #include <fstream>
-#include <cstring>
+#include <memory>
+#include "lsf/basic/macro.hpp"
+#include "lsf/basic/singleton.hpp"
+#include "lsf/util/string_ext.hpp"
 #include "lsf/util/system.hpp"
 #include "lsf/util/date.hpp"
-#include "lsf/basic/singleton.hpp"
-#include "lsf/basic/error.hpp"
-#include "lsf/basic/macro.hpp"
+#include "lsf/util/backtrace.hpp"
+#include "lsf/util/protobuf.hpp"
+#include "lsf/util/log.hpp"
 
 namespace lsf {
 namespace util {
 
 ////////////////////////////////////////////////////////////
-// BasicLogDriver
-////////////////////////////////////////////////////////////
-class BasicLogDriver : public lsf::basic::Error {
+// LogFileBuf
+class LogFileBuf : public std::streambuf {
 public:
-    virtual ~BasicLogDriver() {}
-
-    virtual size_t Write(char const* str, size_t len) = 0;
-    virtual void Flush() = 0;
-    virtual bool IsReady() const = 0;
-};
-
-////////////////////////////////////////////////////////////
-// FileLogDriver
-////////////////////////////////////////////////////////////
-class FileLogDriver : public BasicLogDriver {
-public:
-    const static uint16_t SHIFT_NONE = 0;
-    const static uint16_t SHIFT_DAY = 1;
-    const static uint16_t SHIFT_MONTH = 2;
+    const static int SHIFT_NONE = 0;
+    const static int SHIFT_DAY = 1;
+    const static int SHIFT_MONTH = 2;
+    static const char EOL = '\n';
 
 public:
-    FileLogDriver() {}
-
-    FileLogDriver(std::string const& prefix, uint16_t shift = SHIFT_DAY) : _shift(shift), _prefix(prefix) { _Open(); }
-
-    ~FileLogDriver() { _Shift(); }
-
-public:
-    virtual size_t Write(char const* str, size_t len) override {
-        if (_Shift()) _Open();
-        _ofs.write(str, len);
-        return len;
-    }
-
-    virtual void Flush() override {
-        if (!IsReady()) return;
-        _ofs.flush();
-    }
-
-    virtual bool IsReady() const override { return _ofs.is_open(); }
-
-private:
-    bool _Open() {
-        if (_ofs.is_open()) _ofs.close();
-
-        // mkdir if necessary
-        if (!System::IsExist(util::StringExt::GetDirName(_prefix))) {
-            if (!System::MkDir(util::StringExt::GetDirName(_prefix))) {
-                ErrString() = LSF_DEBUG_INFO + System::ErrString();
-                return false;
-            }
+    LogFileBuf(std::string const& file_prefix, int shift_type) :
+        _shift_type(shift_type), _file_prefix(file_prefix) {
+            Open();
+            if (IsOpen()) TraverseAndMove();
         }
 
-        // construct file path
-        if (SHIFT_DAY == _shift) {
-            _last_shift = Date().GetDay();
-            _log_path = _prefix + "." + Date().ToFormatString("%Y-%m-%d");
-        } else if (SHIFT_MONTH == _shift) {
-            _last_shift = Date().GetMonth();
-            _log_path = _prefix + "." + Date().ToFormatString("%Y-%m");
-        } else {
-            _log_path = _prefix;
+    virtual int overflow(int c) override {
+        if (c == EOL) {
+            _file_buf.pubsync();
+            if (Shift()) Open();
         }
-
-        // open file
-        _ofs.open(_log_path.c_str(), std::ios_base::app | std::ios_base::out);
-
-        if (!_ofs.is_open()) {
-            ErrString() = LSF_DEBUG_INFO + SysErrString();
-            return false;
-        }
-
-        return true;
+        return _file_buf.sputc(c);
     }
 
-    bool _Shift() {
-        if (_shift == SHIFT_NONE) return false;
-        if (_log_path.empty()) return false;
+    bool IsOpen() const { return _file_buf.is_open(); }
+
+protected:
+    void Open() {
+        // save last
+        lsf::util::Date date;
+        switch (_shift_type) {
+            case SHIFT_NONE:  break;
+            case SHIFT_DAY:   _last_shift_val = date.GetDay();   break;
+            case SHIFT_MONTH: _last_shift_val = date.GetMonth(); break;
+            default: return;
+        }
 
         // construct path
-        std::string dest_path;
-        if (SHIFT_DAY == _shift) {
-            if (Date().GetDay() == _last_shift) return false;
-            dest_path = util::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/%m/") +
-                        util::StringExt::GetBaseName(_log_path);
-        } else if (SHIFT_MONTH == _shift) {
-            if (Date().GetMonth() == _last_shift) return false;
-            dest_path = util::StringExt::GetDirName(_log_path) + Date().ToFormatString("/%Y/") +
-                        util::StringExt::GetBaseName(_log_path);
-        } else {
-            return false;
+        _file_path = _file_prefix + date.ToFormatString(".%Y-%m-%d");
+
+        // mkdir if necessary
+        auto file_dir = lsf::util::StringExt::GetDirName(_file_path);
+        if (!lsf::util::System::IsExist(file_dir) && !lsf::util::System::MkDir(file_dir)) return;
+
+        // open file
+        if (_file_buf.is_open()) _file_buf.close();
+        _file_buf.open(_file_path.c_str(), std::ios::app | std::ios::out);
+    }
+
+    bool Shift() {
+        // check file exist
+        if (!IsOpen()) return false;
+
+        // check need shift
+        switch (_shift_type) {
+            case SHIFT_DAY:   if (_last_shift_val == (int)lsf::util::Date().GetDay())   return false; break;
+            case SHIFT_MONTH: if (_last_shift_val == (int)lsf::util::Date().GetMonth()) return false; break;
+            default: return false;
         }
+
+        // real shift
+        if (!RealShift(_file_path)) return false;
+
+        // close old file
+        _file_buf.close();
+        return true;
+    }
+
+    bool RealShift(std::string const& file) {
+        // check head match
+        if (::strncmp(file.c_str(), _file_prefix.c_str(), _file_prefix.size()) != 0) return false;
+
+        // scanf date
+        unsigned int year, month, day;
+        if (sscanf(file.c_str() + _file_prefix.size(), ".%u-%u-%u", &year, &month, &day) == EOF) return false;
+
+        // check date match
+        lsf::util::Date date;
+        if (year == date.GetYear() && month == date.GetMonth() && day == date.GetDay()) return false;
+
+        // calc new file path
+        char const* nest_dir;
+        switch (_shift_type) {
+            case SHIFT_DAY:   nest_dir = "/%Y/%m/"; break;
+            case SHIFT_MONTH: nest_dir = "/%Y/";    break;
+            default: return false;
+        }
+        std::string new_file_path = lsf::util::StringExt::GetDirName(file) +
+                        date.ToFormatString(nest_dir) +
+                        lsf::util::StringExt::GetBaseName(file);
 
         // mkdir and rename
-        if (!System::IsExist(util::StringExt::GetDirName(dest_path))) {
-            if (!System::MkDir(util::StringExt::GetDirName(dest_path))) {
-                ErrString() = LSF_DEBUG_INFO + System::ErrString();
-                return false;
-            }
-        }
-
-        if (!System::Rename(_log_path, dest_path)) {
-            ErrString() = LSF_DEBUG_INFO + System::ErrString();
-            return false;
-        }
-
-        // close file
-        if (_ofs.is_open()) _ofs.close();
+        auto new_file_dir = lsf::util::StringExt::GetDirName(new_file_path);
+        if (!lsf::util::System::IsExist(new_file_dir) && !lsf::util::System::MkDir(new_file_dir)) return false;
+        if (!lsf::util::System::Rename(file, new_file_path)) return false;
 
         return true;
     }
 
-private:
-    uint16_t _shift = 0;
-    size_t _last_shift = 0;
-    std::string _prefix;
-    std::string _log_path;
-    std::ofstream _ofs;
-};
-
-////////////////////////////////////////////////////////////
-// TermLogDriver
-////////////////////////////////////////////////////////////
-class TermLogDriver : public BasicLogDriver {
-public:
-    virtual size_t Write(char const* str, size_t len) override {
-        std::cerr.write(str, len);
-        return len;
+    void TraverseAndMove() {
+        // traverse all file
+        lsf::util::System::ForFilesWithinFold(
+                lsf::util::StringExt::GetDirName(_file_prefix),
+                [this] (std::string const& file) { RealShift(file); });
     }
 
-    virtual void Flush() override { std::cerr.flush(); }
-
-    virtual bool IsReady() const override { return std::cerr.good(); }
+protected:
+    int _shift_type = SHIFT_NONE;
+    int _last_shift_val = -1;
+    std::string _file_prefix;
+    std::string _file_path;
+    std::filebuf _file_buf;
 };
 
 ////////////////////////////////////////////////////////////
 // Log
-////////////////////////////////////////////////////////////
-class Log : public basic::Error {
+class Log : public std::ostream {
 public:
-    // constants
-    const static uint16_t TYPE_INFO = 0x1 << 0;
-    const static uint16_t TYPE_DEBUG = 0x1 << 1;
-    const static uint16_t TYPE_WARN = 0x1 << 2;
-    const static uint16_t TYPE_ERR = 0x1 << 3;
-    const static uint16_t TYPE_FATAL = 0x1 << 4;
-    const static uint16_t TYPE_ALL = TYPE_INFO | TYPE_DEBUG | TYPE_WARN | TYPE_ERR | TYPE_FATAL;
+    const static int TYPE_INF = 0x1 << 0;
+    const static int TYPE_DBG = 0x1 << 1;
+    const static int TYPE_WRN = 0x1 << 2;
+    const static int TYPE_ERR = 0x1 << 3;
+    const static int TYPE_FAT = 0x1 << 4;
+    const static int TYPE_ALL = TYPE_INF | TYPE_DBG | TYPE_WRN | TYPE_ERR | TYPE_FAT;
+    const static size_t MAX_LOG_SIZE = 32768;
+    using base_type = std::ostream;
 
 public:
-    // constructor
-    Log(uint16_t mask = TYPE_ALL) : _mask(mask) {}
+    ////////////////////////////////////////////////////////////
+    // common func
+    Log(int mask = TYPE_ALL) : base_type(std::cerr.rdbuf()), _mask(mask) {}
+    ~Log() { Release(); }
 
-    ~Log() { if (_pdriver) delete _pdriver; }
 
-    // membet funcs
-    bool BindOutput(BasicLogDriver* pdriver) {
-        // release old
-        if (_pdriver) delete _pdriver;
+    void BingTerminalOut() { base_type::rdbuf(std::cout.rdbuf()); }
+    void BingTerminalErr() { base_type::rdbuf(std::cerr.rdbuf()); }
+    void BindString() { Reset(new std::stringbuf()); }
 
-        // assign new
-        _pdriver = pdriver;
-
-        // check
-        if (!_pdriver->IsReady()) {
-            ErrString() = LSF_DEBUG_INFO + _pdriver->ErrString();
-            _pdriver = nullptr;
+    bool BindFile(std::string const& file_prefix, int shift_type = LogFileBuf::SHIFT_NONE) {
+        auto ptmp = new LogFileBuf(file_prefix, shift_type);
+        if (!ptmp->IsOpen()) {
+            delete ptmp;
             return false;
         }
 
+        Reset(ptmp);
         return true;
     }
 
-    size_t WriteLog(uint16_t type, char const* fmt, ...) {
-        if (!IsBindOuput()) return 0;
-        if (!(type & _mask)) return 0;
-        if (fmt == nullptr) return 0;
-
-        // get time prefix
-        std::string prefix = Date::Now().ToFormatString("[%Y-%m-%d %H:%M:%S ");
-        switch (type) {
-            case TYPE_INFO:
-                prefix += "INF] ";
-                break;
-            case TYPE_DEBUG:
-                prefix += "DBG] ";
-                break;
-            case TYPE_WARN:
-                prefix += "WRN] ";
-                break;
-            case TYPE_ERR:
-                prefix += "ERR] ";
-                break;
-            case TYPE_FATAL:
-                prefix += "FAT] ";
-                break;
-            default:
-                prefix += "UKN] ";
-                break;
+    std::string GetString() const {
+        if (std::stringbuf* psb = dynamic_cast<std::stringbuf*>(base_type::rdbuf())) {
+            return psb->str();
         }
+        return "";
+    }
+
+    bool CheckMask(int type) const { return type & _mask; }
+
+    ////////////////////////////////////////////////////////////
+    // output func
+    Log& Output(int type, char const* fmt, ...) {
+        // check input
+        if (!base_type::good()) return *this;
+        if (!CheckMask(type)) return *this;
+        if (fmt == nullptr) return *this;
 
         // get user-define content
-        char tmp[1024];
+        char tmp[MAX_LOG_SIZE];
         va_list ap;
         va_start(ap, fmt);
-        vsprintf(tmp, fmt, ap);
+        vsnprintf(tmp, sizeof(tmp), fmt, ap);
         va_end(ap);
 
         // do ouotput
-        size_t len = 0;
-        len += _pdriver->Write(prefix.c_str(), prefix.size());
-        len += _pdriver->Write(tmp, strlen(tmp));
-        len += _pdriver->Write("\n", 1);
-        _pdriver->Flush();
+        base_type::write(tmp, strnlen(tmp, sizeof(tmp)));
+        base_type::flush();
 
-        return len;
+        return *this;
     }
 
-    // accessor
-    void SetTypeMask(uint16_t type) { _mask = type; }
+protected:
+    void Release() {
+        if (_psb) delete _psb;
+    }
 
-    bool IsBindOuput() const { return _pdriver && _pdriver->IsReady(); }
+    void Reset(std::streambuf* psb) {
+        Release();
+        _psb = psb;
+        base_type::rdbuf(_psb);
+    }
 
-private:
-    BasicLogDriver* _pdriver = nullptr;
-    uint16_t _mask = 0;
+    int _mask = TYPE_ALL;
+    std::streambuf* _psb = nullptr;
 };
 
 ////////////////////////////////////////////////////////////
-// Singleton Log, provide macros for convient access
-class SingleLog : public Log, public lsf::basic::Singleton<SingleLog> {};
+// SingleLog
+class SingleLog : public Log, public lsf::basic::Singleton<SingleLog> { };
 
-#define LSF_LOG_INFO(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_INFO, "%s|%d|%s " fmt, __FILE__, __LINE__, \
-                                               __FUNCTION__, ##args)
+} // end namespace util
+} // end namespace lsf
 
-#define LSF_LOG_DEBUG(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_DEBUG, "%s|%d|%s " fmt, __FILE__, __LINE__, \
-                                               __FUNCTION__, ##args)
+////////////////////////////////////////////////////////////
+// macros
+#define LSF_LOG             lsf::util::SingleLog::Reference()
+#define LSF_DATE            lsf::util::Date::Now().ToFormatString("%Y-%m-%d|%H:%M:%S")
+#define LSF_STACK(count)    lsf::util::Backtrace::Instance()->ToString(5).c_str()
+#define LSF_PROTOBUF        lsf::util::Protobuf::Instance()->ErrString().c_str()
 
-#define LSF_LOG_WARN(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_WARN, "%s|%d|%s " fmt, __FILE__, __LINE__, \
-                                               __FUNCTION__, ##args)
+#define LSF_LOG_INF(fmt, ...) LSF_LOG.Output(lsf::util::Log::TYPE_INF, "%s|INF " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " " fmt "\n", LSF_DATE.c_str(), ##__VA_ARGS__)
+#define LSF_LOG_DBG(fmt, ...) LSF_LOG.Output(lsf::util::Log::TYPE_DBG, "%s|DBG " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " " fmt "\n", LSF_DATE.c_str(), ##__VA_ARGS__)
+#define LSF_LOG_WRN(fmt, ...) LSF_LOG.Output(lsf::util::Log::TYPE_WRN, "%s|WRN " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " " fmt "\n", LSF_DATE.c_str(), ##__VA_ARGS__)
+#define LSF_LOG_ERR(fmt, ...) LSF_LOG.Output(lsf::util::Log::TYPE_ERR, "%s|ERR " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " " fmt "\n", LSF_DATE.c_str(), ##__VA_ARGS__)
+#define LSF_LOG_FAT(fmt, ...) LSF_LOG.Output(lsf::util::Log::TYPE_FAT, "%s|FAT " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " " fmt "\n", LSF_DATE.c_str(), ##__VA_ARGS__)
 
-#define LSF_LOG_ERR(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_ERR, "%s|%d|%s " fmt, __FILE__, __LINE__, \
-                                               __FUNCTION__, ##args)
+#define LSF_LOG_INF_STACK(fmt, ...) LSF_LOG_INF(fmt "\n%s", ##__VA_ARGS__, LSF_STACK(5))
+#define LSF_LOG_DBG_STACK(fmt, ...) LSF_LOG_DBG(fmt "\n%s", ##__VA_ARGS__, LSF_STACK(5))
+#define LSF_LOG_WRN_STACK(fmt, ...) LSF_LOG_WRN(fmt "\n%s", ##__VA_ARGS__, LSF_STACK(5))
+#define LSF_LOG_ERR_STACK(fmt, ...) LSF_LOG_ERR(fmt "\n%s", ##__VA_ARGS__, LSF_STACK(5))
+#define LSF_LOG_FAT_STACK(fmt, ...) LSF_LOG_FAT(fmt "\n%s", ##__VA_ARGS__, LSF_STACK(5))
 
-#define LSF_LOG_FATAL(fmt, args...)                                                                               \
-    lsf::util::SingleLog::Instance()->WriteLog(lsf::util::Log::TYPE_FATAL, "%s|%d|%s " fmt, __FILE__, __LINE__, \
-                                               __FUNCTION__, ##args)
-
-}  // end of namespace util
-}  // end of namespace lsf
+#define LSF_INF if (LSF_LOG.CheckMask(lsf::util::Log::TYPE_INF)) LSF_LOG << LSF_DATE << "|INF " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " "
+#define LSF_DBG if (LSF_LOG.CheckMask(lsf::util::Log::TYPE_DBG)) LSF_LOG << LSF_DATE << "|DBG " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " "
+#define LSF_WRN if (LSF_LOG.CheckMask(lsf::util::Log::TYPE_WRN)) LSF_LOG << LSF_DATE << "|WRN " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " "
+#define LSF_ERR if (LSF_LOG.CheckMask(lsf::util::Log::TYPE_ERR)) LSF_LOG << LSF_DATE << "|ERR " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " "
+#define LSF_FAT if (LSF_LOG.CheckMask(lsf::util::Log::TYPE_FAT)) LSF_LOG << LSF_DATE << "|FAT " __FILE__ "|" LSF_TOKEN_TO_STRING(__LINE__) " "
 
 // vim:ts=4:sw=4:et:ft=cpp:

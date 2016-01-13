@@ -12,26 +12,29 @@
 #      REVISION: 2012-08-15 by leoxiang
 #===============================================================================#
 
+PROJECT_DIR := .
+-include $(PROJECT_DIR)/Makefile.shared
+
 ############################################################
 # define modules
 ############################################################
 SVR_MODULE = \
-			  dev/svr/proto 	\
-			  dev/svr/common 	\
-			  dev/svr/confsvrd	\
-			  dev/svr/proxysvrd	\
-			  dev/svr/connsvrd	\
-			  dev/svr/gamesvrd	\
-			  dev/svr/roomsvrd	\
-			  dev/svr/test 		\
+			  dev/svr/proto 		\
+			  dev/svr/common 		\
+			  dev/svr/confsvrd		\
+			  dev/svr/datasvrd		\
+			  dev/svr/gamesvrd		\
+			  dev/svr/proxysvrd		\
+			  dev/svr/connsvrd		\
+			  dev/svr/httpsvrd  	\
+			  dev/svr/test 			\
 
 TEST_MODULE = \
-			  dev/lsf_test/basic		\
-			  dev/lsf_test/algorithm	\
-			  dev/lsf_test/asio			\
-			  dev/lsf_test/container	\
-			  dev/lsf_test/encrypt 		\
-			  dev/lsf_test/util 		\
+			  dev/lsf/test/basic		\
+			  dev/lsf/test/algorithm	\
+			  dev/lsf/test/asio			\
+			  dev/lsf/test/container	\
+			  dev/lsf/test/util 		\
 
 ############################################################
 # for svr
@@ -54,8 +57,8 @@ test : 				\
 	test_basic 		\
 	test_asio 		\
 	test_container 	\
-	test_encrypt 	\
 	test_util 		\
+	test_algorithm  \
 
 test_clean :
 	for dir in $(TEST_MODULE); do \
@@ -67,6 +70,10 @@ test_compile:
 		make -C $$dir; \
 	done
 
+test_algorithm :
+	@./test/bin/test_combination
+	@./test/bin/test_two_dimensional_table ./test/conf/test_two_dimensional_table.csv
+
 test_basic :
 	@./test/bin/test_scope_exit
 	@./test/bin/test_type_cast
@@ -74,10 +81,11 @@ test_basic :
 	@./test/bin/test_any
 
 test_asio :
-	@./test/bin/test_net
-	@./test/bin/test_tcp
-	@./test/bin/test_udp
-	@./test/bin/test_asio
+	@./test/bin/test_address
+	@./test/bin/test_sockaddr
+	@./test/bin/test_socket
+	@./test/bin/test_async
+	@./test/bin/test_curl
 
 test_container :
 	@./test/bin/test_array
@@ -92,10 +100,6 @@ test_container :
 	@./test/bin/test_basic_container
 	@./test/bin/test_shared_mem
 
-test_encrypt :
-	@./test/bin/test_base64
-	@./test/bin/test_md5
-
 test_util :
 	@./test/bin/test_config ./test/conf/test_config.conf
 	@./test/bin/test_date
@@ -104,8 +108,15 @@ test_util :
 	@./test/bin/test_system
 	@./test/bin/test_backtrace
 	@./test/bin/test_string_ext
+	@./test/bin/test_file_lock
+	@./test/bin/test_locale
+	@./test/bin/test_words_filter
 
-.PHONY : all clean test test_clean check
+table :
+	for _file in $$(ls $(TABLE_DIR)/*.xlsx); do \
+		xlsx2csv $$_file $$(dirname $$_file)/$$(basename $$_file .xlsx).csv; \
+	done
 
+.PHONY : all clean test test_clean check table1 table2
 
 # vim:ts=4:sw=4:ft=make:

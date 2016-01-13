@@ -11,8 +11,6 @@
 #include <type_traits>
 #include "lsf/basic/macro.hpp"
 #include "lsf/basic/noncopyable.hpp"
-#include "lsf/util/log.hpp"
-#include "lsf/util/backtrace.hpp"
 
 namespace lsf {
 namespace basic {
@@ -31,14 +29,7 @@ public:
     inline ScopeExit(ScopeExit&& rhs) : _func(std::move(rhs._func)) {}
 
     // destructor, if not dismiss then call func
-    inline ~ScopeExit() {
-        try {
-            if (!_is_dismiss) _func();
-        }
-        catch (std::exception& e) {
-            LSF_LOG_FATAL_WITH_STACK("scope throws, %s", e.what());
-        }
-    }
+    inline ~ScopeExit() { if (!_is_dismiss) _func(); }
 
     inline void Dismiss() { _is_dismiss = true; }
 

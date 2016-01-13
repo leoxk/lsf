@@ -4,9 +4,14 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-09 by leoxiang
 
+syntax = "proto2";
 import "conf_deploy.proto";
+import "conf_game.proto";
+import "msg_cs.proto";
 import "data_db.proto";
+
 package msg;
+
 
 ////////////////////////////////////////////////////////////
 // proxy head
@@ -15,6 +20,7 @@ enum ENProxyTransferType {
     PROXY_TRANSFER_TYPE_BY_HASH = 2;
     PROXY_TRANSFER_TYPE_BY_BROADCAST = 3;
     PROXY_TRANSFER_TYPE_BY_RANDOM = 4;
+    PROXY_TRANSFER_TYPE_BY_RANDOM_EXCEPT_ID = 5;
 }
 
 message ProxyHead {
@@ -25,6 +31,7 @@ message ProxyHead {
     optional uint32              dst_server_id   = 5;
     optional uint64              dst_hash_id     = 6;
     optional uint32              session_id      = 7;
+    optional uint32              dst_except_id   = 8;
 }
 
 ////////////////////////////////////////////////////////////
@@ -32,135 +39,176 @@ message ProxyHead {
 enum ENInternalError {
     INTERNAL_ERROR_OK = 0; // success
     INTERNAL_ERROR_CANT_FIND_CONFIG = 1;
+    INTERNAL_ERROR_VERSION_NOT_MATCH = 2;
+    INTERNAL_ERROR_LEVELDB = 3;
+    INTERNAL_ERROR_INVALID_CARRY_IN_TYPE = 4;
+    INTERNAL_ERROR_CURL = 5;
+    INTERNAL_ERROR_CARRY_IN = 6;
+    INTERNAL_ERROR_ALREADY_LOCK = 7;
+    INTERNAL_ERROR_LOCK_NOT_MATCH = 8;
+    INTERNAL_ERROR_ALREADY_HAS_DATA = 9;
+    INTERNAL_ERROR_JSON_FORMAT = 10;
+    INTERNAL_ERROR_PLATFORM_ADD_CHIP = 11;
+    INTERNAL_ERROR_JSON_PARSE = 12;
+    INTERNAL_ERROR_NOT_ENOUGH_PROP = 13;
+    INTERNAL_ERROR_DEDUCT_PROP = 14;
+    INTERNAL_ERROR_ADD_PROP = 15;
+    INTERNAL_ERROR_INVALID_INPUT = 16;
 }
 
 ////////////////////////////////////////////////////////////
 // confsvr messages
-message GetDeployConfigReq {
+message GetServerConfigReq {
     optional conf.ENServerType  server_type = 1;
     optional uint32             server_id = 2;
 }
 
-message GetDeployConfigRsp {
+message GetServerConfigRsp {
     optional ENInternalError result = 1;
     optional conf.Server config = 2;
 }
 
 message GetGameConfigReq {
-    /* optional conf.ENServerType  server_type = 1; */
+    optional conf.ENServerType server_type = 1;
+    optional uint32            server_id = 2;
 }
 
 message GetGameConfigRsp {
-    /* optional ENInternalError result = 1; */
+    optional ENInternalError result = 1;
+    optional conf.Game config =2;
+}
+
+message GetAllServerConfigReq {
+}
+
+message GetAllServerConfigRsp {
+    repeated conf.Server configs = 1;
 }
 
 ////////////////////////////////////////////////////////////
 // proxysvr message
 message ReisterToProxyReq {
     optional conf.ENServerType  server_type = 1;
-    optional uint32              server_id = 2;
+    optional uint32             server_id = 2;
 }
 
 message ReisterToProxyRsp {
-    optional bool result = 1;
-}
-
-message GetAllDeployConfigReq {
-}
-
-message GetAllDeployConfigRsp {
-    repeated conf.Server all_config = 1;
+    optional ENInternalError result = 1;
 }
 
 ////////////////////////////////////////////////////////////
 // dbsvr message
-message Data {
-    optional uint32 key = 1;
-    optional string value = 2;
-    optional uint64 version = 3;
-    optional uint32 update_time = 4;
-}
-
 message QueryDataReq {
-    optional data.ENDataType type = 1;
-    optional uint64 id = 2;
-    repeated uint32 keys = 3;
+    optional data.ENDataType type      = 1;
+    optional uint64          id        = 2;
+    optional uint32          version   = 3;
+    optional bool            need_lock = 4;
 }
 
 message QueryDataRsp {
-    optional ENInternalError result = 1;
-    optional data.ENDataType type = 2;
-    optional uint64 id = 3;
-    repeated Data datas = 4;
+    optional ENInternalError result  = 1;
+    optional data.ENDataType type    = 2;
+    optional uint64          id      = 3;
+    optional uint32          version = 4;
+    optional data.DB         data    = 5;
+    optional uint32          lock_id = 6;
 }
 
 message UpdateDataReq {
-    optional data.ENDataType type = 1;
-    optional uint64 id = 2;
-    repeated Data datas = 3;
+    optional data.ENDataType type    = 1;
+    optional uint64          id      = 2;
+    optional uint32          version = 3;
+    optional data.DB         data    = 4;
+    optional uint32          lock_id = 5;
 }
 
 message UpdateDataRsp {
-    optional ENInternalError result = 1;
-    optional data.ENDataType type = 2;
-    optional uint64 id = 3;
-    repeated Data conflict_datas = 4;
+    optional ENInternalError result  = 1;
+    optional data.ENDataType type    = 2;
+    optional uint64          id      = 3;
+    optional uint32          version = 4;
 }
 
 message DeleteDataReq {
-    optional data.ENDataType type = 1;
-    optional uint64 id = 2;
-    repeated uint32 keys = 3;
+    optional data.ENDataType type    = 1;
+    optional uint64          id      = 2;
 }
 
 message DeleteDataRsp {
     optional ENInternalError result = 1;
+    optional data.ENDataType type   = 2;
+    optional uint64          id     = 3;
+}
+
+message InsertDataReq {
+    optional data.ENDataType type    = 1;
+    optional uint64          id      = 2;
+    optional data.DB         data    = 4;
+}
+
+message InsertDataRsp {
+    optional ENInternalError result = 1;
+    optional data.ENDataType type   = 2;
+    optional uint64          id     = 3;
+}
+
+message UnlockDataNotify {
+    optional data.ENDataType type    = 1;
+    optional uint64          id      = 2;
+    optional uint32          lock_id = 3;
 }
 
 ////////////////////////////////////////////////////////////
 // server to server message
-enum SSType {
-    SS_TYPE_GET_DEPLOY_CONFIG_REQ     = 10;
-    SS_TYPE_GET_DEPLOY_CONFIG_RSP     = 11;
-    SS_TYPE_GET_GAME_CONFIG_REQ       = 12;
-    SS_TYPE_GET_GAME_CONFIG_RSP       = 13;
-    SS_TYPE_GET_ALL_DEPLOY_CONFIG_REQ = 14;
-    SS_TYPE_GET_ALL_DEPLOY_CONFIG_RSP = 15;
-    SS_TYPE_REGISTER_TO_PROXY_REQ     = 22;
-    SS_TYPE_REGISTER_TO_PROXY_RSP     = 23;
-    SS_TYPE_QUERY_DATA_REQ            = 16;
-    SS_TYPE_QUERY_DATA_RSP            = 17;
-    SS_TYPE_UPDATE_DATA_REQ           = 18;
-    SS_TYPE_UPDATE_DATA_RSP           = 19;
-    SS_TYPE_DELETE_DATA_REQ           = 20;
-    SS_TYPE_DELETE_DATA_RSP           = 21;
+enum ENSSType {
+    SS_TYPE_NONE                               = 1;
+    SS_TYPE_GET_SERVER_CONFIG_REQ              = 10;
+    SS_TYPE_GET_SERVER_CONFIG_RSP              = 11;
+    SS_TYPE_GET_GAME_CONFIG_REQ                = 12;
+    SS_TYPE_GET_GAME_CONFIG_RSP                = 13;
+    SS_TYPE_GET_ALL_SERVER_CONFIG_REQ          = 14;
+    SS_TYPE_GET_ALL_SERVER_CONFIG_RSP          = 15;
+    SS_TYPE_QUERY_DATA_REQ                     = 16;
+    SS_TYPE_QUERY_DATA_RSP                     = 17;
+    SS_TYPE_UPDATE_DATA_REQ                    = 18;
+    SS_TYPE_UPDATE_DATA_RSP                    = 19;
+    SS_TYPE_DELETE_DATA_REQ                    = 20;
+    SS_TYPE_DELETE_DATA_RSP                    = 21;
+    SS_TYPE_INSERT_DATA_REQ                    = 22;
+    SS_TYPE_INSERT_DATA_RSP                    = 23;
+    SS_TYPE_UNLOCK_DATA_NOTIFY                 = 24;
+    SS_TYPE_REGISTER_TO_PROXY_REQ              = 25;
+    SS_TYPE_REGISTER_TO_PROXY_RSP              = 26;
 }
 
-message SS
-{
+message SS {
     // header
-    optional SSType    msg_type    = 1;
+    optional ENSSType  msg_type   = 1;
     optional ProxyHead proxy_head = 2;
 
     // confsvr message
-    optional GetDeployConfigReq    get_deploy_config_req     = 10;
-    optional GetDeployConfigRsp    get_deploy_config_rsp     = 11;
+    optional GetServerConfigReq    get_server_config_req     = 10;
+    optional GetServerConfigRsp    get_server_config_rsp     = 11;
     optional GetGameConfigReq      get_game_config_req       = 12;
     optional GetGameConfigRsp      get_game_config_rsp       = 13;
-    optional GetAllDeployConfigReq get_all_deploy_config_req = 14;
-    optional GetAllDeployConfigRsp get_all_deploy_config_rsp = 15;
-
-    // proxysvr message
-    optional ReisterToProxyReq register_to_proxy_req = 22;
-    optional ReisterToProxyRsp register_to_proxy_rsp = 23;
+    optional GetAllServerConfigReq get_all_server_config_req = 14;
+    optional GetAllServerConfigRsp get_all_server_config_rsp = 15;
 
     // dbsvr message
-    optional QueryDataReq  query_data_req  = 16;
-    optional QueryDataRsp  query_data_rsp  = 17;
-    optional UpdateDataReq update_data_req = 18;
-    optional UpdateDataRsp update_data_rsp = 19;
-    optional DeleteDataReq delete_data_req = 20;
-    optional DeleteDataRsp delete_data_rsp = 21;
+    optional QueryDataReq     query_data_req     = 16;
+    optional QueryDataRsp     query_data_rsp     = 17;
+    optional UpdateDataReq    update_data_req    = 18;
+    optional UpdateDataRsp    update_data_rsp    = 19;
+    optional DeleteDataReq    delete_data_req    = 20;
+    optional DeleteDataRsp    delete_data_rsp    = 21;
+    optional InsertDataReq    insert_data_req    = 22;
+    optional InsertDataRsp    insert_data_rsp    = 23;
+    optional UnlockDataNotify unlock_data_notify = 24;
+
+    // proxysvr message
+    optional ReisterToProxyReq register_to_proxy_req = 25;
+    optional ReisterToProxyRsp register_to_proxy_rsp = 26;
+
 }
 
 

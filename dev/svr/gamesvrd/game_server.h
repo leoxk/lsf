@@ -16,7 +16,6 @@ public:
 public:
     virtual bool OnRun();
     virtual void OnExit();
-    virtual void OnTick();
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

@@ -5,52 +5,64 @@
 // Revision:    2015-07-07 by leoxiang
 
 #pragma once
+#include <array>
 #include "svr/common/common_header.h"
 #include "svr/common/basic_handler.h"
 
 ////////////////////////////////////////////////////////////
-// HandlerManager
-class HandlerManager : public lsf::basic::Singleton<HandlerManager> {
+// DefaultHandler
+class DefaultHandler : public BasicHandler {
 public:
-    static const size_t DEF_MAX_HANDLER_NUM = 5000;
-    using handler_map_type = std::map<int,BasicHandler*>;
-    using session_rsp_map_type = std::map<conf::ENServerType,std::pair<data::ENSessionState,data::ENSessionState>>;
-    using session_wait_map_type = std::map<data::ENSessionState,data::ENSessionState>;
+    virtual data::ENSessionState OnClientRequest(Session& session);
+    virtual data::ENSessionState OnServerRequest(Session& session);
+};
+
+////////////////////////////////////////////////////////////
+// HandlerManager
+class HandlerManager : private lsf::basic::Singleton<HandlerManager> {
+public:
+    using base_type = lsf::basic::Singleton<HandlerManager>;
+    using cs_handler_arr_type = std::array<BasicHandler*,msg::ENCSType_ARRAYSIZE>;
+    using ss_handler_arr_type = std::array<BasicHandler*,msg::ENSSType_ARRAYSIZE>;
 
 public:
     HandlerManager();
-    bool IsRequest(uint32_t msg_type) { return _handler_map.find(msg_type) != _handler_map.end(); }
+    static BasicHandler* Instance(Session const& session) { return base_type::Instance()->_Instance(session); }
+    static BasicHandler* Instance(msg::CS const& message) { return base_type::Instance()->_Instance(message); }
+    static BasicHandler* Instance(msg::SS const& message) { return base_type::Instance()->_Instance(message); }
+    static bool IsRequest(msg::ENSSType msg_type) { return base_type::Instance()->_IsRequest(msg_type); }
 
-    void ProcessSession(Session& session);
-    void ProcessSessionResponse(Session& session);
-    void ProcessSessionTimeout(Session& session);
+    template<typename HandlerType>
+    static void AddCSHandler(msg::ENCSType req_msg_type, msg::ENCSType rsp_msg_type = msg::CS_TYPE_NONE) {
+        return base_type::Instance()->_AddCSHandler(req_msg_type, rsp_msg_type, new HandlerType());
+    }
 
-    void AddHandler(uint32_t msg_type, BasicHandler* phandler) {
-        if (_handler_map.find(msg_type) != _handler_map.end()) {
-            LSF_LOG_FATAL("duplicated msg id, %d", msg_type);
-        }
-        _handler_map[msg_type] = phandler;
+    template<typename HandlerType>
+    static void AddSSHandler(msg::ENSSType req_msg_type, msg::ENSSType rsp_msg_type = msg::SS_TYPE_NONE) {
+        return base_type::Instance()->_AddSSHandler(req_msg_type, rsp_msg_type, new HandlerType());
     }
 
 private:
-    void AddSessionRspMap(conf::ENServerType server_type, data::ENSessionState rsp_state, data::ENSessionState timeout_state) {
-        if (_session_rsp_map.find(server_type) != _session_rsp_map.end()) {
-            LSF_LOG_FATAL("duplicated server type, %u", server_type);
-        }
-        _session_rsp_map[server_type] = std::make_pair(rsp_state, timeout_state);
+    BasicHandler* _Instance(Session const& session);
+    BasicHandler* _Instance(msg::CS const& message);
+    BasicHandler* _Instance(msg::SS const& message);
+    bool _IsRequest(msg::ENSSType msg_type) { return _ss_handler_arr[msg_type] != nullptr; }
+
+    void _AddCSHandler(msg::ENCSType req_msg_type, msg::ENCSType rsp_msg_type, BasicHandler* phandler) {
+        _cs_handler_arr[req_msg_type] = phandler;
+        _cs_handler_arr[req_msg_type]->SetMsgType(rsp_msg_type);
     }
 
-    void AddSessionWaitMap(data::ENSessionState wait_state, data::ENSessionState timeout_state) {
-        if (_session_wait_map.find(wait_state) != _session_wait_map.end()) {
-            LSF_LOG_FATAL("duplicated session state, %u", wait_state);
-        }
-        _session_wait_map[wait_state] = timeout_state;
+    void _AddSSHandler(msg::ENSSType req_msg_type, msg::ENSSType rsp_msg_type, BasicHandler* phandler) {
+        _ss_handler_arr[req_msg_type] = phandler;
+        _ss_handler_arr[req_msg_type]->SetMsgType(rsp_msg_type);
     }
+
 
 private:
-    handler_map_type _handler_map;
-    session_rsp_map_type _session_rsp_map;
-    session_wait_map_type _session_wait_map;
+    cs_handler_arr_type _cs_handler_arr;
+    ss_handler_arr_type _ss_handler_arr;
+    DefaultHandler _default_handler;
 };
 
 

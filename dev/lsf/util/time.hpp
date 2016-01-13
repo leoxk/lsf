@@ -10,15 +10,15 @@
 #include <cstdint>
 
 namespace lsf {
-namespace basic {
+namespace util {
 
 class Time {
 public:
-    static uint64_t TimeValToMilli(struct timeval const & tv) {
+    static uint64_t TimeValToMilli(struct timeval const&  tv) {
         return tv.tv_sec * 1000 + tv.tv_usec / 1000;
     }
 
-    static int64_t TimeValDiff(struct timeval const & tv1, struct timeval const & tv2) {
+    static int64_t TimeValDiff(struct timeval const&  tv1, struct timeval const&  tv2) {
         return TimeValToMilli(tv1) - TimeValToMilli(tv2);
     }
 
@@ -29,7 +29,7 @@ public:
     }
 };
 
-}  // end of namespace basic
+}  // end of namespace util
 } // end of namespace lsf
 
 // vim:ts=4:sw=4:et:ft=cpp:

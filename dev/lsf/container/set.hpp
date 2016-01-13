@@ -79,40 +79,6 @@ public:
     reverse_iterator rend() { return reverse_iterator(begin()); }
     const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
     const_reverse_iterator rend() const { return reverse_iterator(begin()); }
-
-    ////////////////////////////////////////////////////////////
-    // for debug
-    bool CheckConsist() const { return base_type::_ptr_state->CheckConsist(); }
-
-    iterator FindRoot() {
-        if (!base_type::IsBindStorage()) return end();
-
-        size_type root_pos = base_type::_ptr_state->GetRootPos();
-        if (root_pos == state_type::NPOS) return end();
-
-        return iterator(base_type::_ptr_state, root_pos);
-    }
-
-    std::string ToString(size_type pos) {
-        size_type lchild_pos = base_type::_ptr_state->GetLChildPos(pos);
-        size_type rchild_pos = base_type::_ptr_state->GetRChildPos(pos);
-        size_type parent_pos = base_type::_ptr_state->GetParentPos(pos);
-
-        return _ToString(pos) + ": " + _ToString(lchild_pos) + ", " + _ToString(rchild_pos) + ", " +
-               _ToString(parent_pos);
-    }
-
-    std::string _ToString(size_type pos) {
-        std::string out;
-
-        out = "[" + lsf::basic::TypeCast<std::string>(pos) + "]";
-        if (base_type::_ptr_state->GetColor(pos) == state_type::RED) {
-            out += "[*]";
-        } else {
-            out += "[ ]";
-        }
-        return out;
-    }
 };
 
 }  // end of namespace container

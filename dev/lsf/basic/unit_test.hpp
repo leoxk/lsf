@@ -131,7 +131,7 @@ public:
 
         // unit test content
         gettimeofday(&tv_begin, nullptr);
-        for (auto const & pcase : _case_list) {
+        for (auto const&  pcase : _case_list) {
             _test_case_result = true;
 
             timeval case_begin, case_end;

@@ -77,11 +77,11 @@ public:
     SharedMem() { }
     SharedMem(key_t key) { Attach(key); }
 
-    SharedMem(SharedMem const &rhs) { if (rhs.IsAttached()) Attach(rhs._key); }
+    SharedMem(SharedMem const& rhs) { if (rhs.IsAttached()) Attach(rhs._key); }
 
     ~SharedMem() { Detach(); }
 
-    SharedMem &operator=(SharedMem const &rhs) {
+     SharedMem &operator=(SharedMem const& rhs) {
         if (this == &rhs) return *this;
         if (rhs.IsAttached()) Attach(rhs._key);
         return *this;

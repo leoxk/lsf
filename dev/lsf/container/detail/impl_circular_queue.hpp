@@ -112,8 +112,8 @@ public:
         return tmp;
     }
 
-    bool operator==(QueueIterator const &rhs) { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
-    bool operator!=(QueueIterator const &rhs) { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
+    bool operator==(QueueIterator const& rhs) { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
+    bool operator!=(QueueIterator const& rhs) { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
 
 private:
     state_type *_ptr_state;

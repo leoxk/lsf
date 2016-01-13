@@ -8,7 +8,7 @@
 #                Makefile.rule  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude build.mk after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2015-06-08 by leoxiang
 #===============================================================================#
 
@@ -20,11 +20,11 @@ LIB = $(LIB_DIR)/libcommon.a
 OBJ = $(patsubst %.cpp, $(DEP_DIR)/%.o, $(wildcard *.cpp))
 OBJ += $(patsubst %.c, $(DEP_DIR)/%.o, $(wildcard *.c))
 
-$(LIB) :  $(OBJ) 
+$(LIB) : $(OBJ)
 	$(AR) $@ $^
-	
+
 clean:
-	$(RM) $(LIB) $(DEP_DIR) 
+	$(RM) $(LIB) $(DEP_DIR)
 
 .PHONY: clean
 

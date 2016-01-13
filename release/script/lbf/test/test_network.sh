@@ -9,7 +9,7 @@
 #      REVISION: 2012-07-05 by leoxiang
 #===============================================================================
 
-PATH="$(dirname $0)/../lbf:$PATH"
+PATH="$(dirname $0)/..:$PATH"
 source lbf_init.sh
 
 var_ssh_host="127.0.0.1"

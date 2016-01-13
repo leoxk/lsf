@@ -209,8 +209,8 @@ public:
         return tmp;
     }
 
-    bool operator==(ListIterator const &rhs) const { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
-    bool operator!=(ListIterator const &rhs) const { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
+    bool operator==(ListIterator const& rhs) const { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
+    bool operator!=(ListIterator const& rhs) const { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
 
     size_type GetPos() const { return _pos; }
 

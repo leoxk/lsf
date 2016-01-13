@@ -21,8 +21,8 @@ public:
 
 protected:
     Singleton() {}                            // construtor is hidden
-    Singleton(Singleton const &);             // copy constructor is hidden
-    Singleton &operator=(Singleton const &);  // copy assignment is hidden
+    Singleton(Singleton const& );             // copy constructor is hidden
+    Singleton &operator=(Singleton const& );  // copy assignment is hidden
 };
 
 }  // end of namespace basic

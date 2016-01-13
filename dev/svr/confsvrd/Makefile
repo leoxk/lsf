@@ -23,10 +23,13 @@ OBJ  = $(patsubst %.cpp, $(DEP_DIR)/%.o, $(wildcard *.cpp))
 OBJ += $(patsubst %.cc,  $(DEP_DIR)/%.o, $(wildcard *.cc))
 
 # main targets
-all: $(BIN)
+all: $(BIN) $(CONF_DIR)/conf_game.proto
 
-$(BIN): $(OBJ) $(LIB)
+$(BIN): $(OBJ) $(DEP_LIB)
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ $(LD_FLAGS)
+
+$(CONF_DIR)/% : $(DEV_DIR)/svr/proto/%
+	$(CP) $^ $@
 
 clean:
 	$(RM) $(BIN) $(DEP_DIR)

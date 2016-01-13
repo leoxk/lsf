@@ -9,7 +9,7 @@
 #      REVISION: 2012-02-08 by leoxiang
 #===============================================================================
 
-PATH="$(dirname $0)/lbf/lbf:$PATH"
+PATH="$(dirname $0)/lbf:$PATH"
 source lbf_init.sh
 
 ############################################################
@@ -18,30 +18,49 @@ source lbf_init.sh
 # server settings
 export var_project_path=$(path::abs_pathname $(path::dirname $0)/..)
 export var_log_file="${var_project_path}/log/script.log"
-export var_backup_dir="${var_project_path}/backup"
-export var_backup_files=(bin conf script)
-export var_max_try=30
+# export var_backup_dir="${var_project_path}/backup"
+# export var_backup_files=(bin conf script)
+export var_max_try=1
+export var_policy_port=843
+export var_policy_bin="${var_project_path}/script/flashd.py"
+export var_policy_file="${var_project_path}/script/crossdomain.xml"
 
 # mod settings
 declare -a var_index=("conf"
                       "proxy0"
                       "proxy1"
+                      "data0"
+                      "data1"
                       "conn0"
                       "conn1"
                       "conn2"
+                      "conn3"
+                      "conn4"
                       "game0"
                       "game1"
-                      "room0"
+                      "room"
+                      "match"
+                      "http0"
+                      "http1"
+                      "gm"
                       )
-declare -A var_mod=(["conf"]="./bin/confsvrd ./conf/confsvrd.cfg"
+declare -A var_mod=(["conf"]="./bin/confsvrd"
                     ["proxy0"]="./bin/proxysvrd 127.0.0.1 60000 0"
                     ["proxy1"]="./bin/proxysvrd 127.0.0.1 60000 1"
                     ["conn0"]="./bin/connsvrd 127.0.0.1 60000 0"
                     ["conn1"]="./bin/connsvrd 127.0.0.1 60000 1"
                     ["conn2"]="./bin/connsvrd 127.0.0.1 60000 2"
+                    ["conn3"]="./bin/connsvrd 127.0.0.1 60000 3"
+                    ["conn4"]="./bin/connsvrd 127.0.0.1 60000 4"
                     ["game0"]="./bin/gamesvrd 127.0.0.1 60000 0"
                     ["game1"]="./bin/gamesvrd 127.0.0.1 60000 1"
-                    ["room0"]="./bin/roomsvrd 127.0.0.1 60000 0"
+                    ["match"]="./bin/matchsvrd 127.0.0.1 60000"
+                    ["data0"]="./bin/datasvrd 127.0.0.1 60000 0"
+                    ["data1"]="./bin/datasvrd 127.0.0.1 60000 1"
+                    ["room"]="./bin/roomsvrd 127.0.0.1 60000"
+                    ["http0"]="./bin/httpsvrd 127.0.0.1 60000 0"
+                    ["http1"]="./bin/httpsvrd 127.0.0.1 60000 1"
+                    ["gm"]="./bin/gmsvrd 127.0.0.1 60000"
                     )
 
 ############################################################
@@ -51,8 +70,9 @@ function usage
 {
   echo "Usage: $(path::basename $0) [start|stop|restart] [all|$(echo ${var_index[@]}] | tr ' ' '|')"
   echo "       $(path::basename $0) [status|checklive|reload] [all|$(echo ${var_index[@]}] | tr ' ' '|')"
-  #echo "       $(path::basename $0) [backup|rollback]"
   echo "       $(path::basename $0) [clearshm]"
+  echo "       $(path::basename $0) [flashd|checkflash]"
+  echo "       $(path::basename $0) [make] [make_argc]"
 }
 
 function check_input
@@ -68,16 +88,18 @@ function main
   ulimit -s 81920
 
   case $1 in
-    start)      shift; do_start         ${@};;
-    stop)       shift; do_stop          ${@};;
-    restart)    shift; do_restart       ${@};;
-    status)     shift; do_status        ${@};;
-    checklive)  shift; do_checklive     ${@};;
-    reload)     shift; do_reload        ${@};;
-    clearshm)   shift; do_clearshm      ${@};;
-    #backup)     shift; server::backup   ${@};;
-    #rollback)   shift; server::rollback ${@};;
-    *)          usage;;
+    start)        shift; do_start        ${@};;
+    stop)         shift; do_stop         ${@};;
+    restart)      shift; do_restart      ${@};;
+    status)       shift; do_status       ${@};;
+    checklive)    shift; do_checklive    ${@};;
+    reload)       shift; do_reload       ${@};;
+    clearshm)     shift; do_clearshm     ${@};;
+    realclearshm) shift; do_realclearshm ${@};;
+    flashd)       shift; do_flashd       ${@};;
+    checkflash)   shift; do_checkflash   ${@};;
+    make)         shift; do_make         ${@};;
+    *)            usage;;
   esac
   io::no_output cd -
 }
@@ -172,6 +194,11 @@ function do_clearshm
   read -p "clear shm will lose all user data, please confirm [yes/no]: " var_confirm
   [ ${var_confirm} != "yes" ] && return
 
+  do_realclearshm
+}
+
+function do_realclearshm
+{
   for _id in $(ipcs -m | awk '{ if ($6 == 0) { print $2 } }'); do
     sudo ipcrm -m $_id
   done
@@ -179,11 +206,27 @@ function do_clearshm
   ipcs -m
 }
 
+function do_flashd
+{
+  sudo nohup ${var_policy_bin} --port=${var_policy_port} --file=${var_policy_file} >/dev/null &
+  netstat -ntpl| grep 843
+}
+
+function do_checkflash
+{
+  python -c 'print "<policy-file-request/>%c" % 0' | nc 127.0.0.1 843
+}
+
+function do_make
+{
+  make -C .. ${@}
+}
+
 ############################################################
 # MOST OF TIMES YOU DO NOT NEED TO CHANGE THESE
 ############################################################
 #################################
-# process-related funcs
+# process-related func  s
 function server::is_alive
 {
   io::no_output pgrep -xf "${*}" && return 0 || return 1
@@ -202,15 +245,15 @@ function server::start
 {
   ulimit -c unlimited
   sudo sysctl -w kernel.shmmax=4000000000 >/dev/null
-  ! server::is_alive "${@}" && eval "${@}"
+  ! server::is_alive "${@}" && eval ${@}
 
-  for ((_cnt = 1; _cnt < ${var_max_try}; _cnt++)); do
-    sleep 0.3
+  for ((_cnt = 1; _cnt < $((${var_max_try} * 10)); _cnt++)); do
+    sleep 0.2
     server::is_alive "${@}" && break
-    [ $(( $_cnt % 10)) -eq 0 ] && eval "${@}"
+    [ $(($_cnt % 10)) -eq 0 ] && eval ${@}
   done
 
-  if [ ! $_cnt -eq ${var_max_try} ]; then
+  if [ ! $_cnt -eq $((${var_max_try} * 10)) ]; then
     io::log_info ${var_log_file} $(io::green "[$@] start succeed")
     return 0
   else
@@ -223,12 +266,12 @@ function server::stop
 {
   server::is_alive "${@}" && pkill -USR1 -xf "${*}"
 
-  for ((_cnt = 1; _cnt < ${var_max_try}; _cnt++)); do
-    sleep 0.1
+  for ((_cnt = 1; _cnt < $((${var_max_try} * 10)); _cnt++)); do
+    sleep 0.3
     ! server::is_alive "${@}" && break
   done
 
-  if [ ! $_cnt -eq ${var_max_try} ]; then
+  if [ ! $_cnt -eq $((${var_max_try} * 10)) ]; then
     io::log_info ${var_log_file} $(io::green "[$@] stop succeed")
     return 0
   else

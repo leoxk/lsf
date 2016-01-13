@@ -5,5 +5,60 @@
 // Revision:    2015-06-09 by leoxiang
 
 
+syntax = "proto2";
+package conf;
+
+////////////////////////////////////////////////////////////
+message Integer2DTable {
+    repeated uint64 fields = 1;
+}
+
+message String2DTable {
+    repeated string fields = 1;
+}
+
+message Double2DTable {
+    repeated double fields = 1;
+}
+
+////////////////////////////////////////////////////////////
+enum ENTableType {
+    TABLE_TYPE_NORMAL      = 1; // 普通
+    TABLE_TYPE_NORMAL_CASH = 2; // 现金
+    TABLE_TYPE_FAST        = 3; // 快速场
+}
+
+message Table {
+    optional uint32      server_id           = 1;  // 服务器ID
+    optional uint32      table_id            = 2;  // 桌子ID
+    optional ENTableType table_type          = 3;  // 类型
+    optional uint64      small_blind         = 4;  // 小盲注
+    optional uint64      big_blind           = 5;  // 大盲注
+    optional uint32      max_player          = 6;  // 最大玩家
+    optional uint32      max_wait_player     = 7;  // 最大旁观
+    optional uint64      max_carry_in        = 8;  // 最大带入
+    optional uint64      min_carry_in        = 9;  // 最小带入
+    optional uint32      storage_timeout     = 10; // 储备时间毫秒
+    optional uint32      action_timeout      = 11; // 超时时间毫秒
+    optional uint32      extra_timeout       = 12; // 预设等待时间毫秒
+    optional uint32      reconn_timeout      = 13; // 断线重连时间毫秒
+    optional uint32      reconn_count        = 14; // 断线重连次数
+    optional uint64      recommmend_carry_in = 15; // 推荐带入
+    optional uint32      carry_in_pace       = 16; // 带入金面板步长
+    optional uint32      draw_rate           = 17; // 抽水比例 单位0.01%
+    optional uint32      raise_count         = 18; // 单圈单人最大加注次数
+    optional uint64      ante_blind          = 19; // ante盲注
+}
+
+////////////////////////////////////////////////////////////
+message DirtyWord {
+    optional string word = 1; // 过滤词
+}
+
+////////////////////////////////////////////////////////////
+message Game {
+    repeated Table               tables              = 1;
+    repeated DirtyWord           dirty_words         = 2;
+}
 
 // vim:ts=4:sw=4:et:ft=proto:

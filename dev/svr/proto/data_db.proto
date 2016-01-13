@@ -4,26 +4,35 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-09 by leoxiang
 
+syntax = "proto2";
+import "conf_game.proto";
 package data;
 
+
 ////////////////////////////////////////////////////////////
-// db data
+// Common Data
 enum ENDataType {
-    DATA_TYPE_USER = 1;
-    DATA_TYPE_PLAYBACK = 2;
-    DATA_TYPE_GLOBAL = 3;
+    DATA_TYPE_USER_DATA = 1;
+    DATA_TYPE_GAME_LOG = 2;
+    DATA_TYPE_ROBOT_DATA = 3;
 }
 
-/* message Data { */
-/*     // user data */
-/*     optional UserBase user_base = 2; */
-/*     optional UserProp user_prop = 3; */
-/*  */
-/*     // history data */
-/*     optional PlaybackNormal playback_normal =  */
-/*     optional PlaybackMatch  */
-/*  */
-/*     // global data */
-/* } */
+message DBControlInfo {
+    optional uint64 version        = 1;
+    optional uint32 update_time    = 2;
+    optional uint32 last_lock_id   = 3;
+    optional uint64 last_lock_time = 4;
+}
+
+message DB {
+    optional RobotData robot_data = 3;
+}
+
+////////////////////////////////////////////////////////////
+message RobotData {
+    optional uint64 uid = 1;
+    optional uint32 last_init_chips_time = 2;
+}
+
 
 // vim:ts=4:sw=4:et:ft=proto:

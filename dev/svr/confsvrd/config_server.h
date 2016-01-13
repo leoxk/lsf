@@ -14,12 +14,9 @@ public:
     ConfigServer() : BasicServer(conf::SERVER_TYPE_CONFIG_CENTER) {}
 
 public:
-    virtual bool OnParseCommond(int argc, char** argv);
-    virtual bool OnInitDeployConfig();
+    virtual bool OnParseCommond();
+    virtual bool OnInitConfigService();
     virtual bool OnRun();
-
-private:
-    std::string _config_path;
 };
 
 // vim:ts=4:sw=4:et:ft=cpp:

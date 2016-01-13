@@ -40,12 +40,12 @@ public:
         _store = store;
 
         if (_store.GetPtr() == nullptr) {
-            ErrString() = LSF_DEBUG_INFO + _store.ErrString();
+            SetErrString(LSF_DEBUG_INFO + _store.ErrString());
             return false;
         }
 
         if (((StateType *)_store.GetPtr())->ElemByteSize() != sizeof(value_type)) {
-            ErrString() = LSF_DEBUG_INFO;
+            SetErrString(LSF_DEBUG_INFO);
             return false;
         }
 
@@ -59,7 +59,7 @@ public:
         _store = store;
 
         if (_store.GetPtr() == nullptr) {
-            ErrString() = LSF_DEBUG_INFO + _store.ErrString();
+            SetErrString(LSF_DEBUG_INFO + _store.ErrString());
             return false;
         }
 

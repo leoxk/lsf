@@ -39,13 +39,14 @@ public:
 
     // member funcs
     bool ParseFromFile(std::string const& filename) {
-        std::ifstream infile(filename.c_str());
+        std::fstream fs;
+        fs.open(filename.c_str(), std::ios::in);
 
-        if (!infile) {
-            ErrString() = LSF_DEBUG_INFO + SysErrString();
+        if (!fs.is_open()) {
+            SetErrString(LSF_DEBUG_INFO + SysErrString());
             return false;
         }
-        infile >> *this;
+        fs >> *this;
         return true;
     }
 

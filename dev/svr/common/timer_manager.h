@@ -7,11 +7,11 @@
 #pragma once
 #include <queue>
 #include <vector>
-#include <map>
+#include <array>
 #include <functional>
 #include <algorithm>
+#include "svr/common/common_proto.h"
 #include "svr/common/basic_manager.h"
-#include "svr/proto/data_mem.pb.h"
 
 ////////////////////////////////////////////////////////////
 // PokerTimer
@@ -26,8 +26,9 @@ public:
 public:
     bool Serialize(void * buf, size_t buflen, size_t & uselen) const;
     bool UnSerialize(void * buf, size_t buflen, size_t &uselen);
+    void AfterUnSerialize() { }
     size_t GetSize() const { return base_type::ByteSize(); }
-    size_t GetKey() const { return base_type::timer_id(); }
+    key_type GetKey() const { return base_type::timer_id(); }
     pair_type ToPair() const { return pair_type(base_type::timer_milli_seconds(), base_type::timer_id()); }
     std::string ToString() const;
 };
@@ -40,30 +41,29 @@ public:
     using base_type = BasicManager<Timer>;
     using pair_type = Timer::pair_type;
     using heap_type = std::priority_queue<pair_type,std::vector<pair_type>,std::greater<pair_type>>;
-
     using func_type = std::function<void(Timer const &)>;
-    using func_map_type = std::map<data::ENTimerType,func_type>;
+    using func_arr_type = std::array<func_type,data::ENTimerType_ARRAYSIZE>;
     static const size_t MAX_TIMER_ID = 0xffffff;
+    static const size_t DEF_TIMER_TICK_INTERVAL = 10;
+    static const size_t DEF_CHECK_INTERVAL = 30*1000;
 
 public:
     bool Init(uint32_t shm_key, uint32_t max_size);
     Timer * CreateTimer(uint64_t milli_second, data::ENTimerType timer_type);
     Timer * GetTimer(uint32_t timer_id);
     void ReleaseTimer(uint32_t timer_id);
-    void Tick();
+    void OnTick();
 
 public:
     template<typename HandlerType>
     void AddTimerHandle(data::ENTimerType timer_type, HandlerType&& handler) {
-        _func_map[timer_type] = std::forward<HandlerType>(handler);
+        _func_arr[timer_type] = std::forward<HandlerType>(handler);
     }
 
 private:
 	heap_type _timer_heap;
 	uint32_t _cur_max_id;
-    func_map_type _func_map;
+    func_arr_type _func_arr;
 };
-
-
 
 // vim:ts=4:sw=4:et:ft=cpp:

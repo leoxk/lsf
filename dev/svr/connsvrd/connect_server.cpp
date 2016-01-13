@@ -5,9 +5,10 @@
 // Revision:    2015-06-22 by leoxiang
 
 #include "svr/common/common_header.h"
+#include "svr/common/common_service.h"
 #include "svr/connsvrd/connect_server.h"
-#include "svr/connsvrd/client_msg_service.h"
-#include "svr/connsvrd/client_msg_transfer_service.h"
+#include "svr/connsvrd/accept_client_msg_service.h"
+#include "svr/connsvrd/accept_client_msg_transfer_service.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;
@@ -17,6 +18,7 @@ bool ConnectServer::OnRun() {
     // init service
     if (!AcceptClientMsgService::Instance()->Run(this)) return false;
     if (!AcceptClientMsgTransferService::Instance()->Run(this)) return false;
+
     return true;
 }
 

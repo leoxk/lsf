@@ -17,11 +17,12 @@ BIN = $(BIN_DIR)/connsvrd
 # define obj
 OBJ  = $(patsubst %.cpp, $(DEP_DIR)/%.o, $(wildcard *.cpp))
 OBJ += $(patsubst %.cc,  $(DEP_DIR)/%.o, $(wildcard *.cc))
+LD_FLAGS += -lcrypto
 
 # main targets
 all: $(BIN)
 
-$(BIN): $(OBJ) $(LIB)
+$(BIN): $(OBJ) $(DEP_LIB)
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ $(LD_FLAGS)
 
 clean:

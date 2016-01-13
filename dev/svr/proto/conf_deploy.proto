@@ -4,58 +4,83 @@
 // Author:      leoxiang <leoxiang727@qq.com>
 // Revision:    2015-06-09 by leoxiang
 
+syntax = "proto2";
 package conf;
 
 ////////////////////////////////////////////////////////////
 // Enum define
 enum ENServerType {
-    SERVER_TYPE_CONFIG_CENTER = 1;
-    SERVER_TYPE_PROXY_SERVER  = 2;
-    SERVER_TYPE_LOG_SERVER    = 3;
-    SERVER_TYPE_CONN_SERVER   = 4;
-    SERVER_TYPE_GAME_SERVER   = 5;
-    SERVER_TYPE_ROOM_SERVER   = 6;
-    SERVER_TYPE_DB_SERVER     = 7;
-    SERVER_TYPE_MAX           = 8;
+    SERVER_TYPE_CONFIG_CENTER     = 1;
+    SERVER_TYPE_PROXY_SERVER      = 2;
+    SERVER_TYPE_CONN_SERVER       = 3;
+    SERVER_TYPE_DATA_SERVER       = 4;
+    SERVER_TYPE_GAME_SERVER       = 5;
+    SERVER_TYPE_HTTP_SERVER       = 6;
 }
 
 enum ENServiceType {
     SERVICE_TYPE_CLIENT_MSG             = 1; // receive client msg and response
     SERVICE_TYPE_CLIENT_MSG_TRANSFER    = 2; // transfer client message
-    SERVICE_TYPE_SERVER_MSG_TRANSFER    = 3; // transfer server to server message
+    SERVICE_TYPE_SERVER_MSG_TRANSFER    = 3; // transfer server message
     SERVICE_TYPE_NET_LOG                = 4; // process net log
     SERVICE_TYPE_CONFIG_CENTER          = 5; // request and push configs
-    SERVICE_TYPE_MAX                    = 6;
 }
 
 message AcceptService {
     optional ENServiceType service_type = 1;
-    repeated string listen_address = 2;
+    repeated string listen_addresses = 2;
 }
 
 message ConnectService {
     optional ENServiceType service_type = 1;
-    repeated string connect_address = 2;
+    repeated string connect_addresses = 2;
 }
 
 message Server {
     // baisc
-    optional ENServerType server_type    = 1;
-    optional uint32       server_id      = 2;
-    optional string       local_log_path = 3;
+    optional ENServerType server_type = 1;
+    optional uint32       server_id   = 2;
+    optional bool         test_env    = 3;
+    repeated uint64       test_uids   = 19;
     // network
-    repeated ConnectService connect_service = 4;
-    repeated AcceptService  accept_service  = 5;
+    repeated ConnectService connect_services  = 4;
+    repeated AcceptService  accept_services   = 5;
     // container
-    optional uint32 session_key  = 6;
-    optional uint32 session_size = 7;
-    optional uint32 timer_key    = 8;
-    optional uint32 timer_size   = 9;
+    optional uint32 session_key               = 6;
+    optional uint32 session_size              = 7;
+    optional uint32 timer_key                 = 8;
+    optional uint32 timer_size                = 9;
+    optional uint32 table_key                 = 10;
+    optional uint32 table_size                = 11;
+    optional uint32 client_conn_key           = 12;
+    optional uint32 client_conn_size          = 13;
+    optional uint32 robot_key                 = 15;
+    optional uint32 robot_size                = 16;
+    optional uint32 match_key                 = 17;
+    optional uint32 match_size                = 18;
+    optional uint32 notice_key                = 60;
+    optional uint32 notice_size               = 61;
+    // datasvrd
+    optional uint32 db_cache        = 20;
+    optional string db_path         = 21;
+    optional uint32 db_lock_timeout = 22;
+    // httpsvrd
+    optional string app_secret_key = 31;
+    optional string app_id         = 32;
+    optional string web_api_prefix = 33;
+	optional string web_graph_url = 34;
+	optional string web_sap_url = 35;
+	optional uint32 http_listen = 36;
+    optional string table_conf_path = 37;
+    // connsvrd
+    optional bool   need_login_verify  = 41;
+    optional bool   need_heart_beat    = 42;
+    repeated string external_addresses = 43;
 }
 
 message Deploy {
     optional Server default_config = 1;
-    repeated Server server_config = 2;
+    repeated Server server_configs = 2;
 }
 
 // vim:ts=4:sw=4:et:ft=proto:

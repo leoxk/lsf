@@ -15,13 +15,12 @@ PROJECT_DIR := ../../..
 BIN = $(BIN_DIR)/gamesvrd
 
 # define obj
-OBJ  = $(patsubst %.cpp, $(DEP_DIR)/%.o, $(wildcard *.cpp))
-OBJ += $(patsubst %.cc,  $(DEP_DIR)/%.o, $(wildcard *.cc))
+BIN_OBJ = $(patsubst %.cpp, $(DEP_DIR)/%.o, $(wildcard *.cpp))
 
 # main targets
 all: $(BIN)
 
-$(BIN): $(OBJ) $(LIB)
+$(BIN): $(BIN_OBJ) $(DEP_LIB)
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ $(LD_FLAGS)
 
 clean:

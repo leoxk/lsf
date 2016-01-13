@@ -12,23 +12,11 @@
 namespace lsf {
 namespace util {
 
-// template<typename ElemType>
-// inline static bool Serialize(void * buf, size_t buflen, ElemType const & elem) {
-// size_t uselen = 0;
-// return Serialize(buf, buflen, uselen, elem);
-//}
-
-// template<typename ElemType>
-// inline static bool UnSerialize(void const * buf, size_t buflen, ElemType & elem) {
-// size_t uselen = 0;
-// return UnSerialize(buf, buflen, uselen, elem);
-//}
-
 ////////////////////////////////////////////////////////////
 // Common
 ////////////////////////////////////////////////////////////
 template <typename ElemType>
-inline static bool Serialize(void *buf, size_t buflen, size_t &uselen, ElemType const &elem) {
+inline static bool Serialize(void *buf, size_t buflen, size_t& uselen, ElemType const& elem) {
     if (uselen + sizeof(elem) > buflen) return false;
     ElemType *pelem = (ElemType *)((uint8_t *)buf + uselen);
     *pelem = elem;
@@ -37,7 +25,7 @@ inline static bool Serialize(void *buf, size_t buflen, size_t &uselen, ElemType 
 }
 
 template <typename ElemType>
-inline static bool UnSerialize(void const *buf, size_t buflen, size_t &uselen, ElemType &elem) {
+inline static bool UnSerialize(void const *buf, size_t buflen, size_t& uselen, ElemType& elem) {
     if (uselen + sizeof(elem) > buflen) return false;
     ElemType *pelem = (ElemType *)((uint8_t *)buf + uselen);
     elem = *pelem;
@@ -48,14 +36,14 @@ inline static bool UnSerialize(void const *buf, size_t buflen, size_t &uselen, E
 ////////////////////////////////////////////////////////////
 // Binary
 ////////////////////////////////////////////////////////////
-inline static bool SerializeBinary(void *buf, size_t buflen, size_t &uselen, void const *bin, size_t binlen) {
+inline static bool SerializeBinary(void *buf, size_t buflen, size_t& uselen, void const *bin, size_t binlen) {
     if (uselen + binlen > buflen) return false;
     ::memcpy((uint8_t *)buf + uselen, bin, binlen);
     uselen += binlen;
     return true;
 }
 
-inline static bool UnSerializeBinary(void const *buf, size_t buflen, size_t &uselen, void *bin, size_t binlen) {
+inline static bool UnSerializeBinary(void const *buf, size_t buflen, size_t& uselen, void *bin, size_t binlen) {
     if (uselen + binlen > buflen) return false;
     ::memcpy(bin, (uint8_t *)buf + uselen, binlen);
     uselen += binlen;
@@ -66,8 +54,8 @@ inline static bool UnSerializeBinary(void const *buf, size_t buflen, size_t &use
 // Protobuf
 ////////////////////////////////////////////////////////////
 template <typename PBType>
-inline static bool SerializeProtobuf(void *buf, size_t buflen, size_t &uselen, PBType const &elem) {
-    uint32_t protobuf_len = elem.ByteSize();
+inline static bool SerializeProtobuf(void *buf, size_t buflen, size_t& uselen, PBType const& elem) {
+    size_t protobuf_len = elem.ByteSize();
     if (!Serialize(buf, buflen, uselen, protobuf_len)) return false;
 
     if (uselen + protobuf_len > buflen) return false;
@@ -77,8 +65,8 @@ inline static bool SerializeProtobuf(void *buf, size_t buflen, size_t &uselen, P
 }
 
 template <typename PBType>
-inline static bool UnSerializeProtobuf(void const *buf, size_t buflen, size_t &uselen, PBType &elem) {
-    uint32_t protobuf_len = 0;
+inline static bool UnSerializeProtobuf(void const *buf, size_t buflen, size_t& uselen, PBType& elem) {
+    size_t protobuf_len = 0;
     if (!lsf::util::UnSerialize(buf, buflen, uselen, protobuf_len)) return false;
 
     if (uselen + protobuf_len > buflen) return false;

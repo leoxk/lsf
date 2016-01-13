@@ -18,28 +18,32 @@ PROJECT_DIR := ../../..
 LIB = $(LIB_DIR)/libproto.a
 
 OBJ = \
-		 $(DEP_DIR)/conf_deploy.o	\
-		 $(DEP_DIR)/conf_game.o		\
-		 $(DEP_DIR)/msg_cs.o		\
-		 $(DEP_DIR)/data_db.o		\
-		 $(DEP_DIR)/msg_ss.o		\
-		 $(DEP_DIR)/data_mem.o		\
+		 $(DEP_DIR)/conf_deploy.pb.o	\
+		 $(DEP_DIR)/conf_game.pb.o		\
+		 $(DEP_DIR)/msg_cs.pb.o			\
+		 $(DEP_DIR)/msg_ss.pb.o			\
+		 $(DEP_DIR)/data_db.pb.o		\
+		 $(DEP_DIR)/data_mem.pb.o		\
 
-$(LIB) :  $(OBJ)
+
+$(LIB) : $(OBJ)
 	$(AR) $@ $^
 
-$(OBJ) :$(DEP_DIR)/%.o : %.proto
+$(OBJ) : $(DEP_DIR)/%.o : %.cc $(patsubst $(DEP_DIR)/%.o, %.h, $(OBJ))
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -o $@ $<
+
+
+%.pb.cc : %.proto
 	protoc $< --cpp_out=./
-	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c -o $@ $(patsubst %.proto, %.pb.cc, $<)
+
+%.pb.h : %.proto
+	protoc $< --cpp_out=./
 
 clean:
 	$(RM) $(LIB) $(DEP_DIR)
-	$(RM) $(patsubst $(DEP_DIR)/%.o, %.pb.cc, $(OBJ))
-	$(RM) $(patsubst $(DEP_DIR)/%.o, %.pb.h,  $(OBJ))
+	$(RM) $(patsubst $(DEP_DIR)/%.o, %.cc, $(OBJ))
+	$(RM) $(patsubst $(DEP_DIR)/%.o, %.h,  $(OBJ))
 
 .PHONY: clean
-
-# default dependency rule
--include  $(PROJECT_DIR)/Makefile.rule
 
 # vim:ts=4:sw=4:

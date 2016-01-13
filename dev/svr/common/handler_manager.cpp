@@ -7,70 +7,58 @@
 #include "svr/common/handler_manager.h"
 
 ////////////////////////////////////////////////////////////
+// DefaultHandler
+data::ENSessionState DefaultHandler::OnClientRequest(Session& session) {
+    LSF_LOG_FAT("drived class should override this function, %s", LSF_TS(session));
+    return data::SESSION_STATE_FINISH;
+}
+
+data::ENSessionState DefaultHandler::OnServerRequest(Session& session) {
+    LSF_LOG_FAT("drived class should override this function, %s", LSF_TS(session));
+    return data::SESSION_STATE_FINISH;
+}
+
+////////////////////////////////////////////////////////////
 // HandlerManager
 HandlerManager::HandlerManager() {
-    // init rsp map
-    AddSessionRspMap(conf::SERVER_TYPE_ROOM_SERVER, data::SESSION_STATE_ON_ROOMSVR_WAIT, data::SESSION_STATE_ON_ROOMSVR_RSP);
-
-    // init wait map
-    AddSessionWaitMap(data::SESSION_STATE_ON_ROOMSVR_WAIT, data::SESSION_STATE_ON_ROOMSVR_TIMEOUT);
+    // init
+    _cs_handler_arr.fill(nullptr);
+    _ss_handler_arr.fill(nullptr);
 }
 
-void HandlerManager::ProcessSession(Session& session) {
-    // check input
-    if (session.session_type() >= DEF_MAX_HANDLER_NUM) {
-        LSF_LOG_FATAL("session type exceed max, %u", session.session_type());
-        return;
-    }
+BasicHandler* HandlerManager::_Instance(Session const& session) {
+    // handle cs request
+    if (session.cs_request().has_msg_type()) return _Instance(session.cs_request());
 
-    // find session handler
-    auto iter = _handler_map.find(session.session_type());
-    if (iter == _handler_map.end()) {
-        LSF_LOG_FATAL("unknown session type, %u", session.session_type());
-        return;
-    }
+    // handle ss request
+    if (session.ss_request().has_msg_type()) return _Instance(session.ss_request());
 
-    // process session
-    iter->second->Process(session);
+    LSF_LOG_FAT_STACK("session not have any msg type, %s", LSF_TS(session));
+    return &_default_handler;
 }
 
-void HandlerManager::ProcessSessionResponse(Session& session) {
-    // get server type map
-    auto pmap = _session_rsp_map.find(session.ss_response().proxy_head().src_server_type());
-    if (pmap == _session_rsp_map.end()) {
-        LSF_LOG_ERR("handle session response when cant get server type map, server_type=%u",
-                session.ss_response().proxy_head().src_server_type());
-        return;
+BasicHandler* HandlerManager::_Instance(msg::CS const& message) {
+    if (!msg::ENCSType_IsValid(message.msg_type())) {
+        LSF_LOG_FAT("invalid msg type, %s", LSF_ETS(message.msg_type()));
+        return &_default_handler;
     }
-
-    // check server type and session state
-    if (session.session_state() != std::get<0>(pmap->second)) {
-        LSF_LOG_ERR("handle session response when state not match, session_state=%u, map_state=%u",
-                session.session_state(), std::get<0>(pmap->second));
-        return;
+    if (_cs_handler_arr[message.msg_type()] == nullptr) {
+        LSF_LOG_FAT("msg type not register, %s", LSF_ETS(message.msg_type()));
+        return &_default_handler;
     }
-
-    // set state
-    session.set_session_state(std::get<1>(pmap->second));
-
-    // process
-    ProcessSession(session);
+    return _cs_handler_arr[message.msg_type()];
 }
 
-void HandlerManager::ProcessSessionTimeout(Session& session) {
-    // get session wait map
-    auto pmap = _session_wait_map.find(session.session_state());
-    if (pmap == _session_wait_map.end()) {
-        LSF_LOG_ERR("handle session timeout when cant get session wait map, session_state=%u", session.session_state());
-        return;
+BasicHandler* HandlerManager::_Instance(msg::SS const& message) {
+    if (!msg::ENSSType_IsValid(message.msg_type())) {
+        LSF_LOG_FAT("invalid msg type, %s", LSF_ETS(message.msg_type()));
+        return &_default_handler;
     }
-
-    // set state
-    session.set_session_state(pmap->second);
-
-    // Process
-    ProcessSession(session);
+    if (_ss_handler_arr[message.msg_type()] == nullptr) {
+        LSF_LOG_FAT("msg type not register, %s", LSF_ETS(message.msg_type()));
+        return &_default_handler;
+    }
+    return _ss_handler_arr[message.msg_type()];
 }
-
 
 // vim:ts=4:sw=4:et:ft=cpp:

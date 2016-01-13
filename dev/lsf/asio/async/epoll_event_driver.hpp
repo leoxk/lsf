@@ -5,9 +5,9 @@
 // Revision:    2012-06-12 by leoxiang
 
 #pragma once
-
 #include <sys/epoll.h>
 #include "lsf/asio/async/basic_event_driver.hpp"
+#include "lsf/util/backtrace.hpp"
 
 namespace lsf {
 namespace asio {
@@ -34,13 +34,22 @@ public:
         if (flag & FLAG_READ) ev.events |= EPOLLIN;
         if (flag & FLAG_WRITE) ev.events |= EPOLLOUT;
 
+        // try mod
         int res = ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev));
         if (res == 0) return true;
-        if (errno == ENOENT) return ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev)) == 0;
+        if (errno != ENOENT) return false;
+
+        // try add
+        if (ErrWrap(::epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev)) == 0) {
+            _fds_size++;
+            return true;
+        }
         return false;
     }
 
-    void CancelEvent(int fd) { ::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL); }
+    void CancelEvent(int fd) {
+        if (::epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == 0) _fds_size--;
+    }
 
     bool WaitEvent(int timeout) {
         _cur_pos = 0;
@@ -64,10 +73,13 @@ public:
         return true;
     }
 
+    size_t GetRegisterEventSize() const { return _fds_size; }
+
 private:
     int _epfd = 0;
     size_t _max_evs = 0;
     size_t _cur_pos = 0;
+    size_t _fds_size = 0;
     epoll_event _evs[MAX_EV_NUM];
 };
 

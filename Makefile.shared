@@ -8,7 +8,7 @@
 #                build.mk  - auto-generate dependencies for c/c++ files
 #                Remember to inlcude build.mk after all your targets!
 #        AUTHOR: leoxiang, leoxiang727@qq.com
-#       COMPANY: 
+#       COMPANY:
 #      REVISION: 2011-09-13 by leoxiang
 #===============================================================================#
 
@@ -16,8 +16,6 @@
 # User Settings
 ############################################################
 # tools
-#export CC       	= /opt/rh/devtoolset-2/root/usr/bin/gcc
-#export CXX      	= /opt/rh/devtoolset-2/root/usr/bin/g++
 export CC       	= gcc
 export CXX      	= g++
 export RM       	= rm -rf
@@ -33,15 +31,18 @@ RELEASE_DIR  := $(PROJECT_DIR)/release
 TEST_DIR 	 := $(PROJECT_DIR)/test
 LIB_DIR 	 := $(DEV_DIR)/svr/lib
 BIN_DIR 	 := $(RELEASE_DIR)/bin
+TOOL_DIR 	 := $(RELEASE_DIR)/tool
+CONF_DIR 	 := $(RELEASE_DIR)/conf
+TABLE_DIR 	 := $(RELEASE_DIR)/table
 TEST_BIN_DIR := $(TEST_DIR)/bin
 $(shell mkdir -p $(BIN_DIR) $(TEST_BIN_DIR))
 
 # define options
-LIB := $(LIB_DIR)/libcommon.a \
-	   $(LIB_DIR)/libproto.a \
+DEP_LIB := $(LIB_DIR)/libcommon.a \
+		   $(LIB_DIR)/libproto.a
 
-export INC_FLAGS := -I$(DEV_DIR)
-export LD_FLAGS  := -lpthread -lrt -lprotobuf
+export INC_FLAGS := -I$(DEV_DIR) -I/usr/include/lua5.2 
+export LD_FLAGS  := -L/usr/lib/x86_64-linux-gnu -lpthread -lrt -lprotobuf -lcurl
 
 # define dep dirs
 DEP_DIR := ./objdep

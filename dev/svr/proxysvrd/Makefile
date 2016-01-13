@@ -25,7 +25,7 @@ OBJ += $(patsubst %.cc,  $(DEP_DIR)/%.o, $(wildcard *.cc))
 # main targets
 all: $(BIN)
 
-$(BIN): $(OBJ) $(LIB)
+$(BIN): $(OBJ) $(DEP_LIB)
 	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -o $@ $^ $(LD_FLAGS)
 
 clean:

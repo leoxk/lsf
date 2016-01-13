@@ -17,6 +17,7 @@
 ############################################################
 # generate dep file
 -include $(patsubst %.c  , $(DEP_DIR)/%.d, $(wildcard *.c))
+-include $(patsubst %.cc , $(DEP_DIR)/%.d, $(wildcard *.cc))
 -include $(patsubst %.cpp, $(DEP_DIR)/%.d, $(wildcard *.cpp))
 
 # default rules

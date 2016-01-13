@@ -5,7 +5,6 @@
 // Revision:    2014-09-26 by leoxiang
 
 #pragma once
-
 #include <cstring>
 #include <vector>
 #include <algorithm>

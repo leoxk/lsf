@@ -6,7 +6,7 @@
 
 #include "svr/common/common_header.h"
 #include "svr/proxysvrd/proxy_server.h"
-#include "svr/proxysvrd/server_msg_transfer_service.h"
+#include "svr/proxysvrd/accept_server_msg_transfer_service.h"
 
 using namespace google::protobuf;
 using namespace lsf::util;

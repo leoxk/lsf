@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <set>
 #include <cstdlib>
 #include <sys/time.h>
 #include "lsf/basic/error.hpp"
@@ -54,6 +55,24 @@ public:
         return start + random % off;
     }
 
+    // generate random within set container
+    template<typename ElemType>
+    ElemType GetRand(std::set<ElemType> const& container) {
+        ElemType rand = GetRand(*container.begin(), *container.rbegin());
+        if (container.find(rand) != container.end()) {
+            return rand;
+        }
+        else if (container.lower_bound(rand) != container.end()) {
+            return *container.lower_bound(rand);
+        }
+        else if (container.upper_bound(rand) != container.end()) {
+            return *container.upper_bound(rand);
+        }
+        else {
+            return ElemType();
+        }
+    }
+
     // accessor
     void SetMaxCount(size_t max_cnt) { _max_cnt = max_cnt; }
 
@@ -67,10 +86,6 @@ private:
 ////////////////////////////////////////////////////////////
 // Singleton Random
 class SingleRandom : public Random, public lsf::basic::Singleton<Random> {
-public:
-    static uint32_t GetRand(uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(end); }
-
-    static uint32_t GetRand(uint32_t start, uint32_t end) { return lsf::basic::Singleton<Random>::Reference().GetRand(start, end); }
 };
 
 }  // end of namespace util

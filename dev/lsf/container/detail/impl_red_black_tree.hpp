@@ -127,7 +127,7 @@ public:
     //////////////////////////////////////////////////
     // FindNode
     //////////////////////////////////////////////////
-    std::pair<size_type, size_type> FindNode(value_type const &val) {
+    std::pair<size_type, size_type> FindNode(value_type const& val) {
         size_type pos = _root_pos;
         size_type parent_pos = NPOS;
 
@@ -278,7 +278,7 @@ public:
     //////////////////////////////////////////////////
     // GetNewNodeAndInsert
     //////////////////////////////////////////////////
-    size_type GetNewNodeAndInsert(value_type const &val) {
+    size_type GetNewNodeAndInsert(value_type const& val) {
         std::pair<size_type, size_type> res_pair = FindNode(val);
 
         size_type pos = res_pair.first;
@@ -781,8 +781,8 @@ public:
         return tmp;
     }
 
-    bool operator==(RBTreeIterator const &rhs) const { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
-    bool operator!=(RBTreeIterator const &rhs) const { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
+    bool operator==(RBTreeIterator const& rhs) const { return _ptr_state == rhs._ptr_state && _pos == rhs._pos; }
+    bool operator!=(RBTreeIterator const& rhs) const { return !(_ptr_state == rhs._ptr_state && _pos == rhs._pos); }
 
     size_type GetPos() const { return _pos; }
 

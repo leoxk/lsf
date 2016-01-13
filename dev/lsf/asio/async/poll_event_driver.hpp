@@ -5,9 +5,9 @@
 // Revision:    2012-06-13 by leoxiang
 
 #pragma once
-
 #include <poll.h>
 #include "lsf/asio/async/basic_event_driver.hpp"
+#include "lsf/util/backtrace.hpp"
 
 namespace lsf {
 namespace asio {
@@ -89,6 +89,8 @@ public:
         _cur_pos++;
         return true;
     }
+
+    size_t GetRegisterEventSize() const { return _fds_size; }
 
 private:
     pollfd _fds[MAX_FD_NUM];

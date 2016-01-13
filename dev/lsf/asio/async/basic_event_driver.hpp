@@ -5,7 +5,6 @@
 // Revision:    2015-06-11 by leoxiang
 
 #pragma once
-
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/error.hpp"
 
@@ -24,6 +23,7 @@ public:
     virtual void CancelEvent(int fd) = 0;
     virtual bool WaitEvent(int timeout) = 0;
     virtual bool GetReadyEvent(int* pfd, int* pflag) = 0;
+    virtual size_t GetRegisterEventSize() const = 0;
 };
 
 }  // end of namespace async

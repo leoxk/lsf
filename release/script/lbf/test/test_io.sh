@@ -9,7 +9,7 @@
 #      REVISION: 2012-07-05 by leoxiang
 #===============================================================================
 
-PATH="$(dirname $0)/../lbf:$PATH"
+PATH="$(dirname $0)/..:$PATH"
 source lbf_init.sh
 
 out_file="lbf_test_temp_file.tmp"
