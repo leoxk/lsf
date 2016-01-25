@@ -1,0 +1,74 @@
+\hypertarget{classConnectServerMsgTransferService}{
+\section{ConnectServerMsgTransferService Class Reference}
+\label{classConnectServerMsgTransferService}\index{ConnectServerMsgTransferService@{ConnectServerMsgTransferService}}
+}
+Inheritance diagram for ConnectServerMsgTransferService::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.1728cm]{classConnectServerMsgTransferService}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classConnectServerMsgTransferService_afce131ed9ef093e45ae13f816298708d}{
+virtual bool {\bfseries OnRun} ()}
+\label{classConnectServerMsgTransferService_afce131ed9ef093e45ae13f816298708d}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a1510f05686d809bb313ca15f2844c6bc}{
+virtual void {\bfseries OnConnectionCreate} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket)}
+\label{classConnectServerMsgTransferService_a1510f05686d809bb313ca15f2844c6bc}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_adbf191f7cff70b809b4b19243c86d206}{
+virtual void {\bfseries OnConnectionMessage} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, std::string \&content)}
+\label{classConnectServerMsgTransferService_adbf191f7cff70b809b4b19243c86d206}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a13afbeeb9c1fc543366c4afbcf6b9244}{
+bool {\bfseries TransferResponse} (\hyperlink{classSession}{Session} \&session)}
+\label{classConnectServerMsgTransferService_a13afbeeb9c1fc543366c4afbcf6b9244}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a0c3094283f97a113fa3ea5f6f70dbab0}{
+bool {\bfseries TransferMessageById} (conf::ENServerType server\_\-type, uint32\_\-t server\_\-id, msg::SS \&message)}
+\label{classConnectServerMsgTransferService_a0c3094283f97a113fa3ea5f6f70dbab0}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_ab22ecb9e2f40e8993b7f8e0489948653}{
+bool {\bfseries TransferMessageByHash} (conf::ENServerType server\_\-type, uint64\_\-t hash\_\-id, msg::SS \&message)}
+\label{classConnectServerMsgTransferService_ab22ecb9e2f40e8993b7f8e0489948653}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_ad6f0bdbcd7fd8aac198497c29e91fbd0}{
+bool {\bfseries TransferMessageByBroadCast} (conf::ENServerType server\_\-type, msg::SS \&message)}
+\label{classConnectServerMsgTransferService_ad6f0bdbcd7fd8aac198497c29e91fbd0}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a559f1db502eaf8c2dab6b65b56e4bf39}{
+bool {\bfseries TransferMessageByRandom} (conf::ENServerType server\_\-type, msg::SS \&message)}
+\label{classConnectServerMsgTransferService_a559f1db502eaf8c2dab6b65b56e4bf39}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a96d14f27eb62e266fd7f0c268e040fa7}{
+bool {\bfseries TransferMessageByRandomExceptId} (conf::ENServerType server\_\-type, uint32\_\-t except\_\-id, msg::SS \&message)}
+\label{classConnectServerMsgTransferService_a96d14f27eb62e266fd7f0c268e040fa7}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a3a370cce49e477b7cf6f5e2a4fa86a64}{
+void {\bfseries PostInternalMessage} (msg::SS \&message)}
+\label{classConnectServerMsgTransferService_a3a370cce49e477b7cf6f5e2a4fa86a64}
+
+\item 
+\hypertarget{classConnectServerMsgTransferService_a8693f78e83f99b3320565481cbf108eb}{
+void {\bfseries PostAsyncInternalMessage} (msg::SS \&message)}
+\label{classConnectServerMsgTransferService_a8693f78e83f99b3320565481cbf108eb}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+dev/svr/common/common\_\-service.h\item 
+dev/svr/common/common\_\-service.cpp\end{DoxyCompactItemize}

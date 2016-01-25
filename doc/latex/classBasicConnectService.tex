@@ -1,0 +1,126 @@
+\hypertarget{classBasicConnectService}{
+\section{BasicConnectService Class Reference}
+\label{classBasicConnectService}\index{BasicConnectService@{BasicConnectService}}
+}
+Inheritance diagram for BasicConnectService::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.52252cm]{classBasicConnectService}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicConnectService_a6b09dd735b099a6905331bb6a6893444}{
+{\bfseries BasicConnectService} (conf::ENServiceType service\_\-type)}
+\label{classBasicConnectService_a6b09dd735b099a6905331bb6a6893444}
+
+\item 
+\hypertarget{classBasicConnectService_af343fd1395b4a5ebdcfbcf9b58ea8ba8}{
+bool {\bfseries ConnectionSendBySequence} (google::protobuf::Message const \&message)}
+\label{classBasicConnectService_af343fd1395b4a5ebdcfbcf9b58ea8ba8}
+
+\item 
+\hypertarget{classBasicConnectService_aaa42010b7895660003706e97cb90d8a7}{
+bool {\bfseries ConnectionSendBySequence} (std::string const \&message)}
+\label{classBasicConnectService_aaa42010b7895660003706e97cb90d8a7}
+
+\item 
+\hypertarget{classBasicConnectService_a9b885099fa73b902ea2c58dc72ec9d14}{
+bool {\bfseries ConnectionSendByIndex} (size\_\-t index, google::protobuf::Message const \&message)}
+\label{classBasicConnectService_a9b885099fa73b902ea2c58dc72ec9d14}
+
+\item 
+\hypertarget{classBasicConnectService_a88ba8ef745819e08e0581f3f52bb9f22}{
+bool {\bfseries ConnectionSendByIndex} (size\_\-t index, std::string const \&message)}
+\label{classBasicConnectService_a88ba8ef745819e08e0581f3f52bb9f22}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicConnectService_ac0a7aa6bcf05444e565935b9305e5b8e}{
+static const size\_\-t {\bfseries DEF\_\-CONN\_\-CHECK\_\-INTERVAL} = 10$\ast$1000}
+\label{classBasicConnectService_ac0a7aa6bcf05444e565935b9305e5b8e}
+
+\item 
+\hypertarget{classBasicConnectService_afb1fdce1fb5d26a01113440ce0658eff}{
+static const size\_\-t {\bfseries DEF\_\-CONNECT\_\-TIMEOUT} = 5$\ast$1000}
+\label{classBasicConnectService_afb1fdce1fb5d26a01113440ce0658eff}
+
+\item 
+\hypertarget{classBasicConnectService_a76c17579a55a0acfd9b25976f480eb25}{
+static const size\_\-t {\bfseries DEF\_\-KEEP\_\-SAME\_\-INDEX\_\-INTERVAL} = 100}
+\label{classBasicConnectService_a76c17579a55a0acfd9b25976f480eb25}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicConnectService_a5243e80ff729b2c2a233b0bf66bf264d}{
+virtual void {\bfseries OnSocketConnect} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, \hyperlink{classlsf_1_1asio_1_1SockAddr}{lsf::asio::SockAddr} const \&sockaddr, size\_\-t index) final}
+\label{classBasicConnectService_a5243e80ff729b2c2a233b0bf66bf264d}
+
+\item 
+\hypertarget{classBasicConnectService_ad719f65a46c7cb2607e384c378c073de}{
+virtual void {\bfseries OnSocketConnectFail} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, \hyperlink{classlsf_1_1asio_1_1SockAddr}{lsf::asio::SockAddr} const \&sockaddr) final}
+\label{classBasicConnectService_ad719f65a46c7cb2607e384c378c073de}
+
+\item 
+\hypertarget{classBasicConnectService_aebe0b4384f99c43d24df11752dcf018c}{
+virtual bool {\bfseries OnInitConfig} ()}
+\label{classBasicConnectService_aebe0b4384f99c43d24df11752dcf018c}
+
+\item 
+\hypertarget{classBasicConnectService_ac6a650a3f695d1dcef75f25f4bc8c309}{
+virtual bool {\bfseries OnInitSocket} ()}
+\label{classBasicConnectService_ac6a650a3f695d1dcef75f25f4bc8c309}
+
+\item 
+\hypertarget{classBasicConnectService_a0cb8789e9fe5d74e2ecd6a7050ebeed3}{
+virtual void {\bfseries OnConnectionCheck} (int timer\_\-fd)}
+\label{classBasicConnectService_a0cb8789e9fe5d74e2ecd6a7050ebeed3}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicConnectService_afa7b12cfcda639d51e3a82d62e61e64e}{
+size\_\-t {\bfseries \_\-last\_\-random\_\-send\_\-index} = 0}
+\label{classBasicConnectService_afa7b12cfcda639d51e3a82d62e61e64e}
+
+\item 
+\hypertarget{classBasicConnectService_a9f614d54d1162ad90dfb168991ba1453}{
+uint64\_\-t {\bfseries \_\-last\_\-send\_\-time} = 0}
+\label{classBasicConnectService_a9f614d54d1162ad90dfb168991ba1453}
+
+\item 
+\hypertarget{classBasicConnectService_a7fb3cdc37a792b3fe0423d2082481279}{
+conf::ConnectService {\bfseries \_\-service\_\-config}}
+\label{classBasicConnectService_a7fb3cdc37a792b3fe0423d2082481279}
+
+\item 
+\hypertarget{classBasicConnectService_a7b17059cd7830dec6f65fe5bd7e494e4}{
+conn\_\-scok\_\-type {\bfseries \_\-conn\_\-scok}}
+\label{classBasicConnectService_a7b17059cd7830dec6f65fe5bd7e494e4}
+
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicConnectService_a8e807eb450b87a443cee5956b3d556d3}{
+class {\bfseries lsf::asio::ProactorSerivce}}
+\label{classBasicConnectService_a8e807eb450b87a443cee5956b3d556d3}
+
+\item 
+\hypertarget{classBasicConnectService_ae76adcf38331892fcc17b32e98f08bc7}{
+class \hyperlink{classBasicConnectService_ae76adcf38331892fcc17b32e98f08bc7}{BasicService}}
+\label{classBasicConnectService_ae76adcf38331892fcc17b32e98f08bc7}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+dev/svr/common/basic\_\-service.h\item 
+dev/svr/common/basic\_\-service.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,101 @@
+\hypertarget{classlsf_1_1util_1_1LogFileBuf}{
+\section{lsf::util::LogFileBuf Class Reference}
+\label{classlsf_1_1util_1_1LogFileBuf}\index{lsf::util::LogFileBuf@{lsf::util::LogFileBuf}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a99668a3f8bcb7db5b4b24c812bbdcc67}{
+{\bfseries LogFileBuf} (std::string const \&file\_\-prefix, int shift\_\-type)}
+\label{classlsf_1_1util_1_1LogFileBuf_a99668a3f8bcb7db5b4b24c812bbdcc67}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a124a4185f6860c7ab77e25da1aea7b3a}{
+virtual int {\bfseries overflow} (int c) override}
+\label{classlsf_1_1util_1_1LogFileBuf_a124a4185f6860c7ab77e25da1aea7b3a}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a507c59acfef18c258aeb8e95635c540a}{
+bool {\bfseries IsOpen} () const }
+\label{classlsf_1_1util_1_1LogFileBuf_a507c59acfef18c258aeb8e95635c540a}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a477cf95a4b4d7ebc5f382a2376872876}{
+static const int {\bfseries SHIFT\_\-NONE} = 0}
+\label{classlsf_1_1util_1_1LogFileBuf_a477cf95a4b4d7ebc5f382a2376872876}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_aa81bfc6f81b41b0a49d372c9eaa3a061}{
+static const int {\bfseries SHIFT\_\-DAY} = 1}
+\label{classlsf_1_1util_1_1LogFileBuf_aa81bfc6f81b41b0a49d372c9eaa3a061}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a096457df6221763a13e9c72ee9c4a702}{
+static const int {\bfseries SHIFT\_\-MONTH} = 2}
+\label{classlsf_1_1util_1_1LogFileBuf_a096457df6221763a13e9c72ee9c4a702}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_aa6000aecbd30b6b85f44ef83fa758a3b}{
+static const char {\bfseries EOL} = '$\backslash$n'}
+\label{classlsf_1_1util_1_1LogFileBuf_aa6000aecbd30b6b85f44ef83fa758a3b}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_afbe8d09c09a4416c4912f424a436a62a}{
+void {\bfseries Open} ()}
+\label{classlsf_1_1util_1_1LogFileBuf_afbe8d09c09a4416c4912f424a436a62a}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a85c0c75cfd8d7738948d78d8fee3912c}{
+bool {\bfseries Shift} ()}
+\label{classlsf_1_1util_1_1LogFileBuf_a85c0c75cfd8d7738948d78d8fee3912c}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a94cc1f99da578c6a66c274f85d11acc7}{
+bool {\bfseries RealShift} (std::string const \&file)}
+\label{classlsf_1_1util_1_1LogFileBuf_a94cc1f99da578c6a66c274f85d11acc7}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a9372b9a1e95c9a7f11871078292114a3}{
+void {\bfseries TraverseAndMove} ()}
+\label{classlsf_1_1util_1_1LogFileBuf_a9372b9a1e95c9a7f11871078292114a3}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a50597ab6d77356c388ee0266df9105a8}{
+int {\bfseries \_\-shift\_\-type} = SHIFT\_\-NONE}
+\label{classlsf_1_1util_1_1LogFileBuf_a50597ab6d77356c388ee0266df9105a8}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a9d32c18d7b7f3190475171a8c3651cc5}{
+int {\bfseries \_\-last\_\-shift\_\-val} = -\/1}
+\label{classlsf_1_1util_1_1LogFileBuf_a9d32c18d7b7f3190475171a8c3651cc5}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a3e7061fcf5307ef6f5f373f909ed119f}{
+std::string {\bfseries \_\-file\_\-prefix}}
+\label{classlsf_1_1util_1_1LogFileBuf_a3e7061fcf5307ef6f5f373f909ed119f}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a240c7b823b55bcfad6e1b02f41631571}{
+std::string {\bfseries \_\-file\_\-path}}
+\label{classlsf_1_1util_1_1LogFileBuf_a240c7b823b55bcfad6e1b02f41631571}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1LogFileBuf_a35c89c6a1c300ea0b99b19b327d5cc65}{
+std::filebuf {\bfseries \_\-file\_\-buf}}
+\label{classlsf_1_1util_1_1LogFileBuf_a35c89c6a1c300ea0b99b19b327d5cc65}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/util/log.hpp\end{DoxyCompactItemize}

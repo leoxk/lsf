@@ -1,0 +1,248 @@
+\hypertarget{classBasicHandler}{
+\section{BasicHandler Class Reference}
+\label{classBasicHandler}\index{BasicHandler@{BasicHandler}}
+}
+Inheritance diagram for BasicHandler::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.23077cm]{classBasicHandler}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHandler_a5d33fd5fae39d5c87efb219d6d5074cf}{
+void {\bfseries SetMsgType} (msg::ENCSType msg\_\-type)}
+\label{classBasicHandler_a5d33fd5fae39d5c87efb219d6d5074cf}
+
+\item 
+\hypertarget{classBasicHandler_a47bb7a7bd9639ac14c91546009e5d9b0}{
+void {\bfseries SetMsgType} (msg::ENSSType msg\_\-type)}
+\label{classBasicHandler_a47bb7a7bd9639ac14c91546009e5d9b0}
+
+\item 
+\hypertarget{classBasicHandler_a1a6fa5d4bc3477ab2ef772073e7c7bf7}{
+void {\bfseries GetServerResponse} (\hyperlink{classSession}{Session} \&session, msg::SS const \&message)}
+\label{classBasicHandler_a1a6fa5d4bc3477ab2ef772073e7c7bf7}
+
+\item 
+\hypertarget{classBasicHandler_a71c464a8f12dbe96e1f28c095d96f0a3}{
+void {\bfseries WaitResponseTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a71c464a8f12dbe96e1f28c095d96f0a3}
+
+\item 
+\hypertarget{classBasicHandler_a26ba43df72cbf12829913219d77d58b0}{
+void {\bfseries GetClientRequest} (\hyperlink{classSession}{Session} \&session, msg::CS const \&message)}
+\label{classBasicHandler_a26ba43df72cbf12829913219d77d58b0}
+
+\item 
+\hypertarget{classBasicHandler_a98a430506bb021856f670c5a95ce4dd3}{
+void {\bfseries GetServerRequest} (\hyperlink{classSession}{Session} \&session, msg::SS const \&message)}
+\label{classBasicHandler_a98a430506bb021856f670c5a95ce4dd3}
+
+\item 
+\hypertarget{classBasicHandler_ab7694475f143f46e66bf03a156efaeb1}{
+void {\bfseries GetCurlResult} (\hyperlink{classSession}{Session} \&session, bool result, std::string \&\&content)}
+\label{classBasicHandler_ab7694475f143f46e66bf03a156efaeb1}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHandler_aaa79db27db706d0d3842d34a2ffb5067}{
+static const size\_\-t {\bfseries MAX\_\-REDO\_\-COUNT} = 3}
+\label{classBasicHandler_aaa79db27db706d0d3842d34a2ffb5067}
+
+\item 
+\hypertarget{classBasicHandler_a62c0c5a7a1b7ee7e4e702ea7c462a308}{
+static const size\_\-t {\bfseries DEF\_\-SESSION\_\-TIMEOUT} = 2 $\ast$ 1000}
+\label{classBasicHandler_a62c0c5a7a1b7ee7e4e702ea7c462a308}
+
+\item 
+\hypertarget{classBasicHandler_a369a7e56daab591ef419cb803c0fdcbc}{
+static const size\_\-t {\bfseries DEF\_\-SESSION\_\-HTTP\_\-TIMEOUT} = 10 $\ast$ 1000}
+\label{classBasicHandler_a369a7e56daab591ef419cb803c0fdcbc}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHandler_aade373b643d65d0476467a47e0f1cde2}{
+void {\bfseries RunStateMachine} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_aade373b643d65d0476467a47e0f1cde2}
+
+\item 
+\hypertarget{classBasicHandler_a4dfb7325bf21027016da492bcb822d0d}{
+virtual data::ENSessionState {\bfseries OnClientRequest} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a4dfb7325bf21027016da492bcb822d0d}
+
+\item 
+\hypertarget{classBasicHandler_a07d77ad7d676157c6f70f84799cdf1bf}{
+virtual data::ENSessionState {\bfseries OnServerRequest} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a07d77ad7d676157c6f70f84799cdf1bf}
+
+\item 
+\hypertarget{classBasicHandler_a3993e5662dbb7119f92797c8e7145c0c}{
+virtual data::ENSessionState {\bfseries OnHttpSvrMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a3993e5662dbb7119f92797c8e7145c0c}
+
+\item 
+\hypertarget{classBasicHandler_ac6864aed392a5b375b68f271a08ca378}{
+virtual data::ENSessionState {\bfseries OnHttpSvrTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_ac6864aed392a5b375b68f271a08ca378}
+
+\item 
+\hypertarget{classBasicHandler_a7e92a6251a91519bd770148bbc180e02}{
+virtual data::ENSessionState {\bfseries OnConfSvrMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a7e92a6251a91519bd770148bbc180e02}
+
+\item 
+\hypertarget{classBasicHandler_a067c5a0f53b85146c18b1f2b5933bb4e}{
+virtual data::ENSessionState {\bfseries OnConfSvrTimeOut} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a067c5a0f53b85146c18b1f2b5933bb4e}
+
+\item 
+\hypertarget{classBasicHandler_a3b9ea6915088f1d16388dbfd6319d693}{
+virtual data::ENSessionState {\bfseries OnCurlMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a3b9ea6915088f1d16388dbfd6319d693}
+
+\item 
+\hypertarget{classBasicHandler_a7b03d753cc871c48afe97156c97ec811}{
+virtual data::ENSessionState {\bfseries OnDBSvrNext} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a7b03d753cc871c48afe97156c97ec811}
+
+\item 
+\hypertarget{classBasicHandler_aad2f4384e709d830f780f730ca907897}{
+virtual data::ENSessionState {\bfseries OnDBSvrQuery} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_aad2f4384e709d830f780f730ca907897}
+
+\item 
+\hypertarget{classBasicHandler_a15566792077804c944534d906cbe7006}{
+virtual data::ENSessionState {\bfseries OnDBSvrQueryMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a15566792077804c944534d906cbe7006}
+
+\item 
+\hypertarget{classBasicHandler_a82515e8589882e8c6cd2742631d6e1c8}{
+virtual data::ENSessionState {\bfseries OnDBSvrQueryTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a82515e8589882e8c6cd2742631d6e1c8}
+
+\item 
+\hypertarget{classBasicHandler_a0609c49b6b98a12eec784738fc378ca9}{
+virtual data::ENSessionState {\bfseries OnDBSvrQuerySuccess} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a0609c49b6b98a12eec784738fc378ca9}
+
+\item 
+\hypertarget{classBasicHandler_a22cbe94f2de81195fefb5e01bfc365fd}{
+virtual data::ENSessionState {\bfseries OnDBSvrUpdate} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a22cbe94f2de81195fefb5e01bfc365fd}
+
+\item 
+\hypertarget{classBasicHandler_a239e962b93c981e8a79f6928165bc9f9}{
+virtual data::ENSessionState {\bfseries OnDBSvrUpdateMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a239e962b93c981e8a79f6928165bc9f9}
+
+\item 
+\hypertarget{classBasicHandler_abe8a0f7f6d911d8c65f3fb1fc5fb695f}{
+virtual data::ENSessionState {\bfseries OnDBSvrUpdateTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_abe8a0f7f6d911d8c65f3fb1fc5fb695f}
+
+\item 
+\hypertarget{classBasicHandler_a77f57ae08abddd78bea53f80efca1a8a}{
+virtual data::ENSessionState {\bfseries OnDBSvrUpdateSuccess} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a77f57ae08abddd78bea53f80efca1a8a}
+
+\item 
+\hypertarget{classBasicHandler_a326117b3a026eceb4873e25f09015d7e}{
+virtual data::ENSessionState {\bfseries OnDBSvrInsert} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a326117b3a026eceb4873e25f09015d7e}
+
+\item 
+\hypertarget{classBasicHandler_a8926ce56cdd44f8626fc7c98aef69330}{
+virtual data::ENSessionState {\bfseries OnDBSvrInsertMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a8926ce56cdd44f8626fc7c98aef69330}
+
+\item 
+\hypertarget{classBasicHandler_aca9e6d86acbb3baa264d8c3a5006142d}{
+virtual data::ENSessionState {\bfseries OnDBSvrInsertTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_aca9e6d86acbb3baa264d8c3a5006142d}
+
+\item 
+\hypertarget{classBasicHandler_a2564f0e113fc55bb9f127ae00c123d52}{
+virtual data::ENSessionState {\bfseries OnDBSvrInsertSuccess} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a2564f0e113fc55bb9f127ae00c123d52}
+
+\item 
+\hypertarget{classBasicHandler_adcd735bc9de92a790cac30018c9e586b}{
+virtual data::ENSessionState {\bfseries OnDBSvrDelete} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_adcd735bc9de92a790cac30018c9e586b}
+
+\item 
+\hypertarget{classBasicHandler_a3a42579a69729391dc76c596979ecdfe}{
+virtual data::ENSessionState {\bfseries OnDBSvrDeleteMessage} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a3a42579a69729391dc76c596979ecdfe}
+
+\item 
+\hypertarget{classBasicHandler_a3fec9b9c69af61dc68a5b2552f84588c}{
+virtual data::ENSessionState {\bfseries OnDBSvrDeleteTimeout} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a3fec9b9c69af61dc68a5b2552f84588c}
+
+\item 
+\hypertarget{classBasicHandler_ae704c0d0ddd0e9c953227a5bef02f2d3}{
+virtual data::ENSessionState {\bfseries OnDBSvrDeleteSuccess} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_ae704c0d0ddd0e9c953227a5bef02f2d3}
+
+\item 
+\hypertarget{classBasicHandler_a3172859416861fbe0f2dc6170e013972}{
+virtual void {\bfseries OnSessionFinish} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_a3172859416861fbe0f2dc6170e013972}
+
+\item 
+\hypertarget{classBasicHandler_af28ec40eb803adee1b5691ca37e94ea5}{
+void {\bfseries AddQueryData} (\hyperlink{classSession}{Session} \&session, data::ENDataType data\_\-type, uint64\_\-t data\_\-id)}
+\label{classBasicHandler_af28ec40eb803adee1b5691ca37e94ea5}
+
+\item 
+\hypertarget{classBasicHandler_a5793e0b81e4884a89bae922f32c0a46d}{
+void {\bfseries AddQueryDataAndLock} (\hyperlink{classSession}{Session} \&session, data::ENDataType data\_\-type, uint64\_\-t data\_\-id)}
+\label{classBasicHandler_a5793e0b81e4884a89bae922f32c0a46d}
+
+\item 
+\hypertarget{classBasicHandler_af8f1fab5ca5bd961b12e780fd5db7edb}{
+void {\bfseries AddDeleteData} (\hyperlink{classSession}{Session} \&session, data::ENDataType data\_\-type, uint64\_\-t data\_\-id)}
+\label{classBasicHandler_af8f1fab5ca5bd961b12e780fd5db7edb}
+
+\item 
+\hypertarget{classBasicHandler_a88d6b42d02783d07b9588227efd34a68}{
+data::DB $\ast$ {\bfseries AddInsertData} (\hyperlink{classSession}{Session} \&session, data::ENDataType data\_\-type, uint64\_\-t data\_\-id)}
+\label{classBasicHandler_a88d6b42d02783d07b9588227efd34a68}
+
+\item 
+\hypertarget{classBasicHandler_acca46fa7be71d474186e1fa5db504374}{
+bool {\bfseries SendResponse} (\hyperlink{classSession}{Session} \&session)}
+\label{classBasicHandler_acca46fa7be71d474186e1fa5db504374}
+
+\item 
+\hypertarget{classBasicHandler_a229999ba14046324f765930ec8ea5220}{
+bool {\bfseries RequestUrl} (\hyperlink{classSession}{Session} \&session, std::string const \&url, std::string const \&body=\char`\"{}\char`\"{})}
+\label{classBasicHandler_a229999ba14046324f765930ec8ea5220}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHandler_af833cfccfd57d804801f1915e8a4957e}{
+msg::ENCSType {\bfseries \_\-cs\_\-rsp\_\-type} = msg::CS\_\-TYPE\_\-NONE}
+\label{classBasicHandler_af833cfccfd57d804801f1915e8a4957e}
+
+\item 
+\hypertarget{classBasicHandler_a636082f170090ccb25487b71dd710cb8}{
+msg::ENSSType {\bfseries \_\-ss\_\-rsp\_\-type} = msg::SS\_\-TYPE\_\-NONE}
+\label{classBasicHandler_a636082f170090ccb25487b71dd710cb8}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+dev/svr/common/basic\_\-handler.h\item 
+dev/svr/common/basic\_\-handler.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,125 @@
+\hypertarget{classlsf_1_1util_1_1StringExt}{
+\section{lsf::util::StringExt Class Reference}
+\label{classlsf_1_1util_1_1StringExt}\index{lsf::util::StringExt@{lsf::util::StringExt}}
+}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a650ba7529b3e89359fab336e504079d5}{
+{\footnotesize template$<$typename DelimitType $>$ }\\static std::string {\bfseries SplitGet} (std::string const \&input, DelimitType const \&delimit, size\_\-t index, bool ignore\_\-repeated=false)}
+\label{classlsf_1_1util_1_1StringExt_a650ba7529b3e89359fab336e504079d5}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_ac5ccfe5e5c6c7e0fafd789d311af8181}{
+{\footnotesize template$<$typename DelimitType $>$ }\\static std::string {\bfseries SplitGetNext} (std::string const \&input, DelimitType const \&delimit, size\_\-t \&offset, bool ignore\_\-repeated=false)}
+\label{classlsf_1_1util_1_1StringExt_ac5ccfe5e5c6c7e0fafd789d311af8181}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_ab4b108338c6be993b3dcffa747962e6d}{
+{\footnotesize template$<$typename DelimitType $>$ }\\static std::vector$<$ std::string $>$ {\bfseries SplitStr} (std::string const \&input, DelimitType const \&delimit, bool ignore\_\-repeated=false)}
+\label{classlsf_1_1util_1_1StringExt_ab4b108338c6be993b3dcffa747962e6d}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_abcdf3acdbb743e6429e000e24c2edb13}{
+{\footnotesize template$<$typename DelimitType1 , typename DelimitType2 $>$ }\\static std::string \& {\bfseries FindAndTrimBlock} (std::string \&input, DelimitType1 const \&begin\_\-pattern, DelimitType2 const \&end\_\-pattern, bool ignore\_\-repeated=false)}
+\label{classlsf_1_1util_1_1StringExt_abcdf3acdbb743e6429e000e24c2edb13}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a39efda3173dd7874db13cd8c4ac31b46}{
+static std::string \& {\bfseries ReplaceInplace} (std::string \&src, std::string const \&to\_\-replace, std::string const \&replace\_\-with)}
+\label{classlsf_1_1util_1_1StringExt_a39efda3173dd7874db13cd8c4ac31b46}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_af01a9b0e334605e12ac7fa2dbc179a6b}{
+static std::string {\bfseries Replace} (std::string const \&src, std::string const \&to\_\-replace, std::string const \&replace\_\-with)}
+\label{classlsf_1_1util_1_1StringExt_af01a9b0e334605e12ac7fa2dbc179a6b}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_ab34e6c6e36796a5394d5df1d1b2c5855}{
+static std::string \& {\bfseries RemoveHeadWhitespace} (std::string \&input)}
+\label{classlsf_1_1util_1_1StringExt_ab34e6c6e36796a5394d5df1d1b2c5855}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_aef8d13e267b90b0f6cc1e425724aff6c}{
+static std::string \& {\bfseries RemoveTailWhitespace} (std::string \&input)}
+\label{classlsf_1_1util_1_1StringExt_aef8d13e267b90b0f6cc1e425724aff6c}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_afb948b221029c5aa30c0b4b0880add6d}{
+static std::string {\bfseries GetDirName} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_afb948b221029c5aa30c0b4b0880add6d}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_abf68e2952c513f8d92689edb3172264a}{
+static std::string {\bfseries GetBaseName} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_abf68e2952c513f8d92689edb3172264a}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_aad58a5c479fe26b2ff96aaf850930555}{
+static std::string {\bfseries GetSuffix} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_aad58a5c479fe26b2ff96aaf850930555}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a2e4b54b6c060655c9d8e50178e6d3e8a}{
+static std::string {\bfseries BinToString} (void const $\ast$input, size\_\-t inlen)}
+\label{classlsf_1_1util_1_1StringExt_a2e4b54b6c060655c9d8e50178e6d3e8a}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_ae6524cfc1014b468fd9bcc2a94e6a2d1}{
+static std::string {\bfseries BinToHexString} (void const $\ast$input, size\_\-t inlen)}
+\label{classlsf_1_1util_1_1StringExt_ae6524cfc1014b468fd9bcc2a94e6a2d1}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a3b1b5555efe4d611647b7f2da99b8664}{
+static std::string {\bfseries HexStringToBin} (char const $\ast$input, size\_\-t inlen)}
+\label{classlsf_1_1util_1_1StringExt_a3b1b5555efe4d611647b7f2da99b8664}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a35461d430b8cac9cebb62882170a8867}{
+static std::string {\bfseries BinToString} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_a35461d430b8cac9cebb62882170a8867}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_abc038d2b0181fd692690b3125ec2be5f}{
+static std::string {\bfseries BinToHexString} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_abc038d2b0181fd692690b3125ec2be5f}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a637b1ea40506f667ffce08780c8ffa4c}{
+static std::string {\bfseries HexStringToBin} (std::string const \&input)}
+\label{classlsf_1_1util_1_1StringExt_a637b1ea40506f667ffce08780c8ffa4c}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a65240b9fa2e116d9bd51b8d16a00c86e}{
+static std::string {\bfseries Format} (char const $\ast$fmt,...)}
+\label{classlsf_1_1util_1_1StringExt_a65240b9fa2e116d9bd51b8d16a00c86e}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a3c97c56670b2fe924fc0f4447464ec1f}{
+static size\_\-t {\bfseries Utf8Length} (std::string const \&str)}
+\label{classlsf_1_1util_1_1StringExt_a3c97c56670b2fe924fc0f4447464ec1f}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_adc34cd32331e78888afd8ee95d9cad07}{
+static size\_\-t {\bfseries Utf8Length} (char const $\ast$str)}
+\label{classlsf_1_1util_1_1StringExt_adc34cd32331e78888afd8ee95d9cad07}
+
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_a8033929e8fb5716c6048291dd1861eaf}{
+static std::istream \& {\bfseries SafeGetLine} (std::istream \&is, std::string \&t)}
+\label{classlsf_1_1util_1_1StringExt_a8033929e8fb5716c6048291dd1861eaf}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1util_1_1StringExt_af0b20fb110a2457ff4adff7fddb67f46}{
+static constexpr char const $\ast$ {\bfseries WHITE\_\-SPACES} = \char`\"{} $\backslash$r$\backslash$n$\backslash$f$\backslash$t$\backslash$v\char`\"{}}
+\label{classlsf_1_1util_1_1StringExt_af0b20fb110a2457ff4adff7fddb67f46}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/util/string\_\-ext.hpp\end{DoxyCompactItemize}

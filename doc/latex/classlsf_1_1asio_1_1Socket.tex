@@ -1,0 +1,206 @@
+\hypertarget{classlsf_1_1asio_1_1Socket}{
+\section{lsf::asio::Socket Class Reference}
+\label{classlsf_1_1asio_1_1Socket}\index{lsf::asio::Socket@{lsf::asio::Socket}}
+}
+Inheritance diagram for lsf::asio::Socket::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classlsf_1_1asio_1_1Socket}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ad44f4f4da027beee6ee66d878d063675}{
+{\bfseries Socket} (\hyperlink{classlsf_1_1asio_1_1proto_1_1Protocol}{proto::Protocol} proto, int sockfd, bool is\_\-connect)}
+\label{classlsf_1_1asio_1_1Socket_ad44f4f4da027beee6ee66d878d063675}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a29eb72f06406444b49db750c84ea2e23}{
+{\bfseries Socket} (\hyperlink{classlsf_1_1asio_1_1proto_1_1Protocol}{proto::Protocol} proto)}
+\label{classlsf_1_1asio_1_1Socket_a29eb72f06406444b49db750c84ea2e23}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ae6ff3c2c49aa58b1fc155624ac2c4ee1}{
+int {\bfseries SockFd} () const }
+\label{classlsf_1_1asio_1_1Socket_ae6ff3c2c49aa58b1fc155624ac2c4ee1}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a0ed4cc3acb0f675f5b3b21af8e00aba5}{
+\hyperlink{classlsf_1_1asio_1_1proto_1_1Protocol}{proto::Protocol} {\bfseries protocol} () const }
+\label{classlsf_1_1asio_1_1Socket_a0ed4cc3acb0f675f5b3b21af8e00aba5}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_afbd01aa3b2f93daf9ab1d868afa1b7e4}{
+{\bfseries operator bool} () const }
+\label{classlsf_1_1asio_1_1Socket_afbd01aa3b2f93daf9ab1d868afa1b7e4}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a4e659c99dcf87a79227733aff20e31ff}{
+bool {\bfseries IsV4} () const }
+\label{classlsf_1_1asio_1_1Socket_a4e659c99dcf87a79227733aff20e31ff}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a5a400d6a58fba55e157fb68b1d1f42ed}{
+bool {\bfseries IsV6} () const }
+\label{classlsf_1_1asio_1_1Socket_a5a400d6a58fba55e157fb68b1d1f42ed}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a122f13d47d58603a6a9af363aafb5909}{
+bool {\bfseries IsConnect} () const }
+\label{classlsf_1_1asio_1_1Socket_a122f13d47d58603a6a9af363aafb5909}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a597e127dff8028eaed7adea557db4b56}{
+bool {\bfseries operator==} (\hyperlink{classlsf_1_1asio_1_1Socket}{Socket} const \&rhs) const }
+\label{classlsf_1_1asio_1_1Socket_a597e127dff8028eaed7adea557db4b56}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_aed6fd7a6762f864756c14fb1d92ff8d0}{
+bool {\bfseries operator!=} (\hyperlink{classlsf_1_1asio_1_1Socket}{Socket} const \&rhs) const }
+\label{classlsf_1_1asio_1_1Socket_aed6fd7a6762f864756c14fb1d92ff8d0}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_acc55b7fec90d5ad95d3e424ccada70e7}{
+bool {\bfseries operator$<$} (\hyperlink{classlsf_1_1asio_1_1Socket}{Socket} const \&rhs) const }
+\label{classlsf_1_1asio_1_1Socket_acc55b7fec90d5ad95d3e424ccada70e7}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a759fa2cc2c35f36bfb63706ebfad8f62}{
+bool {\bfseries ShutDown} ()}
+\label{classlsf_1_1asio_1_1Socket_a759fa2cc2c35f36bfb63706ebfad8f62}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_aa3fbd05b99f7c0ab350c5633d749e599}{
+bool {\bfseries Bind} (\hyperlink{classlsf_1_1asio_1_1Address}{Address} const \&address, uint16\_\-t port)}
+\label{classlsf_1_1asio_1_1Socket_aa3fbd05b99f7c0ab350c5633d749e599}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a2a00303eafcdefd903e8994a292e7f31}{
+bool {\bfseries Bind} (\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} const \&sockaddr)}
+\label{classlsf_1_1asio_1_1Socket_a2a00303eafcdefd903e8994a292e7f31}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ab1775b67c31868b47c0b0d87f59d21ce}{
+bool {\bfseries Listen} (int backlog=DEF\_\-LISTEN\_\-QUEUE\_\-SIZE)}
+\label{classlsf_1_1asio_1_1Socket_ab1775b67c31868b47c0b0d87f59d21ce}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a3457c082dab1111d8e83178cfc715a89}{
+\hyperlink{classlsf_1_1asio_1_1Socket}{Socket} $\ast$ {\bfseries Accept} ()}
+\label{classlsf_1_1asio_1_1Socket_a3457c082dab1111d8e83178cfc715a89}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a345b652b6af6da315bc9c31c6b17345a}{
+bool {\bfseries CheckSockError} () const }
+\label{classlsf_1_1asio_1_1Socket_a345b652b6af6da315bc9c31c6b17345a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ad0582a7e280d915a428375b63c56a68d}{
+bool {\bfseries Connect} (\hyperlink{classlsf_1_1asio_1_1Address}{Address} const \&address, uint16\_\-t port, uint64\_\-t milli\_\-expire=DEF\_\-TIMEOUT)}
+\label{classlsf_1_1asio_1_1Socket_ad0582a7e280d915a428375b63c56a68d}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a26cdb2b2f44a542ce41298f854084c63}{
+bool {\bfseries Connect} (\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} const \&remote, uint64\_\-t milli\_\-expire=DEF\_\-TIMEOUT)}
+\label{classlsf_1_1asio_1_1Socket_a26cdb2b2f44a542ce41298f854084c63}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a7a746f5a2929c56fbcfbbb21439a6642}{
+bool {\bfseries Recv} (std::string \&content, uint64\_\-t milli\_\-expire=DEF\_\-TIMEOUT)}
+\label{classlsf_1_1asio_1_1Socket_a7a746f5a2929c56fbcfbbb21439a6642}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ad37798e9ab91781704f66eea7a4e7aea}{
+bool {\bfseries Send} (std::string const \&content, uint64\_\-t milli\_\-expire=DEF\_\-TIMEOUT)}
+\label{classlsf_1_1asio_1_1Socket_ad37798e9ab91781704f66eea7a4e7aea}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a6f2342ebfcad55889435fb8cfff1500e}{
+bool {\bfseries Send} (void const $\ast$buf, size\_\-t len, uint64\_\-t milli\_\-expire=DEF\_\-TIMEOUT)}
+\label{classlsf_1_1asio_1_1Socket_a6f2342ebfcad55889435fb8cfff1500e}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a55a943c161cd9f0c496bf65e01c64aa5}{
+\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} {\bfseries LocalSockAddr} ()}
+\label{classlsf_1_1asio_1_1Socket_a55a943c161cd9f0c496bf65e01c64aa5}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ac6c6d8910025e3e7cc956cdd268bcbb8}{
+\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} {\bfseries RemoteSockAddr} ()}
+\label{classlsf_1_1asio_1_1Socket_ac6c6d8910025e3e7cc956cdd268bcbb8}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a7933def8e97a6fc9f000306fa24d9587}{
+bool {\bfseries SetNonBlock} ()}
+\label{classlsf_1_1asio_1_1Socket_a7933def8e97a6fc9f000306fa24d9587}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_abb71100c20f10ff533c012c1711ef14e}{
+bool {\bfseries SetBlock} ()}
+\label{classlsf_1_1asio_1_1Socket_abb71100c20f10ff533c012c1711ef14e}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a24eb4c31ac6fb5ab052102e0563650c0}{
+bool {\bfseries SetSendBuf} (size\_\-t buflen)}
+\label{classlsf_1_1asio_1_1Socket_a24eb4c31ac6fb5ab052102e0563650c0}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a05fd939075cf42b6bcf1db80959d7427}{
+bool {\bfseries SetRecvBuf} (size\_\-t buflen)}
+\label{classlsf_1_1asio_1_1Socket_a05fd939075cf42b6bcf1db80959d7427}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a157c7ab4fab01b9ef6d36ba444e486fd}{
+bool {\bfseries SetSockReuse} ()}
+\label{classlsf_1_1asio_1_1Socket_a157c7ab4fab01b9ef6d36ba444e486fd}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a723e939fca5119a9ee48ae780b525e16}{
+bool {\bfseries SetSendTimeout} (timeval const \&tv)}
+\label{classlsf_1_1asio_1_1Socket_a723e939fca5119a9ee48ae780b525e16}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a8b6571bd325e8c84c9dcb0da67da3621}{
+bool {\bfseries SetRecvTimeout} (timeval const \&tv)}
+\label{classlsf_1_1asio_1_1Socket_a8b6571bd325e8c84c9dcb0da67da3621}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_ab7b34a22ae6d25c491bd1835e18d59b1}{
+bool {\bfseries SetLinger} (bool is\_\-on, int sec)}
+\label{classlsf_1_1asio_1_1Socket_ab7b34a22ae6d25c491bd1835e18d59b1}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a5e29ec1dca6e28f89e5c98ea142e40ac}{
+size\_\-t {\bfseries GetRecvBufLen} () const }
+\label{classlsf_1_1asio_1_1Socket_a5e29ec1dca6e28f89e5c98ea142e40ac}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_acadb59d2aedea98e4f7c821b3255e317}{
+size\_\-t {\bfseries GetSendBufLen} () const }
+\label{classlsf_1_1asio_1_1Socket_acadb59d2aedea98e4f7c821b3255e317}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_acccc7de87aaf825185bdffbe836251fe}{
+static const int {\bfseries DEF\_\-LISTEN\_\-QUEUE\_\-SIZE} = 128}
+\label{classlsf_1_1asio_1_1Socket_acccc7de87aaf825185bdffbe836251fe}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_acabc64a16cd69168ecae9001bb44c864}{
+static const size\_\-t {\bfseries MAX\_\-BUFFER\_\-LEN} = 128 $\ast$ 1024}
+\label{classlsf_1_1asio_1_1Socket_acabc64a16cd69168ecae9001bb44c864}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1Socket_a8736d123120a02e242c231d2bf839c42}{
+static const size\_\-t {\bfseries DEF\_\-TIMEOUT} = 1000}
+\label{classlsf_1_1asio_1_1Socket_a8736d123120a02e242c231d2bf839c42}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/asio/socket.hpp\end{DoxyCompactItemize}

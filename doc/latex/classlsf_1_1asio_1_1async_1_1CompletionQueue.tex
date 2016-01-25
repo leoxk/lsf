@@ -1,0 +1,115 @@
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue}{
+\section{lsf::asio::async::CompletionQueue Class Reference}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue}\index{lsf::asio::async::CompletionQueue@{lsf::asio::async::CompletionQueue}}
+}
+Inheritance diagram for lsf::asio::async::CompletionQueue::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classlsf_1_1asio_1_1async_1_1CompletionQueue}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structlsf_1_1asio_1_1async_1_1CompletionQueue_1_1RawCompletionFunc}{RawCompletionFunc}
+\item 
+struct \hyperlink{structlsf_1_1asio_1_1async_1_1CompletionQueue_1_1ReadCompletionFunc}{ReadCompletionFunc}
+\item 
+struct \hyperlink{structlsf_1_1asio_1_1async_1_1CompletionQueue_1_1WriteCompletionFunc}{WriteCompletionFunc}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a611ed3740bb2bc1bcca7e09361d28ab0}{
+shared\_\-read\_\-completion\_\-type {\bfseries GetReadCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a611ed3740bb2bc1bcca7e09361d28ab0}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a15925e91e59c9f6031b213359f1fed42}{
+shared\_\-write\_\-completion\_\-type {\bfseries GetWriteCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a15925e91e59c9f6031b213359f1fed42}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a82df5f046fa360da1f803f9f4eb1113a}{
+shared\_\-raw\_\-completion\_\-type {\bfseries GetRawCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a82df5f046fa360da1f803f9f4eb1113a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a35f1310ada4f8193bc7c2343ad5199d3}{
+shared\_\-read\_\-completion\_\-type {\bfseries GetAndCreateReadCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a35f1310ada4f8193bc7c2343ad5199d3}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_ad41fb86976b06cf77c0b90a0f70ad98e}{
+shared\_\-write\_\-completion\_\-type {\bfseries GetAndCreateWriteCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_ad41fb86976b06cf77c0b90a0f70ad98e}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a23dd34e4d1b5e5ce53a89798d87ffb30}{
+shared\_\-raw\_\-completion\_\-type {\bfseries GetAndCreateRawCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a23dd34e4d1b5e5ce53a89798d87ffb30}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a859f8a09efb118f4363723dcd8eeb72b}{
+void {\bfseries CancelReadCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a859f8a09efb118f4363723dcd8eeb72b}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_aa22525630051f7e16ec8c97a60ea4c88}{
+void {\bfseries CancelWriteCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_aa22525630051f7e16ec8c97a60ea4c88}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_af6cbdc29f01b9b346f0db4adcadb6bea}{
+void {\bfseries CancelRawCompletionFunc} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_af6cbdc29f01b9b346f0db4adcadb6bea}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac08299123f7aa24a36d649a7b1345406}{
+std::map$<$ int, shared\_\-read\_\-completion\_\-type $>$ const \& {\bfseries GetReadCompletionMap} () const }
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac08299123f7aa24a36d649a7b1345406}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac086fe0222dd5648bce01576d9e83633}{
+std::map$<$ int, shared\_\-write\_\-completion\_\-type $>$ const \& {\bfseries GetWriteCompletionMap} () const }
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac086fe0222dd5648bce01576d9e83633}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_aa49a6887180c67fbf8446a69fb204608}{
+std::map$<$ int, shared\_\-raw\_\-completion\_\-type $>$ const \& {\bfseries GetRawCompletionMap} () const }
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_aa49a6887180c67fbf8446a69fb204608}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_ae7d7b1638ec7db244e23c823e8bb97ad}{
+static const short {\bfseries ACTION\_\-ACCEPT} = 1}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_ae7d7b1638ec7db244e23c823e8bb97ad}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac4f440fabb8c4b16aa9cb63c13bc0606}{
+static const short {\bfseries ACTION\_\-CONNECT} = 2}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_ac4f440fabb8c4b16aa9cb63c13bc0606}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a489ff297298a52e2b72d98d74d354b0e}{
+static const short {\bfseries ACTION\_\-WRITE} = 4}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a489ff297298a52e2b72d98d74d354b0e}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_aff11306f9975c207e3f9cb75fc748250}{
+static const short {\bfseries ACTION\_\-READ} = 5}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_aff11306f9975c207e3f9cb75fc748250}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1CompletionQueue_a92ef9285b9611386635c0a65edbc36d0}{
+static const short {\bfseries ACTION\_\-TIMER} = 7}
+\label{classlsf_1_1asio_1_1async_1_1CompletionQueue_a92ef9285b9611386635c0a65edbc36d0}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/asio/async/completion\_\-queue.hpp\end{DoxyCompactItemize}

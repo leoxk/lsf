@@ -1,0 +1,84 @@
+\hypertarget{classBasicHttp}{
+\section{BasicHttp Class Reference}
+\label{classBasicHttp}\index{BasicHttp@{BasicHttp}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHttp_ad5c0909c854486aecf71377073b72b42}{
+void {\bfseries Init} (uint32\_\-t port)}
+\label{classBasicHttp_ad5c0909c854486aecf71377073b72b42}
+
+\item 
+\hypertarget{classBasicHttp_a06aaed65f80fd9b0209625426213d1cd}{
+bool {\bfseries Start} ()}
+\label{classBasicHttp_a06aaed65f80fd9b0209625426213d1cd}
+
+\item 
+\hypertarget{classBasicHttp_a181cda3b0a709ca2eb6711467a0c4dd1}{
+bool {\bfseries Close} ()}
+\label{classBasicHttp_a181cda3b0a709ca2eb6711467a0c4dd1}
+
+\item 
+\hypertarget{classBasicHttp_a2c4a7caafebed81fd7aefeba17c1e00f}{
+bool {\bfseries RegisterHandler} (std::string uri, handler f)}
+\label{classBasicHttp_a2c4a7caafebed81fd7aefeba17c1e00f}
+
+\item 
+\hypertarget{classBasicHttp_ac1480a1d4a5b95698f038a16170e5bfe}{
+void {\bfseries UnRegisterHandler} (std::string uri)}
+\label{classBasicHttp_ac1480a1d4a5b95698f038a16170e5bfe}
+
+\item 
+\hypertarget{classBasicHttp_abf7d6301ebf41b645f178c97372ea256}{
+void {\bfseries Loop} (int milli)}
+\label{classBasicHttp_abf7d6301ebf41b645f178c97372ea256}
+
+\item 
+\hypertarget{classBasicHttp_a2c064a0d882f5536f16147cdc3149130}{
+void {\bfseries SendReply} (std::string uri, std::string reply)}
+\label{classBasicHttp_a2c064a0d882f5536f16147cdc3149130}
+
+\item 
+\hypertarget{classBasicHttp_a13b165fa4e5a037535bd434ad337bc50}{
+void {\bfseries SendError} (std::string uri, int errcode, std::string reply)}
+\label{classBasicHttp_a13b165fa4e5a037535bd434ad337bc50}
+
+\item 
+\hypertarget{classBasicHttp_ac839bb0cea5e68734d47d0d475c64b2a}{
+void {\bfseries SendFile} (std::string uri, std::string content)}
+\label{classBasicHttp_ac839bb0cea5e68734d47d0d475c64b2a}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHttp_afda915018ed1eb551317547c68a4b7f4}{
+char {\bfseries \_\-port} \mbox{[}11\mbox{]}}
+\label{classBasicHttp_afda915018ed1eb551317547c68a4b7f4}
+
+\item 
+\hypertarget{classBasicHttp_aa3252a4b9cbe96cffe0d1b3edcc3382d}{
+struct mg\_\-mgr {\bfseries \_\-mgr}}
+\label{classBasicHttp_aa3252a4b9cbe96cffe0d1b3edcc3382d}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classBasicHttp_a4ffdf90b889ef8301dd7de8e0b17248d}{
+static handler\_\-map {\bfseries \_\-handlers}}
+\label{classBasicHttp_a4ffdf90b889ef8301dd7de8e0b17248d}
+
+\item 
+\hypertarget{classBasicHttp_a1315d635c2c7403693cbf2df1b97cc8e}{
+static connection\_\-map {\bfseries \_\-connections}}
+\label{classBasicHttp_a1315d635c2c7403693cbf2df1b97cc8e}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+dev/svr/common/basic\_\-http.h\item 
+dev/svr/common/basic\_\-http.cpp\end{DoxyCompactItemize}

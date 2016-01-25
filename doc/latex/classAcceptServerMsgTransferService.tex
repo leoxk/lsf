@@ -1,0 +1,55 @@
+\hypertarget{classAcceptServerMsgTransferService}{
+\section{AcceptServerMsgTransferService Class Reference}
+\label{classAcceptServerMsgTransferService}\index{AcceptServerMsgTransferService@{AcceptServerMsgTransferService}}
+}
+Inheritance diagram for AcceptServerMsgTransferService::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.23699cm]{classAcceptServerMsgTransferService}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classAcceptServerMsgTransferService_a0014b5858da33289e9abba6f3dfc1fa1}{
+bool {\bfseries InitSocketMapFromServerConfig} ()}
+\label{classAcceptServerMsgTransferService_a0014b5858da33289e9abba6f3dfc1fa1}
+
+\item 
+\hypertarget{classAcceptServerMsgTransferService_a7ad2ad65e493f9a06998b4e07191cc7b}{
+void {\bfseries HandleRegisterRequest} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, msg::SS const \&request)}
+\label{classAcceptServerMsgTransferService_a7ad2ad65e493f9a06998b4e07191cc7b}
+
+\item 
+\hypertarget{classAcceptServerMsgTransferService_a1b2d4772183ac87744320260ec20af03}{
+void {\bfseries HandleMessageTransfer} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, msg::SS const \&request, std::string const \&message)}
+\label{classAcceptServerMsgTransferService_a1b2d4772183ac87744320260ec20af03}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classAcceptServerMsgTransferService_af3a10bb242f42adc4038891766475e76}{
+virtual void {\bfseries OnConnectionMessage} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{lsf::asio::SharedSocket} socket, std::string \&message)}
+\label{classAcceptServerMsgTransferService_af3a10bb242f42adc4038891766475e76}
+
+\item 
+\hypertarget{classAcceptServerMsgTransferService_ac291271cdab011bfa4b51761b00effdc}{
+bool {\bfseries TransferMessageByTypeAndId} (conf::ENServerType server\_\-type, uint32\_\-t server\_\-id, msg::ProxyHead const \&proxy\_\-head, std::string const \&message)}
+\label{classAcceptServerMsgTransferService_ac291271cdab011bfa4b51761b00effdc}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classAcceptServerMsgTransferService_a45a11e5aec1f81ae8e94e20bb5166418}{
+sock\_\-map\_\-type {\bfseries \_\-sock\_\-map}}
+\label{classAcceptServerMsgTransferService_a45a11e5aec1f81ae8e94e20bb5166418}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+dev/svr/proxysvrd/accept\_\-server\_\-msg\_\-transfer\_\-service.h\item 
+dev/svr/proxysvrd/accept\_\-server\_\-msg\_\-transfer\_\-service.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,66 @@
+\hypertarget{classlsf_1_1asio_1_1CurlMulti}{
+\section{lsf::asio::CurlMulti Class Reference}
+\label{classlsf_1_1asio_1_1CurlMulti}\index{lsf::asio::CurlMulti@{lsf::asio::CurlMulti}}
+}
+Inheritance diagram for lsf::asio::CurlMulti::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classlsf_1_1asio_1_1CurlMulti}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a705f919671c2674ddd94a3d6be765028}{
+{\bfseries operator bool} () const }
+\label{classlsf_1_1asio_1_1CurlMulti_a705f919671c2674ddd94a3d6be765028}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_abb8c4083b9abdc3c37bd8682e93bc867}{
+bool {\bfseries Init} ()}
+\label{classlsf_1_1asio_1_1CurlMulti_abb8c4083b9abdc3c37bd8682e93bc867}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_abaa3bd072f996193e59473e5459581b0}{
+{\footnotesize template$<$typename HandlerType  = std::nullptr\_\-t$>$ }\\bool {\bfseries AddCurl} (\hyperlink{classlsf_1_1asio_1_1SharedCurl}{SharedCurl} shared\_\-curl, HandlerType \&\&handler=nullptr)}
+\label{classlsf_1_1asio_1_1CurlMulti_abaa3bd072f996193e59473e5459581b0}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a2401849fa9cfcd81c7f3ae3e977a6473}{
+void {\bfseries RemoveCurl} (\hyperlink{classlsf_1_1asio_1_1SharedCurl}{SharedCurl} shared\_\-curl)}
+\label{classlsf_1_1asio_1_1CurlMulti_a2401849fa9cfcd81c7f3ae3e977a6473}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a41fb52fccc83320cc91c4fac3942fce6}{
+std::set$<$ int $>$ const \& {\bfseries TimerSet} () const }
+\label{classlsf_1_1asio_1_1CurlMulti_a41fb52fccc83320cc91c4fac3942fce6}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a1e78435ff82977848fff13ab26fce156}{
+std::map$<$ CURL $\ast$, std::pair$<$ \hyperlink{classlsf_1_1asio_1_1SharedCurl}{SharedCurl}, finish\_\-callback\_\-type $>$ $>$ const \& {\bfseries CurlMap} () const }
+\label{classlsf_1_1asio_1_1CurlMulti_a1e78435ff82977848fff13ab26fce156}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a880d82cb94ec97050d8cc96cad33ced6}{
+static void {\bfseries AddTimerCallback} (CURLM $\ast$multi\_\-handle, long timeout\_\-milli, void $\ast$puser)}
+\label{classlsf_1_1asio_1_1CurlMulti_a880d82cb94ec97050d8cc96cad33ced6}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_a500dabfe065dc3ff9fd8f1622863890b}{
+static int {\bfseries HandleSocketCallback} (CURL $\ast$easy\_\-handle, curl\_\-socket\_\-t sock, int action, void $\ast$puser, void $\ast$psock)}
+\label{classlsf_1_1asio_1_1CurlMulti_a500dabfe065dc3ff9fd8f1622863890b}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1CurlMulti_ab364b1523ded58f62c59619dc66680fb}{
+static void {\bfseries CheckMultiInfo} ()}
+\label{classlsf_1_1asio_1_1CurlMulti_ab364b1523ded58f62c59619dc66680fb}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/asio/curl.hpp\end{DoxyCompactItemize}

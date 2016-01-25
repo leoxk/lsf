@@ -1,0 +1,98 @@
+\hypertarget{classlsf_1_1asio_1_1SockAddr}{
+\section{lsf::asio::SockAddr Class Reference}
+\label{classlsf_1_1asio_1_1SockAddr}\index{lsf::asio::SockAddr@{lsf::asio::SockAddr}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_aea1bbbd8a7422c048e1ffc76a7fda352}{
+{\bfseries SockAddr} (\hyperlink{classlsf_1_1asio_1_1proto_1_1Domain}{proto::Domain} domain=proto::v4)}
+\label{classlsf_1_1asio_1_1SockAddr_aea1bbbd8a7422c048e1ffc76a7fda352}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a321d7e79df0fc0102dba4b19aaacdc0b}{
+{\bfseries SockAddr} (std::string const \&str)}
+\label{classlsf_1_1asio_1_1SockAddr_a321d7e79df0fc0102dba4b19aaacdc0b}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a77c0fe31ca978859ed798e751a97f700}{
+{\bfseries SockAddr} (\hyperlink{classlsf_1_1asio_1_1Address}{Address} const \&address, uint16\_\-t port)}
+\label{classlsf_1_1asio_1_1SockAddr_a77c0fe31ca978859ed798e751a97f700}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_ab9e989b96e5235081ebb7d6a9412fbe3}{
+{\bfseries SockAddr} (sockaddr const $\ast$paddr)}
+\label{classlsf_1_1asio_1_1SockAddr_ab9e989b96e5235081ebb7d6a9412fbe3}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a604abd8a96b80017eaf0b9e18c7a3705}{
+std::string {\bfseries ToString} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a604abd8a96b80017eaf0b9e18c7a3705}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a65eabf4c5f172a24a4da94749a09e404}{
+uint16\_\-t {\bfseries GetPort} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a65eabf4c5f172a24a4da94749a09e404}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a6c9941736b4aaaa25b46599b9eedc313}{
+\hyperlink{classlsf_1_1asio_1_1Address}{Address} {\bfseries GetAddress} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a6c9941736b4aaaa25b46599b9eedc313}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_ab84a1f24bb07d687bf5db80385813e75}{
+bool {\bfseries IsV4} () const }
+\label{classlsf_1_1asio_1_1SockAddr_ab84a1f24bb07d687bf5db80385813e75}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a443b74234c26c974be42093230d00ad0}{
+bool {\bfseries IsV6} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a443b74234c26c974be42093230d00ad0}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_aac1c3ed4b2792f9269dfee4d82ec3683}{
+bool {\bfseries operator==} (\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} const \&rhs) const }
+\label{classlsf_1_1asio_1_1SockAddr_aac1c3ed4b2792f9269dfee4d82ec3683}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a74b6371260ed0e90af8591250875fb90}{
+bool {\bfseries operator!=} (\hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} const \&rhs) const }
+\label{classlsf_1_1asio_1_1SockAddr_a74b6371260ed0e90af8591250875fb90}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a01ed07d2995b08cd4910ae50039241a6}{
+sockaddr const $\ast$ {\bfseries data} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a01ed07d2995b08cd4910ae50039241a6}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a2fc4ea284e6d55a4bebce19e487dd18b}{
+socklen\_\-t {\bfseries size} () const }
+\label{classlsf_1_1asio_1_1SockAddr_a2fc4ea284e6d55a4bebce19e487dd18b}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a453a6d8ce67ab33f3022c704a7c3f1f9}{
+static \hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} {\bfseries Any} (\hyperlink{classlsf_1_1asio_1_1proto_1_1Domain}{proto::Domain} domain=proto::v4)}
+\label{classlsf_1_1asio_1_1SockAddr_a453a6d8ce67ab33f3022c704a7c3f1f9}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a4f9ff7f1fef58080776f0ea6a0032542}{
+sockaddr\_\-in {\bfseries v4}}
+\label{classlsf_1_1asio_1_1SockAddr_a4f9ff7f1fef58080776f0ea6a0032542}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1SockAddr_a3ee4827e60b045c116cba3b59f3944ec}{
+sockaddr\_\-in6 {\bfseries v6}}
+\label{classlsf_1_1asio_1_1SockAddr_a3ee4827e60b045c116cba3b59f3944ec}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/asio/sockaddr.hpp\end{DoxyCompactItemize}

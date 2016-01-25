@@ -1,0 +1,207 @@
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce}{
+\section{lsf::asio::async::ProactorSerivce Class Reference}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce}\index{lsf::asio::async::ProactorSerivce@{lsf::asio::async::ProactorSerivce}}
+}
+Inheritance diagram for lsf::asio::async::ProactorSerivce::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classlsf_1_1asio_1_1async_1_1ProactorSerivce}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0cbf6b525d13721e4c3fb6e128708ba4}{
+{\bfseries ProactorSerivce} (\hyperlink{classlsf_1_1asio_1_1async_1_1BasicEventDriver}{BasicEventDriver} $\ast$pdriver)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0cbf6b525d13721e4c3fb6e128708ba4}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a9c2ba845eff58eb3de8808efbbebba09}{
+{\footnotesize template$<$typename HandlerType1 , typename HandlerType2  = std::nullptr\_\-t$>$ }\\bool {\bfseries AsyncAccept} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, HandlerType1 \&\&handler, HandlerType2 \&\&fail\_\-handler=nullptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a9c2ba845eff58eb3de8808efbbebba09}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a82fdfae765df9c0d2424e1aece967dfb}{
+{\footnotesize template$<$typename HandlerType1 , typename HandlerType2  = std::nullptr\_\-t$>$ }\\bool {\bfseries AsyncConnect} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, \hyperlink{classlsf_1_1asio_1_1Address}{Address} const \&address, uint16\_\-t port, HandlerType1 \&\&handler, HandlerType2 \&\&fail\_\-handler=nullptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a82fdfae765df9c0d2424e1aece967dfb}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a7bd63579178580d47211072f4221ff9a}{
+{\footnotesize template$<$typename HandlerType1 , typename HandlerType2  = std::nullptr\_\-t$>$ }\\bool {\bfseries AsyncConnect} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, \hyperlink{classlsf_1_1asio_1_1SockAddr}{SockAddr} const \&sockaddr, HandlerType1 \&\&handler, HandlerType2 \&\&fail\_\-handler=nullptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a7bd63579178580d47211072f4221ff9a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5371f4da671cdfd2784f2bd96d295617}{
+{\footnotesize template$<$typename StringType , typename HandlerType $>$ }\\bool {\bfseries AsyncWrite} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, StringType \&\&buffer, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5371f4da671cdfd2784f2bd96d295617}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a6325d6ce050b29c3168b014cd785bc35}{
+{\footnotesize template$<$typename HandlerType1 , typename HandlerType2  = std::nullptr\_\-t$>$ }\\bool {\bfseries AsyncRead} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, HandlerType1 \&\&handler, HandlerType2 \&\&peer\_\-close\_\-handler=nullptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a6325d6ce050b29c3168b014cd785bc35}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a58cfb7b9acceb8603c130dcfc6f34d7c}{
+{\footnotesize template$<$typename HandlerType $>$ }\\bool {\bfseries AsyncRawCallback} (int sockfd, int flags, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a58cfb7b9acceb8603c130dcfc6f34d7c}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a3b9f3a725367bfa23c792bf92bf8e466}{
+{\footnotesize template$<$typename HandlerType $>$ }\\int {\bfseries AsyncAddTimerOnce} (uint64\_\-t milli\_\-expire, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a3b9f3a725367bfa23c792bf92bf8e466}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0c94afc94f98c8dfd79b560db75c5ac7}{
+{\footnotesize template$<$typename HandlerType $>$ }\\int {\bfseries AsyncAddTimerForever} (uint64\_\-t milli\_\-expire, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0c94afc94f98c8dfd79b560db75c5ac7}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a66e43eda511faf7b82553de9bb9aaf65}{
+{\footnotesize template$<$typename HandlerType $>$ }\\int {\bfseries AsyncAddTimerForeverAndTriggerNow} (uint64\_\-t milli\_\-expire, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a66e43eda511faf7b82553de9bb9aaf65}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_ac32b291ce74e4caf837bb6c192274cc7}{
+{\footnotesize template$<$typename HandlerType $>$ }\\int {\bfseries AsyncAddTimerMulti} (uint64\_\-t milli\_\-expire, size\_\-t trigger\_\-count, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_ac32b291ce74e4caf837bb6c192274cc7}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a45a28f612525128216e1b08e8fded891}{
+{\footnotesize template$<$typename HandlerType $>$ }\\int {\bfseries AsyncAddTimer} (uint64\_\-t milli\_\-expire, uint64\_\-t milli\_\-interval, size\_\-t trigger\_\-count, HandlerType \&\&handler)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a45a28f612525128216e1b08e8fded891}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a345c811991813881ea529b8bb11131d6}{
+std::pair$<$ uint64\_\-t, uint64\_\-t $>$ {\bfseries AsyncGetTimer} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a345c811991813881ea529b8bb11131d6}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_aac0d6b22e353022d75bc4e8437dfa5cc}{
+void {\bfseries AsyncCancel} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} socket)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_aac0d6b22e353022d75bc4e8437dfa5cc}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5a82488543f1ee18cc83763c8f170a63}{
+void {\bfseries AsyncCancel} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5a82488543f1ee18cc83763c8f170a63}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0633c96e82a7758c088d65a4b831774f}{
+void {\bfseries AsyncCloseTimer} (int sockfd)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0633c96e82a7758c088d65a4b831774f}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a92e86ffd3479d070017bd2ec8cbc4ba1}{
+void {\bfseries Run} ()}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a92e86ffd3479d070017bd2ec8cbc4ba1}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a7cb28747d2836490ea6dec0825828e41}{
+void {\bfseries OnAcceptEvent} (CompletionQueue::shared\_\-read\_\-completion\_\-type shared\_\-completion)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a7cb28747d2836490ea6dec0825828e41}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a11bcfac500734a98428747a09910d621}{
+void {\bfseries OnConnectEvent} (CompletionQueue::shared\_\-write\_\-completion\_\-type shared\_\-completion)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a11bcfac500734a98428747a09910d621}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a872fd24926e09282061a63208a5d3ad5}{
+void {\bfseries OnWriteEvent} (CompletionQueue::shared\_\-write\_\-completion\_\-type shared\_\-completion)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a872fd24926e09282061a63208a5d3ad5}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a566a8f7b0578c2d12d1db5724f0cf28a}{
+void {\bfseries OnReadEvent} (CompletionQueue::shared\_\-read\_\-completion\_\-type shared\_\-completion)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a566a8f7b0578c2d12d1db5724f0cf28a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_aaa44b55e85cdadd8a55ec57d2ca1939c}{
+void {\bfseries OnTimerEvent} (CompletionQueue::shared\_\-read\_\-completion\_\-type shared\_\-completion)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_aaa44b55e85cdadd8a55ec57d2ca1939c}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0768e919c0d70e72a0c79133b124e53a}{
+void {\bfseries OnErrorEvent} (int fd)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a0768e919c0d70e72a0c79133b124e53a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a290fc88522e84498d7050c2baa6dec7a}{
+{\footnotesize template$<$typename SharedSocket $>$ }\\void {\bfseries SaveUnusedData} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, std::string const \&data)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a290fc88522e84498d7050c2baa6dec7a}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a8cff2ec06820695cadcf2dd02766dfe1}{
+{\footnotesize template$<$typename SharedSocket $>$ }\\void {\bfseries SaveUnusedData} (\hyperlink{classlsf_1_1asio_1_1SharedSocket}{SharedSocket} shared\_\-socket, char const $\ast$data, size\_\-t len)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a8cff2ec06820695cadcf2dd02766dfe1}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a74f68a45feaab2a9b5a0eaa64058f7ba}{
+void {\bfseries SetExit} ()}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a74f68a45feaab2a9b5a0eaa64058f7ba}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a6ec39ecb7fe19d050f4194904b91b862}{
+uint64\_\-t {\bfseries ClockTime} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a6ec39ecb7fe19d050f4194904b91b862}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a028dfeb5686a933132abade33b407d86}{
+uint64\_\-t {\bfseries ClockTimeMilli} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a028dfeb5686a933132abade33b407d86}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a868e08bd60b367c910412b685b83bedb}{
+uint64\_\-t {\bfseries ClockTimeMicro} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a868e08bd60b367c910412b685b83bedb}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a15c5f9bda2cb0ac3494f92cffb509944}{
+uint64\_\-t {\bfseries ClockTimeNano} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a15c5f9bda2cb0ac3494f92cffb509944}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a3dbdbe88a995df89d3829f44abf82e58}{
+\hyperlink{classlsf_1_1asio_1_1async_1_1BasicEventDriver}{BasicEventDriver} const $\ast$ {\bfseries Driver} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a3dbdbe88a995df89d3829f44abf82e58}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a8de473d6fe447231218fdbb92530af72}{
+\hyperlink{classlsf_1_1asio_1_1async_1_1CompletionQueue}{CompletionQueue} const \& {\bfseries Queue} () const }
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a8de473d6fe447231218fdbb92530af72}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a4768ab940e5d50a49a29bd709a2acfb3}{
+static \hyperlink{classlsf_1_1asio_1_1async_1_1ProactorSerivce}{ProactorSerivce} $\ast$ {\bfseries Inspect} (\hyperlink{classlsf_1_1asio_1_1async_1_1ProactorSerivce}{ProactorSerivce} $\ast$ptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a4768ab940e5d50a49a29bd709a2acfb3}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5a95395f27d3b5d57cd3892bde54154c}{
+static const size\_\-t {\bfseries MAX\_\-WAIT\_\-MILLI\_\-SECONDS} = 10}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a5a95395f27d3b5d57cd3892bde54154c}
+
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a052f9070bdd7ff10c24ccb2125b4244c}{
+static const size\_\-t {\bfseries MAX\_\-BUFFER\_\-LEN} = 128 $\ast$ 1024}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a052f9070bdd7ff10c24ccb2125b4244c}
+
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a23aa0d9f9675607f604ca5189754360a}{
+\hyperlink{classlsf_1_1asio_1_1async_1_1ProactorSerivce}{ProactorSerivce} $\ast$ {\bfseries Inspect} (\hyperlink{classlsf_1_1asio_1_1async_1_1ProactorSerivce}{ProactorSerivce} $\ast$ptr)}
+\label{classlsf_1_1asio_1_1async_1_1ProactorSerivce_a23aa0d9f9675607f604ca5189754360a}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+dev/lsf/asio/async/proactor\_\-service.hpp\end{DoxyCompactItemize}

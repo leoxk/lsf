@@ -27,7 +27,6 @@ SVR_MODULE = \
 			  dev/svr/proxysvrd		\
 			  dev/svr/connsvrd		\
 			  dev/svr/httpsvrd  	\
-			  dev/svr/test 			\
 
 TEST_MODULE = \
 			  dev/lsf/test/basic		\
