@@ -36,8 +36,8 @@ bool GetSingleMessageFromStream(std::string const& buffer, size_t& pos, std::str
 
     // check header
     if (length < header.length) return false;
-    if (header.magic[0] != msg::MAGIC[0] || header.magic[1] != msg::MAGIC[1] || header.length <= sizeof(msg::Header)) {
-        LSF_LOG_ERR("invalid header, magic=%x%x, length=%u, buffer_length=%u", header.magic[0], header.magic[1], header.length, length);
+    if (header.length <= sizeof(msg::Header)) {
+        LSF_LOG_ERR("invalid header, length=%u, buffer_length=%u", header.length, length);
         return false;
     }
 
@@ -53,8 +53,6 @@ bool GetSingleMessageFromStream(std::string const& buffer, size_t& pos, std::str
 bool PutSingleMessageIntoStream(std::string&  buffer, std::string const& content) {
     // set header
     msg::Header header;
-    header.magic[0] = msg::MAGIC[0];
-    header.magic[1] = msg::MAGIC[1];
     header.length = sizeof(msg::Header) + content.length();
     header.hton();
 
