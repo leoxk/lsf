@@ -43,6 +43,7 @@ protected:
     virtual data::ENSessionState OnConfSvrMessage(Session& session);
     virtual data::ENSessionState OnConfSvrTimeOut(Session& session);
     virtual data::ENSessionState OnCurlMessage(Session& session);
+    virtual data::ENSessionState OnCurlTimeout(Session& session);
     virtual data::ENSessionState OnDBSvrNext(Session& session);
     virtual data::ENSessionState OnDBSvrQuery(Session& session);
     virtual data::ENSessionState OnDBSvrQueryMessage(Session& session);

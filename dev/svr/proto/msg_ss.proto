@@ -54,6 +54,8 @@ enum ENInternalError {
     INTERNAL_ERROR_DEDUCT_PROP = 14;
     INTERNAL_ERROR_ADD_PROP = 15;
     INTERNAL_ERROR_INVALID_INPUT = 16;
+
+    INTERNAL_ERROR_CURL_TIMEOUT = 100;
 }
 
 ////////////////////////////////////////////////////////////

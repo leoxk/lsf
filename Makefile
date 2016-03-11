@@ -39,7 +39,7 @@ TEST_MODULE = \
 # for svr
 ############################################################
 all :
-	@mkdir dev/svr/lib/
+	@mkdir -p dev/svr/lib/
 	for dir in $(SVR_MODULE); do \
 		make -C $$dir; \
 	done

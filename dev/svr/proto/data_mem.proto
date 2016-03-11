@@ -24,6 +24,7 @@ enum ENSessionState {
 
     SESSION_STATE_CURL_WAIT            = 61;
     SESSION_STATE_CURL_MESSAGE         = 62;
+    SESSION_STATE_CURL_TIMEOUT         = 63;
 
     SESSION_STATE_CONFSVR_WAIT         = 91;
     SESSION_STATE_CONFSVR_MESSAGE      = 92;

@@ -75,6 +75,7 @@ void BasicHandler::WaitResponseTimeout(Session& session) {
         case data::SESSION_STATE_DBSVR_UPDATE_WAIT: session_state = data::SESSION_STATE_DBSVR_UPDATE_TIMEOUT; break;
         case data::SESSION_STATE_DBSVR_DELETE_WAIT: session_state = data::SESSION_STATE_DBSVR_DELETE_TIMEOUT; break;
         case data::SESSION_STATE_DBSVR_INSERT_WAIT: session_state = data::SESSION_STATE_DBSVR_INSERT_TIMEOUT; break;
+        case data::SESSION_STATE_CURL_WAIT:         session_state = data::SESSION_STATE_CURL_TIMEOUT; break;
         default:
             LSF_LOG_FAT("invalid session state, %s", LSF_TS(session));
             return;
@@ -105,6 +106,9 @@ void BasicHandler::GetServerRequest(Session& session, msg::SS const& message) {
 void BasicHandler::GetCurlResult(Session& session, bool result, std::string&& content) {
     LSF_LOG_INF("http response: session_id=%u, %s", session.session_id(), content.c_str());
 
+    // set state and run
+    TimerManager::Instance()->ReleaseTimer(session.timer_id());
+    session.clear_timer_id();
     session.set_curl_result(result);
     session.set_curl_content(std::move(content));
     session.set_session_state(data::SESSION_STATE_CURL_MESSAGE);
@@ -126,6 +130,7 @@ void BasicHandler::RunStateMachine(Session& session) {
             case data::SESSION_STATE_CONFSVR_TIMEOUT:      session.set_session_state(OnConfSvrTimeOut(session));     break;
             case data::SESSION_STATE_CONFSVR_MESSAGE:      session.set_session_state(OnConfSvrMessage(session));     break;
             case data::SESSION_STATE_CURL_MESSAGE:         session.set_session_state(OnCurlMessage(session));        break;
+            case data::SESSION_STATE_CURL_TIMEOUT:         session.set_session_state(OnCurlTimeout(session));        break;
             case data::SESSION_STATE_DBSVR_NEXT:           session.set_session_state(OnDBSvrNext(session));          break;
             case data::SESSION_STATE_DBSVR_QUERY:          session.set_session_state(OnDBSvrQuery(session));         break;
             case data::SESSION_STATE_DBSVR_QUERY_TIMEOUT:  session.set_session_state(OnDBSvrQueryTimeout(session));  break;
@@ -151,7 +156,7 @@ void BasicHandler::RunStateMachine(Session& session) {
             case data::SESSION_STATE_DBSVR_UPDATE_WAIT: SetSessionTimer(session, DEF_SESSION_TIMEOUT); return;
             case data::SESSION_STATE_DBSVR_DELETE_WAIT: SetSessionTimer(session, DEF_SESSION_TIMEOUT); return;
             case data::SESSION_STATE_DBSVR_INSERT_WAIT: SetSessionTimer(session, DEF_SESSION_TIMEOUT); return;
-            case data::SESSION_STATE_CURL_WAIT: return;
+            case data::SESSION_STATE_CURL_WAIT:         SetSessionTimer(session, DEF_SESSION_HTTP_TIMEOUT); return;
 
             // end state machine
             case data::SESSION_STATE_FINISH:
@@ -244,6 +249,12 @@ data::ENSessionState BasicHandler::OnConfSvrMessage(Session& session){
 
 data::ENSessionState BasicHandler::OnCurlMessage(Session& session) {
     LSF_LOG_FAT("derived class should override this function, %s", LSF_TS(session));
+    return data::SESSION_STATE_FINISH;
+}
+
+data::ENSessionState BasicHandler::OnCurlTimeout(Session& session) {
+    LSF_LOG_ERR("curl request timeout, %s", LSF_TS(session));
+    SetErrorResponse(session, msg::INTERNAL_ERROR_CURL_TIMEOUT);
     return data::SESSION_STATE_FINISH;
 }
 
