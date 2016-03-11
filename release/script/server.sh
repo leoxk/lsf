@@ -32,6 +32,7 @@ declare -a var_index=("conf"
                       "conn0"
                       "game0"
                       "http0"
+                      "test0"
                       )
 declare -A var_mod=(["conf"]="./bin/confsvrd"
                     ["proxy0"]="./bin/proxysvrd 127.0.0.1 60000 0"
@@ -39,6 +40,7 @@ declare -A var_mod=(["conf"]="./bin/confsvrd"
                     ["game0"]="./bin/gamesvrd 127.0.0.1 60000 0"
                     ["data0"]="./bin/datasvrd 127.0.0.1 60000 0"
                     ["http0"]="./bin/httpsvrd 127.0.0.1 60000 0"
+                    ["test0"]="./bin/testsvrd 127.0.0.1 60000 0"
                     )
 
 ############################################################

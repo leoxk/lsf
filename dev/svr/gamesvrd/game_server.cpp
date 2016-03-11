@@ -23,7 +23,6 @@ bool GameServer::OnRun() {
     // init service
     if (!ConnectClientMsgTransferService::Instance()->Run(this)) return false;
     if (!ConnectServerMsgTransferService::Instance()->Run(this)) return false;
-    ConnectLogService::Instance()->Run(this);
 
     // init session manager
     if (!SessionManager::Instance()->Init(

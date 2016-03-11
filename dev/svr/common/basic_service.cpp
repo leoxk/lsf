@@ -251,7 +251,7 @@ bool BasicConnectService::OnInitSocket() {
 
     // register connection check callback
     IOService::Instance()->AsyncAddTimerForever(DEF_CONN_CHECK_INTERVAL,
-            std::bind(&BasicConnectService::OnConnectionCheck, this, std::placeholders::_1));
+            std::bind(&BasicConnectService::OnConnectionCheck, this));
 
     return true;
 }
@@ -283,7 +283,7 @@ void BasicConnectService::OnSocketConnectFail(lsf::asio::SharedSocket socket, ls
     LSF_LOG_ERR("connect failed, %s, sockaddr=%s, %s", LSF_ETS(_service_type), LSF_TS(sockaddr), LSF_ES(*IOService::Instance()));
 }
 
-void BasicConnectService::OnConnectionCheck(int timer_fd) {
+void BasicConnectService::OnConnectionCheck() {
     // travers all connection and check
     for (int i = 0; i < _service_config.connect_addresses_size(); ++i) {
         // check status

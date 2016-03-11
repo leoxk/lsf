@@ -10,6 +10,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <memory>
+#include <poll.h>
 #include "lsf/basic/error.hpp"
 #include "lsf/basic/macro.hpp"
 #include "lsf/asio/sockaddr.hpp"
@@ -291,31 +292,54 @@ public:
 
 private:
     bool _WaitActionTimeout(int fd, bool wait_read, bool wait_write, uint64_t milli_expire) {
-        struct timeval tv;
-        tv.tv_sec = milli_expire / 1000;
-        tv.tv_usec = (milli_expire % 1000) * 1000;
-        fd_set rd_set, wt_set;
-        FD_ZERO(&rd_set);
-        FD_ZERO(&wt_set);
-        FD_SET(fd, &rd_set);
-        FD_SET(fd, &wt_set);
+        // add fd set
+        pollfd fds[1];
+        fds[0] = {0};
+        fds[0].fd = fd;
+        fds[0].events |= POLLERR;
+        if (wait_read)  fds[0].events |= POLLIN;
+        if (wait_write) fds[0].events |= POLLOUT;
 
-        // process select, avoid signal
-        int ret;
+        // wait
         while (true) {
-            ret = ErrWrap(::select(fd+1, wait_read ? &rd_set : nullptr, wait_write ? &wt_set : nullptr, nullptr, &tv));
+            auto ret = ErrWrap(::poll(fds, 1, milli_expire));
+            // interrupt, do again
             if (ret < 0 && errno == EINTR) continue;
+            // poll error
+            if (ret < 0) return false;
             break;
         }
 
-        // select failed
-        if (ret < 0) return false;
-
-        // no wait action
-        if (ret == 0) return false;
-
-        return true;
+        if (wait_read  && (fds[0].revents & POLLIN))  return true;
+        if (wait_write && (fds[0].revents & POLLOUT)) return true;
+        return false;
     }
+    // bool _WaitActionTimeout(int fd, bool wait_read, bool wait_write, uint64_t milli_expire) {
+    //     struct timeval tv;
+    //     tv.tv_sec = milli_expire / 1000;
+    //     tv.tv_usec = (milli_expire % 1000) * 1000;
+    //     fd_set rd_set, wt_set;
+    //     FD_ZERO(&rd_set);
+    //     FD_ZERO(&wt_set);
+    //     FD_SET(fd, &rd_set);
+    //     FD_SET(fd, &wt_set);
+    //
+    //     // process select, avoid signal
+    //     int ret;
+    //     while (true) {
+    //         ret = ErrWrap(::select(fd+1, wait_read ? &rd_set : nullptr, wait_write ? &wt_set : nullptr, nullptr, &tv));
+    //         if (ret < 0 && errno == EINTR) continue;
+    //         break;
+    //     }
+    //
+    //     // select failed
+    //     if (ret < 0) return false;
+    //
+    //     // no wait action
+    //     if (ret == 0) return false;
+    //
+    //     return true;
+    // }
 
 private:
     proto::Protocol _proto;

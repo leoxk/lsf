@@ -16,6 +16,7 @@ enum ENServerType {
     SERVER_TYPE_DATA_SERVER       = 4;
     SERVER_TYPE_GAME_SERVER       = 5;
     SERVER_TYPE_HTTP_SERVER       = 6;
+    SERVER_TYPE_TEST_SERVER       = 7;
 }
 
 enum ENServiceType {
@@ -24,6 +25,7 @@ enum ENServiceType {
     SERVICE_TYPE_SERVER_MSG_TRANSFER    = 3; // transfer server message
     SERVICE_TYPE_NET_LOG                = 4; // process net log
     SERVICE_TYPE_CONFIG_CENTER          = 5; // request and push configs
+    SERVICE_TYPE_CLIENT_BENCHMARK       = 6; // mimic cient and perform server load test
 }
 
 message AcceptService {

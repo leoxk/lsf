@@ -115,7 +115,15 @@ public:
         return ptr_test_case;
     }
 
+    std::vector<std::string> const& GetArgs() const { return _args; }
+
     bool Run(int argc, char** argv) {
+        // assign args;
+        for (auto i = 0; i < argc; ++i) {
+            _args.push_back(argv[i]);
+        }
+
+        // init vars
         size_t passed_num = 0;
         size_t failed_num = 0;
         size_t cnt = 1;
@@ -184,6 +192,7 @@ public:
 private:
     container_type _case_list;
     bool _test_case_result = true;
+    std::vector<std::string> _args;
 };
 
 }  // end of namespace basic

@@ -108,7 +108,7 @@ protected:
     // init logic
     virtual bool OnInitConfig();
     virtual bool OnInitSocket();
-    virtual void OnConnectionCheck(int timer_fd);
+    virtual void OnConnectionCheck();
 
 protected:
     size_t _last_random_send_index = 0;

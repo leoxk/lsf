@@ -22,6 +22,7 @@ SVR_MODULE = \
 			  dev/svr/proto 		\
 			  dev/svr/common 		\
 			  dev/svr/confsvrd		\
+			  dev/svr/testsvrd  	\
 			  dev/svr/datasvrd		\
 			  dev/svr/gamesvrd		\
 			  dev/svr/proxysvrd		\

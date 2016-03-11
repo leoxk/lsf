@@ -136,4 +136,10 @@ message ClientConn {
     optional uint32       table_id  = 10;
 }
 
+////////////////////////////////////////////////////////////
+// TestData
+message TestData {
+    optional uint64 uid = 1;
+}
+
 // vim:ts=4:sw=4:et:ft=proto:

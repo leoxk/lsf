@@ -30,9 +30,6 @@ class ProactorSerivce : public lsf::basic::NonCopyable, public lsf::basic::Error
 public:
     static const size_t MAX_WAIT_MILLI_SECONDS = 10;
     static const size_t MAX_BUFFER_LEN = 128 * 1024;
-    friend ProactorSerivce* Inspect(ProactorSerivce* ptr);
-
-    static ProactorSerivce* Inspect(ProactorSerivce* ptr) { return ptr; }
 
 public:
     ProactorSerivce(BasicEventDriver* pdriver) : _pdriver(pdriver) {}
