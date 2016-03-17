@@ -1,4 +1,4 @@
 lsf
 ===
 
-light-weighted server framework
+C++ Light-weighted Server Framework For Game Development
