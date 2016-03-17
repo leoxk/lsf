@@ -11,7 +11,7 @@ before_install:
 - locale
 - echo $PATH
 install:
-- apt-get install libprotobuf-dev protobuf-compiler
+- sudo apt-get install libprotobuf-dev protobuf-compiler
 before_script: false
 script:
 - make test
