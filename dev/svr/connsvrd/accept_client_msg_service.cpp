@@ -61,7 +61,8 @@ void AcceptClientMsgService::OnConnectionMessage(lsf::asio::SharedSocket socket,
         return;
     }
 
-    LSF_LOG_INF("get message from conn_id=%u, msg_type=%s(%u)", socket->SockFd(), LSF_ETS(cs_msg.msg_type()), (int)cs_msg.msg_type());
+    auto& info = _sock_map[socket->SockFd()];
+    LSF_LOG_INF("get message from conn_id=%u, uid=%u, msg_type=%s(%u)", socket->SockFd(), info.conn_head.uid(), LSF_ETS(cs_msg.msg_type()), (int)cs_msg.msg_type());
 
     // process login
     switch (cs_msg.msg_type()) {
@@ -112,25 +113,7 @@ void AcceptClientMsgService::HandleLogin(lsf::asio::SharedSocket socket, msg::CS
     // verify sig if needed
     if (ConfigManager::Instance()->ServerConfig().need_login_verify() &&
         !ConfigManager::Instance()->IsTest(request.uid())) {
-        // check input
-        // if (!request.has_uname()) { response.set_result(msg::ERROR_INVALID_UNAME); return; }
-        // if (!request.has_verify_sig()) { response.set_result(msg::ERROR_INVALID_VERIFY_SIG); return; }
-
-        // construct pre sig
-        std::ostringstream oss;
-        oss << "uid=" << request.uid()
-            << "|username=" << request.uname()
-            << "|app_secret_key=" << ConfigManager::Instance()->ServerConfig().app_secret_key();
-        std::string pre_sig = oss.str();
-
-        // calc sig
-        uint8_t buffer[MD5_DIGEST_LENGTH];
-        MD5((uint8_t const*)pre_sig.data(), pre_sig.size(), buffer);
-        std::string sig = StringExt::BinToHexString(buffer, sizeof(buffer));
-        LSF_LOG_INF("verify signature: %s %s %s", pre_sig.c_str(), sig.c_str(), request.verify_sig().c_str());
-
-        // verify sig
-        // if (sig != request.verify_sig()) { response.set_result(msg::ERROR_INVALID_VERIFY_SIG); return; }
+        // TODO
     }
 
     // assign value
@@ -184,13 +167,13 @@ bool AcceptClientMsgService::SendMessageToClient(msg::CS& message) {
         LSF_LOG_ERR("socket get from conn head err, fd=%d", message.conn_head().conn_id());
         return true;
     }
-    SharedSocket socket = _sock_map[(int)message.conn_head().conn_id()].socket;
+    auto& info = _sock_map[(int)message.conn_head().conn_id()];
 
-    LSF_LOG_INF("send message to conn_id=%u, msg_type=%s(%u)", message.conn_head().conn_id(), LSF_ETS(message.msg_type()), (int)message.msg_type());
+    LSF_LOG_INF("send message to conn_id=%u, uid=%u, msg_type=%s(%u)", message.conn_head().conn_id(), info.conn_head.uid(), LSF_ETS(message.msg_type()), (int)message.msg_type());
 
     // send message
     message.clear_conn_head();
-    ConnectionSend(socket, message);
+    ConnectionSend(info.socket, message);
     return true;
 }
 
