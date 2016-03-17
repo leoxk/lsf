@@ -11,7 +11,7 @@ Based on these components LSF form a basic framework mainly for game development
 
 Usage
 -----
-Run unit test first
+Run unit test first.
 ```
 make test
 ```
@@ -19,7 +19,7 @@ Build the basic framework servers.
 ```
 make
 ```
-Server Control through bash script
+Server Control through bash script.
 ```
 ./release/script/servcer.sh
 ```
