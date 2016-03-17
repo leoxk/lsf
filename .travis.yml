@@ -10,9 +10,10 @@ before_install:
 - date
 - locale
 - echo $PATH
-- sudo apt-get install libprotobuf-dev protobuf-compiler -y
+- sudo apt-get install libprotobuf-dev protobuf-compiler libc-ares2 -y
 script:
 - make test
+- make
 branches:
   only:
   - master
