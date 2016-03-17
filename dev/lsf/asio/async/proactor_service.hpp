@@ -522,6 +522,10 @@ public:
     uint64_t ClockTimeMilli() const { return _ts.tv_sec * 1000 + _ts.tv_nsec / 1000000; }
     uint64_t ClockTimeMicro() const { return _ts.tv_sec * 1000000 + _ts.tv_nsec / 1000; }
     uint64_t ClockTimeNano() const { return _ts.tv_sec * 1000000000 + _ts.tv_nsec; }
+    uint64_t RealClockTime() { UpdateClock(); return ClockTime(); }
+    uint64_t RealClockTimeMilli() { UpdateClock(); return ClockTimeMilli(); }
+    uint64_t RealClockTimeMicro() { UpdateClock(); return ClockTimeMicro(); }
+    uint64_t RealClockTimeNano() { UpdateClock(); return ClockTimeNano(); }
 
     BasicEventDriver const* Driver() const { return _pdriver; }
     CompletionQueue const& Queue() const { return _queue; }

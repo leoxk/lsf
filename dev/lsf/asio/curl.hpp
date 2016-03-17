@@ -297,10 +297,12 @@ public:
         // because we forbid signal in Curl constructor
         // so we must make sure libcurl support async dns lookup
         // otherwise dns lookup may last forever
+        // here we just give errinfo, do not force error
         auto* pinfo = curl_version_info(CURLVERSION_NOW);
         if (!(pinfo->features & CURL_VERSION_ASYNCHDNS)) {
-            SetErrString(LSF_DEBUG_INFO + std::string(" Not Support Async DNS"));
-            return false;
+            LSF_LOG_ERR("libcurl do not support async dns, please libcurl with c-ares");
+            // SetErrString(LSF_DEBUG_INFO + std::string(" Not Support Async DNS"));
+            // return false;
         }
 
         // init multi handle

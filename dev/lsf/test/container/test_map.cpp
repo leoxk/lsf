@@ -5,6 +5,7 @@
 // Revision:    2012-11-28 by leoxiang
 
 #include <string>
+#include <map>
 #include "lsf/basic/unit_test.hpp"
 #include "lsf/container/map.hpp"
 #include "lsf/container/heap_mem.hpp"
@@ -79,6 +80,20 @@ LSF_TEST_CASE(test_iter_erase) {
         LSF_ASSERT(maps.Erase(cur_iter->key));
     }
     LSF_ASSERT(maps.empty());
+
+    // std::multimap<int, int, std::greater<int>> m;
+    // m.emplace(100, 1);
+    // m.emplace(100, 2);
+    // m.emplace(100, 3);
+    // m.emplace(200, 3);
+    // m.emplace(200, 2);
+    // m.emplace(200, 1);
+    // m.emplace(100, 1);
+    // m.emplace(100, 2);
+    // m.emplace(100, 3);
+    // for (auto& pair : m) {
+    //     std::cout << pair.first << ":" << pair.second << std::endl;
+    // }
 }
 
 int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }

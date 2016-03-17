@@ -57,6 +57,7 @@ template <typename PBType>
 inline static bool SerializeProtobuf(void *buf, size_t buflen, size_t& uselen, PBType const& elem) {
     size_t protobuf_len = elem.ByteSize();
     if (!Serialize(buf, buflen, uselen, protobuf_len)) return false;
+    if (protobuf_len == 0) return true;
 
     if (uselen + protobuf_len > buflen) return false;
     if (!elem.SerializeWithCachedSizesToArray((uint8_t *)buf + uselen)) return false;
@@ -68,6 +69,7 @@ template <typename PBType>
 inline static bool UnSerializeProtobuf(void const *buf, size_t buflen, size_t& uselen, PBType& elem) {
     size_t protobuf_len = 0;
     if (!lsf::util::UnSerialize(buf, buflen, uselen, protobuf_len)) return false;
+    if (protobuf_len == 0) return true;
 
     if (uselen + protobuf_len > buflen) return false;
     if (!elem.ParseFromArray((uint8_t *)buf + uselen, protobuf_len)) return false;

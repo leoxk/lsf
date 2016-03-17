@@ -59,7 +59,12 @@ protected:
         }
 
         // construct path
-        _file_path = _file_prefix + date.ToFormatString(".%Y-%m-%d");
+        switch (_shift_type) {
+            case SHIFT_NONE:    _file_path = _file_prefix; break;
+            case SHIFT_DAY:
+            case SHIFT_MONTH:
+            default:            _file_path = _file_prefix + date.ToFormatString(".%Y-%m-%d"); break;
+        }
 
         // mkdir if necessary
         auto file_dir = lsf::util::StringExt::GetDirName(_file_path);

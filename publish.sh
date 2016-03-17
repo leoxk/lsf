@@ -61,7 +61,6 @@ for _var_select in ${var_select_list}; do
     11) var_pack_list+=" ./release/conf/deploy.cfg"
         ;;
     12) var_pack_list+=" ./release/conf/conf_game.proto"
-        var_pack_list+=" ./release/table/*.xlsx"
         var_pack_list+=" ./release/table/*.csv"
         ;;
     13) var_pack_list+=" ./release/bin/matchsvrd" ;;
