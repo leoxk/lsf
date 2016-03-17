@@ -9,6 +9,11 @@ Overview
 LSF implment a few core components for server end development.
 Based on these components LSF form a basic framework mainly for game development.
 
+Documentation
+-------------
+
+[http://leoxk.github.io/lsf/](http://leoxk.github.io/lsf/)
+
 Usage
 -----
 Run unit test first.
