@@ -4,8 +4,7 @@
 #
 #   DESCRIPTION: ---
 #         NOTES: ---
-#        AUTHOR: leoxiang, xiangkun@ximigame.com
-#       COMPANY: XiMi Co.Ltd
+#        AUTHOR: leoxiang
 #      REVISION: 2014-12-31 by leoxiang
 #===============================================================================
 

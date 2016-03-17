@@ -13,8 +13,8 @@ PATH="$(dirname $0)/..:$PATH"
 source lbf_init.sh
 
 var_ssh_host="127.0.0.1"
-var_ssh_user="xiangkun"
-var_ssh_passwd="ximi"
+var_ssh_user=""
+var_ssh_passwd=""
 var_ssh_port="22"
 
 var_ip_conf="$(path::cur_dirname)/ip.conf"
@@ -37,7 +37,7 @@ test::test_case test_bool_func {
   test::assert network::is_lan_ip "10.0.0.1"
   test::assert ! network::is_lan_ip "221.0.0.1"
   test::assert ! network::is_lan_ip "135.0.0.1"
-  
+
   test::assert ! network::is_wan_ip "192.168.1.1"
   test::assert ! network::is_wan_ip "172.168.1.1"
   test::assert ! network::is_wan_ip "10.0.0.1"
