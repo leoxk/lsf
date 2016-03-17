@@ -10,12 +10,9 @@ before_install:
 - date
 - locale
 - echo $PATH
-install:
-- sudo apt-get install libprotobuf-dev protobuf-compiler
-before_script: false
+- sudo apt-get install libprotobuf-dev protobuf-compiler -y
 script:
 - make test
-after_success: false
 branches:
   only:
   - master
