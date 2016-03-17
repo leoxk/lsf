@@ -7,8 +7,10 @@ os:
 - linux
 ruby: 2.2.0
 before_install:
-- echo $LANG
-- echo $LC_ALL
+- date
+- locale
+- echo $PATH
+install:
 - apt-get install libprotobuf-dev protobuf-compiler
 before_script: false
 script:
