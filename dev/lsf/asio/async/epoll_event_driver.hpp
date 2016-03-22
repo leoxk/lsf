@@ -31,6 +31,7 @@ public:
         ev.events |= (EPOLLERR | EPOLLHUP);
         // here we use EPOLLRDHUP to make epoll aware of peer close connection
         // or shutdown write-half of the connection, see epoll_ctl for more
+        if (flag & FLAG_ET) ev.events |= EPOLLET;
         if (flag & FLAG_READ) ev.events |= EPOLLIN;
         if (flag & FLAG_WRITE) ev.events |= EPOLLOUT;
 

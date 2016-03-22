@@ -23,6 +23,7 @@ public:
     static const int FLAG_READ  = async::BasicEventDriver::FLAG_READ;
     static const int FLAG_WRITE = async::BasicEventDriver::FLAG_WRITE;
     static const int FLAG_ERR   = async::BasicEventDriver::FLAG_ERR;
+    static const int FLAG_ET   = async::BasicEventDriver::FLAG_ET;
 
 public:
     static ProactorSerivce *Instance() {

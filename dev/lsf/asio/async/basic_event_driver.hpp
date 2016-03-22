@@ -17,6 +17,7 @@ public:
     static const int FLAG_READ = 0x1;
     static const int FLAG_WRITE = 0x2;
     static const int FLAG_ERR = 0x4;
+    static const int FLAG_ET = 0x8;
 
 public:
     virtual bool RegisterEvent(int fd, int flag) = 0;

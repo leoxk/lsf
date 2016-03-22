@@ -207,7 +207,8 @@ public:
         switch (action) {
             case CURL_POLL_IN:
             case CURL_POLL_OUT: {
-                int flag = (action == CURL_POLL_IN ? IOService::FLAG_READ : IOService::FLAG_WRITE);
+                // here use epoll ET mode for CPU optimise
+                int flag = (action == CURL_POLL_IN ? IOService::FLAG_READ : IOService::FLAG_WRITE) | IOService::FLAG_ET;
                 IOService::Instance()->AsyncRawCallback(sock, flag, [](int sockfd, int flags) {
                     // init curl flags
                     int curl_flags = 0;
