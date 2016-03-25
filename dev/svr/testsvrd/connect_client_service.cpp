@@ -15,7 +15,7 @@ using namespace lsf::util;
 
 bool ConnectClientService::OnRun() {
     // register sending heart beat
-    IOService::Instance()->AsyncAddTimerForever(10*1000, [this](int) {
+    IOService::Instance()->AsyncAddTimerForever(1*1000, [this](int) {
             if (_conn_scok.empty()) return;
 
             auto socket = _conn_scok[0];

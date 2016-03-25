@@ -14,8 +14,11 @@ using namespace lsf::util;
 using namespace lsf::asio;
 
 bool TestServer::OnRun() {
+    // set max fd
+    System::SetMaxNofile(100000);
+
     // init service
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 30000; ++i) {
         auto* pservice = new ConnectClientService(10000);
         if (!pservice->Run(this)) return false;
     }
