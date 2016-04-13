@@ -39,6 +39,7 @@ These pages contain the API documentation of LSF, which is short for light-weigh
 #include <google/protobuf/message_lite.h>
 #include "lsf/asio/async.hpp"
 #include "lsf/asio/curl.hpp"
+#include "lsf/asio/curl_multi.hpp"
 #include "lsf/basic/noncopyable.hpp"
 #include "lsf/basic/macro.hpp"
 #include "lsf/basic/error.hpp"

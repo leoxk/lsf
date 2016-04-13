@@ -17,11 +17,15 @@ PROJECT_DIR := ../../../..
 
 # define targets
 BIN = \
-	  $(TEST_BIN_DIR)/test_address 	\
-	  $(TEST_BIN_DIR)/test_sockaddr \
-	  $(TEST_BIN_DIR)/test_socket 	\
-	  $(TEST_BIN_DIR)/test_async 	\
-	  $(TEST_BIN_DIR)/test_curl 	\
+	  $(TEST_BIN_DIR)/test_address 		\
+	  $(TEST_BIN_DIR)/test_sockaddr 	\
+	  $(TEST_BIN_DIR)/test_socket 		\
+	  $(TEST_BIN_DIR)/test_async 		\
+	  $(TEST_BIN_DIR)/test_curl 		\
+	  $(TEST_BIN_DIR)/test_curl_multi 	\
+	  $(TEST_BIN_DIR)/test_curl_thread 	\
+	  $(TEST_BIN_DIR)/bench_curl_multi 	\
+	  $(TEST_BIN_DIR)/bench_curl_thread \
 
 # main targets
 all: $(BIN)

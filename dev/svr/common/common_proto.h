@@ -18,12 +18,16 @@
 // tcp stream header
 namespace msg {
 
+static const uint8_t MAGIC[] = {0xf8, 0x8f};
+
 #pragma pack(push)
 #pragma pack(1)
 class Header {
 public:
     void ntoh() { length = ntohl(length); }
     void hton() { length = htonl(length); }
+
+    uint8_t magic[2];
     uint32_t length;
 };
 #pragma pack(pop)

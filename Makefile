@@ -87,6 +87,8 @@ test_asio :
 	@./test/bin/test_socket
 	@./test/bin/test_async
 	@./test/bin/test_curl
+	@./test/bin/test_curl_multi
+	@./test/bin/test_curl_thread
 
 test_container :
 	@./test/bin/test_array

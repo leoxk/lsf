@@ -245,6 +245,9 @@ public:
             // update clock
             UpdateClock();
 
+            // process tick function
+            for (auto& func : _tick_funcs) func();
+
             // wait events
             _pdriver->WaitEvent(MAX_WAIT_MILLI_SECONDS);
 
@@ -504,6 +507,11 @@ public:
 
     ////////////////////////////////////////////////////////////
     // Other Func
+    template<typename FuncType>
+    void RegisterTickFunction(FuncType&& func) {
+        _tick_funcs.push_back(std::forward<FuncType>(func));
+    }
+
     template<typename SharedSocket>
     void SaveUnusedData(SharedSocket shared_socket, std::string const& data) {
         ReadDataBuffer::Instance()->AppendUnusedData(shared_socket->SockFd(), data);
@@ -531,10 +539,11 @@ private:
     void UpdateClock() { ::clock_gettime(CLOCK_REALTIME, &_ts); }
 
 private:
-    BasicEventDriver* _pdriver = nullptr;
-    bool              _is_exit = false;
-    timespec          _ts      = {0,0};
-    CompletionQueue   _queue;
+    BasicEventDriver*                  _pdriver = nullptr;
+    bool                               _is_exit = false;
+    timespec                           _ts      = {0,0};
+    CompletionQueue                    _queue;
+    std::vector<std::function<void()>> _tick_funcs;
 };
 
 }  // end of namespace async
