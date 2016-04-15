@@ -148,9 +148,10 @@ public:
         return true;
     }
 
+    // use milli seconds
     bool SetTimeout(size_t timeout) {
-        if (!SetOpt(CURLOPT_TIMEOUT, timeout)) return false;
-        if (!SetOpt(CURLOPT_CONNECTTIMEOUT, timeout)) return false;
+        if (!SetOpt(CURLOPT_TIMEOUT_MS, timeout)) return false;
+        if (!SetOpt(CURLOPT_CONNECTTIMEOUT_MS, timeout)) return false;
         return true;
     }
 

@@ -14,13 +14,12 @@ using namespace lsf::asio;
 #define VALID_URL "http://www.google.com/"
 #define WRONG_NAME "http://127.0.0.1:1234"
 #define WRONG_URL  "http://www.google.com/error"
-#define DEF_TIMEOUT 5
+#define DEF_TIMEOUT 5*1000
 
 LSF_TEST_CASE(test_multi_curl) {
     SharedCurl shared_curl;
     LSF_ASSERT(shared_curl.use_count() == 1);
     LSF_ASSERT(shared_curl->SetUrl(URL));
-    LSF_ASSERT(shared_curl->SetTimeout(DEF_TIMEOUT));
     LSF_ASSERT(CurlMulti::Instance()->AddCurl(shared_curl, [&](SharedCurl curl) {
         LSF_ASSERT(curl->EffectiveUrl() == VALID_URL);
         LSF_ASSERT(curl.use_count() == 3);
@@ -46,7 +45,6 @@ LSF_TEST_CASE(test_more_sophicate) {
     SharedCurl curls[COUNT1];
     for (int i = 0; i < COUNT1; ++i) {
         LSF_ASSERT(curls[i]->SetUrl(URL));
-        LSF_ASSERT(curls[i]->SetTimeout(DEF_TIMEOUT));
         LSF_ASSERT(CurlMulti::Instance()->AddCurl(curls[i], [](SharedCurl curl) {
             LSF_ASSERT(curl->EffectiveUrl() == VALID_URL);
             LSF_ASSERT(curl.use_count() == 3);
@@ -72,7 +70,6 @@ void AddCurl() {
     SharedCurl curl;
     LSF_ASSERT(curl->SetVerbose());
     LSF_ASSERT(curl->SetUrl(URL));
-    LSF_ASSERT(curl->SetTimeout(DEF_TIMEOUT));
     LSF_ASSERT(CurlMulti::Instance()->AddCurl(curl, [](SharedCurl curl) {
             LSF_ASSERT(curl->EffectiveUrl() == VALID_URL);
             LSF_ASSERT(curl.use_count() == 2);
@@ -93,16 +90,12 @@ LSF_TEST_CASE(test_more_sophicate_sequencial) {
     IOService::Instance()->Run();
 
     // check status
-    LSF_ASSERT(CurlMulti::Instance()->TimerSet().size() == 1);
+    LSF_ASSERT(CurlMulti::Instance()->TimerSet().size() == 0);
     LSF_ASSERT(CurlMulti::Instance()->CurlMap().empty());
-    LSF_ASSERT(IOService::Instance()->Driver()->GetRegisterEventSize() == 1);
-    LSF_ASSERT(IOService::Instance()->Queue().GetReadCompletionMap().size() == 1);
+    LSF_ASSERT(IOService::Instance()->Driver()->GetRegisterEventSize() == 0);
+    LSF_ASSERT(IOService::Instance()->Queue().GetReadCompletionMap().size() == 0);
     LSF_ASSERT(IOService::Instance()->Queue().GetWriteCompletionMap().size() == 0);
     LSF_ASSERT(IOService::Instance()->Queue().GetRawCompletionMap().size() == 0);
-
-    std::cout << CurlMulti::Instance()->TimerSet().size() << std::endl
-              << IOService::Instance()->Driver()->GetRegisterEventSize() << std::endl
-              << IOService::Instance()->Queue().GetReadCompletionMap().size() << std::endl;
 }
 
 LSF_TEST_CASE(test_timeout) {

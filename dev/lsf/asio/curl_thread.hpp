@@ -38,7 +38,7 @@ public:
         }
 
         // create thread
-        for (size_t i = 0; i < thread_count; ++i) {
+        for (auto i = 0; i < thread_count; ++i) {
             std::thread t(&CurlThread::ProcessWorker, this);
             t.detach();
         }

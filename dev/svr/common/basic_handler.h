@@ -19,6 +19,7 @@ public:
     static const size_t MAX_REDO_COUNT = 3;
     static const size_t DEF_SESSION_TIMEOUT = 2 * 1000;
     static const size_t DEF_SESSION_HTTP_TIMEOUT = 10 * 1000;
+    static const size_t DEF_SESSION_CURL_TIMEOUT = 5 * 1000;
 
 public:
     virtual ~BasicHandler() { }

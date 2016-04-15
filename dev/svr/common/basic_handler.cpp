@@ -617,6 +617,7 @@ bool BasicHandler::RequestUrl(Session& session, std::string const& url, std::str
     // set url
     SharedCurl shared_curl;
     shared_curl->SetUrl(url);
+    shared_curl->SetTimeout(DEF_SESSION_CURL_TIMEOUT);
     LSF_LOG_INF("http request: session_id=%u, %s", session.session_id(), url.c_str());
 
     // post data
