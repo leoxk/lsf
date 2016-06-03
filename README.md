@@ -1,4 +1,4 @@
-LSF - Lightweighted Server Framework
+SF - Lightweighted Server Framework
 ===================================================
 
 [![Build Status](https://travis-ci.org/leoxk/lsf.svg?branch=master)](https://travis-ci.org/leoxk/lsf)
