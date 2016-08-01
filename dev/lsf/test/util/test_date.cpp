@@ -25,8 +25,6 @@ LSF_TEST_CASE(test) {
 
     LSF_ASSERT(date.ToFormatString("%Y-%m-%d %H:%M:%S") == "2011-11-11 11:11:11");
     LSF_ASSERT(date.ToFormatString("%Y-%m-%d %H:%M:%S") == date.ToString());
-
-    // cout << "Current Time is: " << Date::Now().ToFormatString("%Y-%m-%d %H:%M:%S") << endl;
 }
 
 LSF_TEST_CASE(test_create_from_string) {
@@ -41,7 +39,9 @@ LSF_TEST_CASE(test_create_from_string) {
     LSF_ASSERT(date.GetSecond() == 11);
 
     LSF_ASSERT(Date("  2011-11-11   11:11:11  ").ToString() == "2011-11-11 11:11:11");
-    std::cout << Date("  2011-11-11   11:11:11  ").ToString() << std::endl;
+
+    LSF_ASSERT(Date(Date("2016-08-08 08:08:08").ToCalendarTime()).ToString() == "2016-08-08 08:08:08");
+    LSF_ASSERT(Date(Date("2016-09-09 09:09:09").ToCalendarTime()).ToString() == "2016-09-09 09:09:09");
 }
 
 int main(int argc, char **argv) { LSF_TEST_ALL(argc, argv); }

@@ -160,6 +160,17 @@ public:
         return input;
     }
 
+    static std::string& RemoveHeadZeroInplace(std::string& input) {
+        while (!input.empty() && input[0] == '0') input.erase(0, 1);
+        return input;
+    }
+
+    static std::string RemoveHeadZero(std::string const& input) {
+        auto tmp = input;
+        while (!tmp.empty() && tmp[0] == '0') tmp.erase(0, 1);
+        return tmp;
+    }
+
     ////////////////////////////////////////////////////////////
     // path related
     static std::string GetDirName(std::string const& input) {

@@ -48,12 +48,12 @@ public:
         util::StringExt::RemoveHeadWhitespace(tmp);
         util::StringExt::RemoveTailWhitespace(tmp);
         size_t pos = 0;
-        size_t year   = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
-        size_t month  = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
-        size_t day    = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
-        size_t hour   = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
-        size_t minute = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
-        size_t second = basic::TypeCast<size_t>(util::StringExt::SplitGetNext(tmp, "- :", pos, true));
+        size_t year   = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
+        size_t month  = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
+        size_t day    = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
+        size_t hour   = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
+        size_t minute = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
+        size_t second = basic::TypeCast<size_t>(StringExt::RemoveHeadZero(util::StringExt::SplitGetNext(tmp, "- :", pos, true)));
         new (this) Date(year, month, day, hour, minute, second);
     }
 
